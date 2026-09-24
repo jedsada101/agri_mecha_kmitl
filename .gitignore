@@ -1,0 +1,10 @@
+# OS and editor cruft
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
+*~
+
+# Local notes that are not part of the courseware
+scratch/
+*.bak

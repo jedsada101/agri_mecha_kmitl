@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="เมคคาทรอนิกส์และหุ่นยนต์เกษตร | หลักสูตร 16 สัปดาห์" data-title-en="Agricultural Mechatronics &amp; Robotics | 16-Week Course">Agricultural Mechatronics &amp; Robotics</title>
+<meta name="description" content="Agricultural Mechatronics and Robotics — a 16-week course for 3rd-year B.Eng. students in Agri-Intelligence Engineering. เมคคาทรอนิกส์และหุ่นยนต์เกษตร สำหรับนักศึกษาวิศวกรรมเกษตรอัจฉริยะ">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a>
+      <a href="#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a>
+      <a href="#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a>
+      <a href="#instructor"><span data-lang-th>ผู้สอน</span><span data-lang-en>Instructor</span></a>
+      <a href="chapters/ch01.html" class="btn btn--primary btn--sm" style="margin-left:.5rem">
+        <span data-lang-th>เริ่มเรียน</span><span data-lang-en>Start learning</span>
+      </a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- =========================================================== Hero ====== -->
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div>
+      <span class="eyebrow">
+        <span data-lang-th>วศ.บ. วิศวกรรมเกษตรอัจฉริยะ &middot; ชั้นปีที่ 3</span>
+        <span data-lang-en>B.Eng. Agri-Intelligence Engineering &middot; Year 3</span>
+      </span>
+      <h1>
+        <span data-lang-th>เมคคาทรอนิกส์และ<br><span class="accent">หุ่นยนต์เกษตร</span></span>
+        <span data-lang-en>Agricultural<br><span class="accent">Mechatronics &amp; Robotics</span></span>
+      </h1>
+      <p class="hero__lead">
+        <span data-lang-th>วิชาบูรณาการที่พาคุณเดินจาก “เซนเซอร์หนึ่งตัว” ไปจนถึง “ระบบฟาร์มอัตโนมัติทั้งระบบ” ครอบคลุมระบบควบคุมลำดับด้วย PLC ระบบควบคุมกระบวนการและ PID หุ่นยนต์อุตสาหกรรม จลนศาสตร์และการจำลอง ตลอดจนหุ่นยนต์เคลื่อนที่ในแปลงเกษตร รวม 16 สัปดาห์</span>
+        <span data-lang-en>An integrative course that takes you from a single sensor to a fully automated farm system: sequence control with PLCs, process control and PID, industrial robots, kinematics and simulation, and field-going mobile robots — across 16 weeks.</span>
+      </p>
+
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="chapters/ch01.html">
+          <i class="fa-solid fa-play"></i>
+          <span data-lang-th>เริ่มบทที่ 1</span><span data-lang-en>Start Chapter 1</span>
+        </a>
+        <a class="btn btn--ghost" href="#chapters">
+          <i class="fa-solid fa-list-ul"></i>
+          <span data-lang-th>ดูสารบัญทั้งหมด</span><span data-lang-en>Browse all chapters</span>
+        </a>
+      </div>
+
+      <div class="hero__stats">
+        <div><b>16</b><span data-lang-th>สัปดาห์</span><span data-lang-en>Weeks</span></div>
+        <div><b>11</b><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></div>
+        <div><b>22</b><span data-lang-th>แบบทดสอบ</span><span data-lang-en>Quizzes</span></div>
+        <div><b>3(2-2-5)</b><span data-lang-th>หน่วยกิต</span><span data-lang-en>Credits</span></div>
+      </div>
+    </div>
+
+    <aside class="hero__card">
+      <h3>
+        <i class="fa-solid fa-bullseye" style="color:var(--gold-500)"></i>
+        <span data-lang-th>เมื่อจบวิชานี้ คุณจะสามารถ</span>
+        <span data-lang-en>By the end of this course you can</span>
+      </h3>
+      <ul>
+        <li><i class="fa-solid fa-circle-check"></i><span data-lang-th>เลือกเซนเซอร์ แอคชูเอเตอร์ และคอนโทรลเลอร์ให้เหมาะกับงานเกษตร</span><span data-lang-en>Select sensors, actuators and controllers for agricultural tasks</span></li>
+        <li><i class="fa-solid fa-circle-check"></i><span data-lang-th>ออกแบบและเขียนโปรแกรม PLC ด้วย Ladder Diagram และ SFC</span><span data-lang-en>Design and program PLCs with ladder diagrams and SFC</span></li>
+        <li><i class="fa-solid fa-circle-check"></i><span data-lang-th>สร้างแบบจำลองระบบและปรับจูนตัวควบคุม PID</span><span data-lang-en>Model a plant and tune a PID controller</span></li>
+        <li><i class="fa-solid fa-circle-check"></i><span data-lang-th>คำนวณจลนศาสตร์หุ่นยนต์และจำลองงานด้วย RoboDK และ Webots</span><span data-lang-en>Compute robot kinematics and simulate tasks in RoboDK and Webots</span></li>
+        <li><i class="fa-solid fa-circle-check"></i><span data-lang-th>บูรณาการทุกส่วนเป็นระบบฟาร์มอัตโนมัติหนึ่งระบบ</span><span data-lang-en>Integrate everything into one automated farm system</span></li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================================================= Overview ====== -->
+<section class="section section--alt" id="overview">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow"><span data-lang-th>ภาพรวมรายวิชา</span><span data-lang-en>Course overview</span></span>
+      <h2><span data-lang-th>เรียนอย่างไรในวิชานี้</span><span data-lang-en>How this course works</span></h2>
+      <p>
+        <span data-lang-th>ทุกบทเรียนออกแบบด้วยรูปแบบเดียวกัน: ทดสอบก่อนเรียน → เนื้อหาพร้อมภาพประกอบและสมการ → กิจกรรมในชั้นเรียน → ปฏิบัติการ → ทดสอบหลังเรียน → รายการอ้างอิง</span>
+        <span data-lang-en>Every chapter follows the same rhythm: pre-test → illustrated content and equations → in-class activity → laboratory → post-test → reference list.</span>
+      </p>
+    </div>
+
+    <div class="grid grid--4">
+      <article class="card card--hover reveal">
+        <div class="card__icon"><i class="fa-solid fa-clipboard-question"></i></div>
+        <h3><span data-lang-th>ทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h3>
+        <p><span data-lang-th>สำรวจความรู้เดิม 5–10 ข้อ ทราบผลทันทีพร้อมคำอธิบาย ไม่นับคะแนนเก็บ</span><span data-lang-en>A 5–10 item diagnostic with instant feedback. Not graded.</span></p>
+      </article>
+      <article class="card card--hover reveal">
+        <div class="card__icon card__icon--sky"><i class="fa-solid fa-diagram-project"></i></div>
+        <h3><span data-lang-th>เนื้อหาเชิงภาพ</span><span data-lang-en>Visual content</span></h3>
+        <p><span data-lang-th>แผนภาพบล็อก วงจร และไดอะแกรม อธิบายกลไกการทำงานจริง ไม่ใช่แค่คำนิยาม</span><span data-lang-en>Block diagrams, circuits and schematics that show mechanism, not just definitions.</span></p>
+      </article>
+      <article class="card card--hover reveal">
+        <div class="card__icon card__icon--gold"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+        <h3><span data-lang-th>กิจกรรมและปฏิบัติการ</span><span data-lang-en>Activity &amp; laboratory</span></h3>
+        <p><span data-lang-th>ทุกบทมีกิจกรรมในชั้นเรียนและใบปฏิบัติการพร้อมเกณฑ์ให้คะแนน ตั้งแต่ต่อวงจร PLC ปรับจูน PID ไปจนถึงจำลองหุ่นยนต์</span><span data-lang-en>Every chapter pairs an in-class activity with a graded lab sheet — from PLC wiring and PID tuning to robot simulation.</span></p>
+      </article>
+      <article class="card card--hover reveal">
+        <div class="card__icon card__icon--steel"><i class="fa-solid fa-book-open"></i></div>
+        <h3><span data-lang-th>อ้างอิงครบถ้วน</span><span data-lang-en>Full references</span></h3>
+        <p><span data-lang-th>ทุกบทมีรายการอ้างอิงตำรา มาตรฐาน และงานวิจัยสำหรับค้นคว้าต่อ</span><span data-lang-en>Textbooks, standards and papers listed in every chapter for further study.</span></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= Chapters ====== -->
+<section class="section" id="chapters">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow"><span data-lang-th>สารบัญ</span><span data-lang-en>Contents</span></span>
+      <h2><span data-lang-th>บทเรียนทั้ง 11 บท</span><span data-lang-en>All 11 chapters</span></h2>
+      <p>
+        <span data-lang-th>เรียงตามลำดับการเรียนรู้จากแนวคิดพื้นฐาน สู่ระบบควบคุม สู่หุ่นยนต์ และจบด้วยการบูรณาการในงานวิศวกรรมเกษตร</span>
+        <span data-lang-en>Ordered from foundations, to control systems, to robots, closing with integration in agricultural engineering.</span>
+      </p>
+    </div>
+
+    <div class="chapters">
+
+      <!-- Ch 1 -->
+      <article class="ch-card reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">01</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 1</span><span data-lang-en>Week 1</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-seedling"></i> Foundations</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>บทนำสู่เมคคาทรอนิกส์เกษตร</span><span data-lang-en>Introduction to Agricultural Mechatronics</span></h3>
+          <p><span data-lang-th>นิยามเมคคาทรอนิกส์ องค์ประกอบ 5 ส่วน หุ่นยนต์แบบติดตั้งอยู่กับที่และแบบเคลื่อนที่ และบทบาทในเกษตรอัจฉริยะ</span><span data-lang-en>What mechatronics is, its five building blocks, fixed vs mobile robots, and their role in smart agriculture.</span></p>
+          <div class="ch-card__tags"><span>Mechatronics</span><span>Fixed robot</span><span>Mobile robot</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--primary btn--sm" href="chapters/ch01.html"><span data-lang-th>เข้าเรียน</span><span data-lang-en>Open</span> <i class="fa-solid fa-arrow-right"></i></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 3 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ch 2 -->
+      <article class="ch-card reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">02</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 2</span><span data-lang-en>Week 2</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-sliders"></i> Control</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>แนวคิดระบบควบคุม</span><span data-lang-en>Control System Concepts</span></h3>
+          <p><span data-lang-th>ทำไมต้องควบคุม ระบบควบคุมลำดับกับกระบวนการ ระบบเปิดกับระบบปิด พร้อมตัวอย่างในงานเกษตร</span><span data-lang-en>Why control is needed, sequence vs process control, open- vs closed-loop, with agricultural examples.</span></p>
+          <div class="ch-card__tags"><span>Open-loop</span><span>Closed-loop</span><span>Feedback</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--primary btn--sm" href="chapters/ch02.html"><span data-lang-th>เข้าเรียน</span><span data-lang-en>Open</span> <i class="fa-solid fa-arrow-right"></i></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 3 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ch 3 -->
+      <article class="ch-card reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">03</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 3–4</span><span data-lang-en>Weeks 3–4</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-microchip"></i> Components</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>แอคชูเอเตอร์ เซนเซอร์ และคอนโทรลเลอร์</span><span data-lang-en>Actuators, Sensors and Controllers</span></h3>
+          <p><span data-lang-th>อุปกรณ์พื้นฐานที่ใช้จริงในระบบเกษตร ตั้งแต่มอเตอร์ นิวแมติกส์ เซนเซอร์ความชื้น ไปจนถึงไมโครคอนโทรลเลอร์</span><span data-lang-en>The devices actually used in agricultural systems — motors, pneumatics, moisture sensors, microcontrollers.</span></p>
+          <div class="ch-card__tags"><span>Motor</span><span>Sensor</span><span>Signal</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--primary btn--sm" href="chapters/ch03.html"><span data-lang-th>เข้าเรียน</span><span data-lang-en>Open</span> <i class="fa-solid fa-arrow-right"></i></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 6 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ch 4 -->
+      <article class="ch-card is-soon reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">04</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 5–6</span><span data-lang-en>Weeks 5–6</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-code-branch"></i> PLC</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>การควบคุมลำดับและ PLC</span><span data-lang-en>Sequence Control and PLC</span></h3>
+          <p><span data-lang-th>แนวคิดการควบคุมลำดับ SFC พีชคณิตบูลีน K-map แลดเดอร์ไดอะแกรม ไทเมอร์ และเคาน์เตอร์</span><span data-lang-en>Sequence concepts, SFC, Boolean logic, K-maps, ladder diagrams, timers and counters.</span></p>
+          <div class="ch-card__tags"><span>SFC</span><span>Ladder</span><span>K-map</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--ghost btn--sm" href="#"><span data-lang-th>เร็ว ๆ นี้</span><span data-lang-en>Coming soon</span></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 6 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ch 5 -->
+      <article class="ch-card is-soon reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">05</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 7–8</span><span data-lang-en>Weeks 7–8</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-plug-circle-bolt"></i> PLC Lab</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>การประยุกต์และติดตั้ง PLC</span><span data-lang-en>PLC Applications and Implementation</span></h3>
+          <p><span data-lang-th>I/O ของ PLC การเดินสาย ฮาร์ดแวร์ รีจิสเตอร์ข้อมูล ฟังก์ชันทางคณิตศาสตร์ และแบบฝึกปฏิบัติ</span><span data-lang-en>PLC I/O, wiring, hardware, data registers, mathematical functions and practical exercises.</span></p>
+          <div class="ch-card__tags"><span>Wiring</span><span>Registers</span><span>Sinking/Sourcing</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--ghost btn--sm" href="#"><span data-lang-th>เร็ว ๆ นี้</span><span data-lang-en>Coming soon</span></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 6 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ch 6 -->
+      <article class="ch-card is-soon reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">06</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 9–10</span><span data-lang-en>Weeks 9–10</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-wave-square"></i> Process</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>การควบคุมกระบวนการ</span><span data-lang-en>Process Control</span></h3>
+          <p><span data-lang-th>แผนภาพบล็อก การสร้างแบบจำลองระบบ ระบบอันดับหนึ่งและอันดับสอง และผลตอบสนองเชิงเวลา</span><span data-lang-en>Block diagrams, system modelling, first- and second-order systems, and time response.</span></p>
+          <div class="ch-card__tags"><span>Block diagram</span><span>Transfer function</span><span>Step response</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--ghost btn--sm" href="#"><span data-lang-th>เร็ว ๆ นี้</span><span data-lang-en>Coming soon</span></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 6 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ch 7 -->
+      <article class="ch-card is-soon reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">07</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 11</span><span data-lang-en>Week 11</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-gauge-high"></i> Controllers</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>ตัวควบคุมกระบวนการ</span><span data-lang-en>Process Controllers</span></h3>
+          <p><span data-lang-th>การควบคุมแบบ ON–OFF แนวคิด P, PI, PID ผลตอบสนองของตัวควบคุม และการปรับจูน</span><span data-lang-en>ON–OFF control, P/PI/PID concepts, controller response and tuning methods.</span></p>
+          <div class="ch-card__tags"><span>ON-OFF</span><span>PID</span><span>Tuning</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--ghost btn--sm" href="#"><span data-lang-th>เร็ว ๆ นี้</span><span data-lang-en>Coming soon</span></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 3 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ch 8 -->
+      <article class="ch-card is-soon reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">08</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 12</span><span data-lang-en>Week 12</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-robot"></i> Robots</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>ระบบหุ่นยนต์อุตสาหกรรม</span><span data-lang-en>Industrial Robot Systems</span></h3>
+          <p><span data-lang-th>ประเภทหุ่นยนต์ โครงร่าง ข้อต่อ เฟรมอ้างอิง และระบบพิกัดที่ใช้ในงานจริง</span><span data-lang-en>Robot types, configurations, joints, frames and the coordinate systems used in practice.</span></p>
+          <div class="ch-card__tags"><span>Joints</span><span>Workspace</span><span>Frames</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--ghost btn--sm" href="#"><span data-lang-th>เร็ว ๆ นี้</span><span data-lang-en>Coming soon</span></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 3 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ch 9 -->
+      <article class="ch-card is-soon reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">09</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 13–14</span><span data-lang-en>Weeks 13–14</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-cubes"></i> Kinematics</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>จลนศาสตร์หุ่นยนต์และการจำลอง</span><span data-lang-en>Robot Kinematics and Simulation</span></h3>
+          <p><span data-lang-th>เมทริกซ์การแปลง จลนศาสตร์ไปข้างหน้า RoboDK และการใช้งานหุ่นยนต์จริงแบบเดลต้า อาร์ติคูเลต และคาร์ทีเซียน</span><span data-lang-en>Transformation matrices, forward kinematics, RoboDK, and real delta, articulated and cartesian robots.</span></p>
+          <div class="ch-card__tags"><span>DH parameters</span><span>RoboDK</span><span>Delta</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--ghost btn--sm" href="#"><span data-lang-th>เร็ว ๆ นี้</span><span data-lang-en>Coming soon</span></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 6 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ch 10 -->
+      <article class="ch-card is-soon reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">10</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 15</span><span data-lang-en>Week 15</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-tractor"></i> Mobile</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>ระบบหุ่นยนต์เคลื่อนที่</span><span data-lang-en>Mobile Robot Systems</span></h3>
+          <p><span data-lang-th>ประเภทหุ่นยนต์เคลื่อนที่ ชนิดล้อและสายพาน ระบบขับเคลื่อนดิฟเฟอเรนเชียล จลนศาสตร์ แนวคิดการระบุตำแหน่งและวางแผนเส้นทาง และการจำลองด้วย Webots</span><span data-lang-en>Mobile robot types, wheel and track types, differential drive, kinematics, localization and path-planning concepts, and simulation in Webots.</span></p>
+          <div class="ch-card__tags"><span>Differential drive</span><span>Localization</span><span>Path planning</span><span>Webots</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--ghost btn--sm" href="#"><span data-lang-th>เร็ว ๆ นี้</span><span data-lang-en>Coming soon</span></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 3 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ch 11 -->
+      <article class="ch-card is-soon reveal">
+        <div class="ch-card__top">
+          <div class="ch-card__num">11</div>
+          <div class="ch-card__head-text">
+            <span class="ch-card__week"><span data-lang-th>สัปดาห์ที่ 16</span><span data-lang-en>Week 16</span></span>
+            <span class="ch-card__topic"><i class="fa-solid fa-wheat-awn"></i> Integration</span>
+          </div>
+        </div>
+        <div class="ch-card__body">
+          <h3><span data-lang-th>การประยุกต์ในงานวิศวกรรมเกษตร</span><span data-lang-en>Applications in Agricultural Engineering</span></h3>
+          <p><span data-lang-th>บูรณาการเซนเซอร์ คอนโทรลเลอร์ แอคชูเอเตอร์ PLC และหุ่นยนต์ เข้าเป็นระบบเกษตรอัจฉริยะหนึ่งระบบ</span><span data-lang-en>Bringing sensors, controllers, actuators, PLCs and robots together into one smart-farming system.</span></p>
+          <div class="ch-card__tags"><span>System integration</span><span>Smart farm</span><span>Project</span></div>
+          <div class="ch-card__foot">
+            <a class="btn btn--ghost btn--sm" href="#"><span data-lang-th>เร็ว ๆ นี้</span><span data-lang-en>Coming soon</span></a>
+            <span class="ch-card__meta"><i class="fa-regular fa-clock"></i> 3 <span data-lang-th>ชม.</span><span data-lang-en>hrs</span></span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================================================== Weekly plan ====== -->
+<section class="section section--alt" id="plan">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow"><span data-lang-th>แผนการสอน</span><span data-lang-en>Course schedule</span></span>
+      <h2><span data-lang-th>แผนการสอน 16 สัปดาห์</span><span data-lang-en>The 16-week plan</span></h2>
+    </div>
+
+    <div class="grid grid--2">
+      <div class="card">
+        <ul class="timeline">
+          <li><b><span data-lang-th>สัปดาห์ 1</span><span data-lang-en>Week 1</span></b> <span data-lang-th>บทนำสู่เมคคาทรอนิกส์เกษตร หุ่นยนต์ติดตั้งกับที่และเคลื่อนที่</span><span data-lang-en>Introduction to agricultural mechatronics; fixed and mobile robots</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 2</span><span data-lang-en>Week 2</span></b> <span data-lang-th>แนวคิดระบบควบคุม ลำดับ/กระบวนการ เปิด/ปิดลูป</span><span data-lang-en>Control concepts: sequence/process, open/closed loop</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 3</span><span data-lang-en>Week 3</span></b> <span data-lang-th>เซนเซอร์ในงานเกษตรและการปรับสภาพสัญญาณ</span><span data-lang-en>Agricultural sensors and signal conditioning</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 4</span><span data-lang-en>Week 4</span></b> <span data-lang-th>แอคชูเอเตอร์และคอนโทรลเลอร์ ปฏิบัติการที่ 1</span><span data-lang-en>Actuators and controllers; Lab 1</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 5</span><span data-lang-en>Week 5</span></b> <span data-lang-th>การควบคุมลำดับ ลอจิก และ K-map</span><span data-lang-en>Sequence control, logic and K-maps</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 6</span><span data-lang-en>Week 6</span></b> <span data-lang-th>SFC แลดเดอร์ ไทเมอร์ เคาน์เตอร์ ปฏิบัติการที่ 2</span><span data-lang-en>SFC, ladder, timers, counters; Lab 2</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 7</span><span data-lang-en>Week 7</span></b> <span data-lang-th>ฮาร์ดแวร์ PLC การเดินสาย I/O</span><span data-lang-en>PLC hardware and I/O wiring</span></li>
+          <li class="is-exam"><b><span data-lang-th>สัปดาห์ 8</span><span data-lang-en>Week 8</span></b> <span data-lang-th>สอบกลางภาค + โครงงาน PLC ย่อย</span><span data-lang-en>Midterm examination + mini PLC project</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <ul class="timeline">
+          <li><b><span data-lang-th>สัปดาห์ 9</span><span data-lang-en>Week 9</span></b> <span data-lang-th>แผนภาพบล็อกและการสร้างแบบจำลองระบบ</span><span data-lang-en>Block diagrams and system modelling</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 10</span><span data-lang-en>Week 10</span></b> <span data-lang-th>ระบบอันดับหนึ่ง/สอง และผลตอบสนองเชิงเวลา</span><span data-lang-en>First/second-order systems and time response</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 11</span><span data-lang-en>Week 11</span></b> <span data-lang-th>ตัวควบคุม ON–OFF, P, PI, PID และการปรับจูน</span><span data-lang-en>ON–OFF, P, PI, PID controllers and tuning</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 12</span><span data-lang-en>Week 12</span></b> <span data-lang-th>ระบบหุ่นยนต์อุตสาหกรรมและระบบพิกัด</span><span data-lang-en>Industrial robot systems and coordinate frames</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 13</span><span data-lang-en>Week 13</span></b> <span data-lang-th>เมทริกซ์การแปลงและจลนศาสตร์ไปข้างหน้า</span><span data-lang-en>Transformation matrices and forward kinematics</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 14</span><span data-lang-en>Week 14</span></b> <span data-lang-th>จำลองด้วย RoboDK และหุ่นยนต์จริง ปฏิบัติการที่ 3</span><span data-lang-en>RoboDK simulation and real robots; Lab 3</span></li>
+          <li><b><span data-lang-th>สัปดาห์ 15</span><span data-lang-en>Week 15</span></b> <span data-lang-th>หุ่นยนต์เคลื่อนที่ จลนศาสตร์ การระบุตำแหน่งและวางแผนเส้นทาง จำลองด้วย Webots</span><span data-lang-en>Mobile robots: kinematics, localization, path planning; Webots simulation</span></li>
+          <li class="is-exam"><b><span data-lang-th>สัปดาห์ 16</span><span data-lang-en>Week 16</span></b> <span data-lang-th>บูรณาการระบบเกษตรอัจฉริยะ นำเสนอโครงงาน</span><span data-lang-en>Smart-farm integration and project presentations</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== Assessment ====== -->
+<section class="section" id="assessment">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></span>
+      <h2><span data-lang-th>สัดส่วนคะแนนและเกณฑ์</span><span data-lang-en>Grading breakdown</span></h2>
+    </div>
+
+    <div class="table-wrap" style="max-width:820px;margin-inline:auto">
+      <table>
+        <thead>
+          <tr>
+            <th><span data-lang-th>รายการประเมิน</span><span data-lang-en>Component</span></th>
+            <th><span data-lang-th>สัดส่วน</span><span data-lang-en>Weight</span></th>
+            <th><span data-lang-th>รายละเอียด</span><span data-lang-en>Detail</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span data-lang-th>แบบทดสอบก่อน–หลังเรียน และการมีส่วนร่วม</span><span data-lang-en>Pre/post-tests and participation</span></td>
+            <td>10%</td>
+            <td><span data-lang-th>วัดพัฒนาการรายบท ไม่ตัดสินถูก–ผิดในแบบทดสอบก่อนเรียน</span><span data-lang-en>Tracks per-chapter gain; pre-tests are diagnostic only</span></td>
+          </tr>
+          <tr>
+            <td><span data-lang-th>ปฏิบัติการและรายงาน</span><span data-lang-en>Laboratory work and reports</span></td>
+            <td>25%</td>
+            <td><span data-lang-th>PLC, PID, หุ่นยนต์ รวม 3 ปฏิบัติการหลัก</span><span data-lang-en>Three core labs: PLC, PID and robotics</span></td>
+          </tr>
+          <tr>
+            <td><span data-lang-th>สอบกลางภาค</span><span data-lang-en>Midterm examination</span></td>
+            <td>25%</td>
+            <td><span data-lang-th>บทที่ 1–5 (สัปดาห์ที่ 8)</span><span data-lang-en>Chapters 1–5 (Week 8)</span></td>
+          </tr>
+          <tr>
+            <td><span data-lang-th>สอบปลายภาค</span><span data-lang-en>Final examination</span></td>
+            <td>25%</td>
+            <td><span data-lang-th>บทที่ 6–11</span><span data-lang-en>Chapters 6–11</span></td>
+          </tr>
+          <tr>
+            <td><span data-lang-th>โครงงานบูรณาการ</span><span data-lang-en>Integrated project</span></td>
+            <td>15%</td>
+            <td><span data-lang-th>ออกแบบระบบอัตโนมัติสำหรับงานเกษตรหนึ่งงาน นำเสนอสัปดาห์ที่ 16</span><span data-lang-en>Design one automated agricultural system; presented in Week 16</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== Instructor ====== -->
+<section class="section section--alt" id="instructor">
+  <div class="wrap">
+    <div class="grid grid--2" style="align-items:center">
+      <div>
+        <span class="eyebrow"><span data-lang-th>ผู้สอน</span><span data-lang-en>Instructor</span></span>
+        <h2 class="mb-0">Jedsada Saijai</h2>
+        <p class="muted" style="margin-top:.3rem">
+          <span data-lang-th>สาขาวิศวกรรมเกษตรอัจฉริยะ &middot; สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</span>
+          <span data-lang-en>Agri-Intelligence Engineering &middot; King Mongkut's Institute of Technology Ladkrabang</span>
+        </p>
+        <p>
+          <span data-lang-th>เอกสารประกอบการสอนชุดนี้เรียบเรียงขึ้นสำหรับนักศึกษาชั้นปีที่ 3 โดยเน้นการเชื่อมโยงทฤษฎีระบบควบคุมและหุ่นยนต์เข้ากับปัญหาจริงในงานเกษตร ตั้งแต่โรงเรือนอัจฉริยะ เครื่องคัดแยกผลผลิต ไปจนถึงหุ่นยนต์เคลื่อนที่ในแปลง</span>
+          <span data-lang-en>These course materials are written for third-year students, deliberately tying control and robotics theory to real agricultural problems — from smart greenhouses and produce-sorting machines to field-going mobile robots.</span>
+        </p>
+      </div>
+      <div class="card">
+        <h3><i class="fa-solid fa-circle-info" style="color:var(--green-500)"></i> <span data-lang-th>ข้อมูลรายวิชา</span><span data-lang-en>Course information</span></h3>
+        <div class="deflist">
+          <div class="deflist__item">
+            <div class="deflist__term"><span data-lang-th>ระดับ</span><span data-lang-en>Level</span></div>
+            <div class="deflist__def"><span data-lang-th>ปริญญาตรี ชั้นปีที่ 3</span><span data-lang-en>Undergraduate, Year 3</span></div>
+          </div>
+          <div class="deflist__item">
+            <div class="deflist__term"><span data-lang-th>หลักสูตร</span><span data-lang-en>Programme</span></div>
+            <div class="deflist__def"><span data-lang-th>วศ.บ. วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>B.Eng. Agri-Intelligence Engineering</span></div>
+          </div>
+          <div class="deflist__item">
+            <div class="deflist__term"><span data-lang-th>ระยะเวลา</span><span data-lang-en>Duration</span></div>
+            <div class="deflist__def"><span data-lang-th>16 สัปดาห์ &middot; 3(2-2-5) — บรรยาย 2 ชม. ปฏิบัติ 2 ชม. และศึกษาด้วยตนเอง 5 ชม./สัปดาห์</span><span data-lang-en>16 weeks &middot; 3(2-2-5) — 2 h lecture, 2 h laboratory and 5 h self-study per week</span></div>
+          </div>
+          <div class="deflist__item">
+            <div class="deflist__term"><span data-lang-th>วิชาพื้นฐาน</span><span data-lang-en>Prerequisites</span></div>
+            <div class="deflist__def"><span data-lang-th>วงจรไฟฟ้าเบื้องต้น คณิตศาสตร์วิศวกรรม และการเขียนโปรแกรมพื้นฐาน</span><span data-lang-en>Basic circuits, engineering mathematics and introductory programming</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></h5>
+        <ul>
+          <li><a href="chapters/ch01.html">01 &middot; <span data-lang-th>บทนำ</span><span data-lang-en>Introduction</span></a></li>
+          <li><a href="chapters/ch02.html">02 &middot; <span data-lang-th>แนวคิดระบบควบคุม</span><span data-lang-en>Control concepts</span></a></li>
+          <li><a href="#chapters">04 &middot; <span data-lang-th>การควบคุมลำดับและ PLC</span><span data-lang-en>Sequence &amp; PLC</span></a></li>
+          <li><a href="#chapters">09 &middot; <span data-lang-th>จลนศาสตร์หุ่นยนต์</span><span data-lang-en>Robot kinematics</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+          <li><a href="#instructor"><span data-lang-th>ผู้สอน</span><span data-lang-en>Instructor</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 3 · แอคชูเอเตอร์ เซนเซอร์ และคอนโทรลเลอร์" data-title-en="Chapter 3 · Actuators, Sensors and Controllers">Chapter 3 · Actuators, Sensors and Controllers</title>
+<meta name="description" content="Chapter 3: the devices used in agricultural systems — sensor characteristics, signal conditioning and ADC, actuators and their drivers, and how to choose a controller.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght400;500;600;700;800&family=Noto+Sans+Thai:wght400;500;600;700;800&family=JetBrains+Mono:wght400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="ch01.html"><span data-lang-th>บทที่ 1</span><span data-lang-en>Ch 1</span></a>
+      <a href="ch02.html"><span data-lang-th>บทที่ 2</span><span data-lang-en>Ch 2</span></a>
+      <a href="ch03.html" class="is-active"><span data-lang-th>บทที่ 3</span><span data-lang-en>Ch 3</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 3</span><span data-lang-en>Chapter 3</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 3–4</span><span data-lang-en>Weeks 3–4</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 4 ชม. + ปฏิบัติ 4 ชม.</span><span data-lang-en>4 h lecture + 4 h laboratory</span></span>
+      <span class="badge badge--sky"><i class="fa-solid fa-film"></i> <span data-lang-th>แอนิเมชัน 3 ชุด</span><span data-lang-en>3 animations</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 3 · แอคชูเอเตอร์ เซนเซอร์ และคอนโทรลเลอร์</span>
+      <span data-lang-en>Chapter 3 · Actuators, Sensors and Controllers</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>สองบทที่ผ่านมาเราพูดถึงระบบในระดับแนวคิด บทนี้เราลงไปที่ตัวอุปกรณ์จริง: เซนเซอร์อ่านค่าได้แม่นแค่ไหน สัญญาณต้องผ่านอะไรบ้างกว่าจะถึงคอนโทรลเลอร์ เลือกมอเตอร์อย่างไรให้แรงพอ และจะใช้ PLC หรือไมโครคอนโทรลเลอร์ดี</span>
+      <span data-lang-en>The first two chapters dealt in concepts. This one deals in hardware: how good a sensor really is, what the signal must pass through before it reaches the controller, how to size a motor so it is strong enough, and whether the job calls for a PLC or a microcontroller.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#chain"><span data-lang-th>3.1 ห่วงโซ่สัญญาณ</span><span data-lang-en>3.1 The signal chain</span></a></li>
+      <li><a href="#sensor-spec"><span data-lang-th>3.2 คุณลักษณะของเซนเซอร์</span><span data-lang-en>3.2 Sensor characteristics</span></a></li>
+      <li><a href="#agri-sensors"><span data-lang-th>3.3 เซนเซอร์ในงานเกษตร</span><span data-lang-en>3.3 Agricultural sensors</span></a></li>
+      <li><a href="#conditioning"><span data-lang-th>3.4 การปรับสภาพสัญญาณและ ADC</span><span data-lang-en>3.4 Conditioning and the ADC</span></a></li>
+      <li><a href="#actuators"><span data-lang-th>3.5 แอคชูเอเตอร์</span><span data-lang-en>3.5 Actuators</span></a></li>
+      <li><a href="#driving"><span data-lang-th>3.6 การขับและการเลือกขนาด</span><span data-lang-en>3.6 Driving and sizing</span></a></li>
+      <li><a href="#controllers"><span data-lang-th>3.7 คอนโทรลเลอร์</span><span data-lang-en>3.7 Controllers</span></a></li>
+      <li><a href="#interfacing"><span data-lang-th>3.8 การต่อร่วมและสภาพแวดล้อม</span><span data-lang-en>3.8 Interfacing and environment</span></a></li>
+      <li><a href="#activity"><span data-lang-th>3.9 กิจกรรมในชั้นเรียน</span><span data-lang-en>3.9 In-class activity</span></a></li>
+      <li><a href="#lab"><span data-lang-th>3.10 ปฏิบัติการที่ 3</span><span data-lang-en>3.10 Laboratory 3</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>อ่านสเปกของเซนเซอร์และแปลความหมายของช่วงวัด ความแม่นยำ ความละเอียด และเวลาตอบสนองได้</span><span data-lang-en>Read a sensor datasheet and interpret range, accuracy, resolution and response time.</span></li>
+        <li><span data-lang-th>คำนวณความไวและความคลาดเคลื่อนของเซนเซอร์จากข้อมูลการสอบเทียบ</span><span data-lang-en>Compute sensor sensitivity and error from calibration data.</span></li>
+        <li><span data-lang-th>คำนวณความละเอียดของ ADC และเลือกจำนวนบิตให้เหมาะกับงานที่กำหนด</span><span data-lang-en>Compute ADC resolution and choose a bit depth appropriate to the task.</span></li>
+        <li><span data-lang-th>เลือกชนิดของแอคชูเอเตอร์ให้เหมาะกับงานเกษตร พร้อมคำนวณแรงบิดและกำลังที่ต้องการ</span><span data-lang-en>Select an actuator type for an agricultural task and size its torque and power.</span></li>
+        <li><span data-lang-th>ออกแบบวงจรขับแอคชูเอเตอร์อย่างปลอดภัย รวมถึงการป้องกันแรงดันย้อนกลับ</span><span data-lang-en>Design a safe actuator drive circuit, including back-EMF protection.</span></li>
+        <li><span data-lang-th>เปรียบเทียบ PLC ไมโครคอนโทรลเลอร์ และคอมพิวเตอร์บอร์ดเดี่ยว แล้วเลือกใช้ได้อย่างมีเหตุผล</span><span data-lang-en>Compare a PLC, a microcontroller and a single-board computer, and choose between them with reasons.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ตอบก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิม ระบบเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer before reading. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch03-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 3.1 --------- -->
+    <section id="chain">
+      <h2><span data-lang-th>3.1 ห่วงโซ่สัญญาณ จากปรากฏการณ์จริงถึงการกระทำ</span><span data-lang-en>3.1 The signal chain, from phenomenon to action</span></h2>
+
+      <p>
+        <span data-lang-th>ในบทที่ 1 เราวาดบล็อก “เซนเซอร์” เป็นกล่องเดียว ความจริงแล้วกว่าอุณหภูมิในโรงเรือนจะกลายเป็นตัวเลขในคอนโทรลเลอร์ สัญญาณต้องผ่านหลายด่าน และทุกด่านล้วนเพิ่มความคลาดเคลื่อนของตัวเอง</span>
+        <span data-lang-en>In Chapter 1 we drew “sensor” as a single box. In reality, before the greenhouse temperature becomes a number inside the controller, the signal passes through several stages — and every stage adds error of its own.</span>
+      </p>
+
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 240" role="img" aria-labelledby="fig31-title">
+            <title id="fig31-title">The measurement and actuation chain</title>
+            <defs>
+              <marker id="ar31" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" class="dg-arrow"/>
+              </marker>
+            </defs>
+
+            <!-- measurement path -->
+            <text class="dg-text-b" x="30" y="26" data-lang-th>เส้นทางการวัด</text>
+            <text class="dg-text-b" x="30" y="26" data-lang-en>Measurement path</text>
+
+            <rect x="26" y="44" width="118" height="54" rx="9" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <text class="dg-text-sm" x="85" y="68" text-anchor="middle" data-lang-th>ปรากฏการณ์</text>
+            <text class="dg-text-sm" x="85" y="68" text-anchor="middle" data-lang-en>Phenomenon</text>
+            <text class="dg-text-sm" x="85" y="86" text-anchor="middle" data-lang-th>อุณหภูมิ แรง แสง</text>
+            <text class="dg-text-sm" x="85" y="86" text-anchor="middle" data-lang-en>heat, force, light</text>
+
+            <line x1="144" y1="71" x2="176" y2="71" class="dg-stroke" stroke-width="2" marker-end="url(#ar31)"/>
+            <rect x="178" y="44" width="118" height="54" rx="9" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="237" y="68" text-anchor="middle" data-lang-th>ตัวรับรู้</text>
+            <text class="dg-text-sm" x="237" y="68" text-anchor="middle" data-lang-en>Transducer</text>
+            <text class="dg-text-sm" x="237" y="86" text-anchor="middle">RTD, PT100</text>
+
+            <line x1="296" y1="71" x2="328" y2="71" class="dg-stroke" stroke-width="2" marker-end="url(#ar31)"/>
+            <rect x="330" y="44" width="134" height="54" rx="9" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="397" y="68" text-anchor="middle" data-lang-th>ปรับสภาพสัญญาณ</text>
+            <text class="dg-text-sm" x="397" y="68" text-anchor="middle" data-lang-en>Conditioning</text>
+            <text class="dg-text-sm" x="397" y="86" text-anchor="middle" data-lang-th>ขยาย กรอง เชิงเส้น</text>
+            <text class="dg-text-sm" x="397" y="86" text-anchor="middle" data-lang-en>amplify, filter</text>
+
+            <line x1="464" y1="71" x2="496" y2="71" class="dg-stroke" stroke-width="2" marker-end="url(#ar31)"/>
+            <rect x="498" y="44" width="118" height="54" rx="9" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="557" y="68" text-anchor="middle">ADC</text>
+            <text class="dg-text-sm" x="557" y="86" text-anchor="middle" data-lang-th>แปลงเป็นเลขฐานสอง</text>
+            <text class="dg-text-sm" x="557" y="86" text-anchor="middle" data-lang-en>to a binary code</text>
+
+            <line x1="616" y1="71" x2="648" y2="71" class="dg-stroke" stroke-width="2" marker-end="url(#ar31)"/>
+            <rect x="650" y="44" width="184" height="54" rx="9" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <text class="dg-text-sm" x="742" y="68" text-anchor="middle" data-lang-th>คอนโทรลเลอร์</text>
+            <text class="dg-text-sm" x="742" y="68" text-anchor="middle" data-lang-en>Controller</text>
+            <text class="dg-text-sm" x="742" y="86" text-anchor="middle">PLC / MCU</text>
+
+            <!-- actuation path -->
+            <text class="dg-text-b" x="30" y="152" data-lang-th>เส้นทางการสั่งงาน</text>
+            <text class="dg-text-b" x="30" y="152" data-lang-en>Actuation path</text>
+
+            <path d="M 742 98 L 742 130 L 742 146" class="dg-stroke" stroke-width="2" fill="none" marker-end="url(#ar31)"/>
+            <rect x="650" y="150" width="184" height="54" rx="9" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="742" y="174" text-anchor="middle" data-lang-th>เอาต์พุต / DAC / PWM</text>
+            <text class="dg-text-sm" x="742" y="174" text-anchor="middle" data-lang-en>output, DAC or PWM</text>
+            <text class="dg-text-sm" x="742" y="192" text-anchor="middle" data-lang-th>สัญญาณระดับลอจิก</text>
+            <text class="dg-text-sm" x="742" y="192" text-anchor="middle" data-lang-en>logic-level signal</text>
+
+            <line x1="650" y1="177" x2="618" y2="177" class="dg-stroke" stroke-width="2" marker-end="url(#ar31)"/>
+            <rect x="466" y="150" width="150" height="54" rx="9" class="dg-fill-gold dg-stroke-gold" stroke-width="2"/>
+            <text class="dg-text-sm" x="541" y="174" text-anchor="middle" data-lang-th>วงจรขับกำลัง</text>
+            <text class="dg-text-sm" x="541" y="174" text-anchor="middle" data-lang-en>Power driver</text>
+            <text class="dg-text-sm" x="541" y="192" text-anchor="middle" data-lang-th>รีเลย์ มอสเฟต H-bridge</text>
+            <text class="dg-text-sm" x="541" y="192" text-anchor="middle" data-lang-en>relay, MOSFET, H-bridge</text>
+
+            <line x1="466" y1="177" x2="434" y2="177" class="dg-stroke" stroke-width="2" marker-end="url(#ar31)"/>
+            <rect x="282" y="150" width="150" height="54" rx="9" class="dg-fill-gold dg-stroke-gold" stroke-width="2"/>
+            <text class="dg-text-sm" x="357" y="174" text-anchor="middle" data-lang-th>แอคชูเอเตอร์</text>
+            <text class="dg-text-sm" x="357" y="174" text-anchor="middle" data-lang-en>Actuator</text>
+            <text class="dg-text-sm" x="357" y="192" text-anchor="middle" data-lang-th>มอเตอร์ วาล์ว ปั๊ม</text>
+            <text class="dg-text-sm" x="357" y="192" text-anchor="middle" data-lang-en>motor, valve, pump</text>
+
+            <line x1="282" y1="177" x2="250" y2="177" class="dg-stroke" stroke-width="2" marker-end="url(#ar31)"/>
+            <rect x="130" y="150" width="118" height="54" rx="9" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <text class="dg-text-sm" x="189" y="180" text-anchor="middle" data-lang-th>กระบวนการ</text>
+            <text class="dg-text-sm" x="189" y="180" text-anchor="middle" data-lang-en>Process</text>
+            <path d="M 130 177 L 85 177 L 85 104" class="dg-stroke" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#ar31)"/>
+          </svg>
+          <span class="fig-label fig-label--bare" style="left:17.5%;top:24%">\( x \)</span>
+          <span class="fig-label fig-label--bare" style="left:35.5%;top:24%">\( v \)</span>
+          <span class="fig-label fig-label--bare" style="left:55.5%;top:24%">\( v' \)</span>
+          <span class="fig-label fig-label--bare" style="left:73.5%;top:24%">\( n \)</span>
+          <span class="fig-label fig-label--bare" style="left:73.5%;top:77%">\( u \)</span>
+          <span class="fig-label fig-label--bare" style="left:51.5%;top:77%">\( P \)</span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 3.1</span><span data-lang-en>Figure 3.1</span></b>
+          <span data-lang-th> ปริมาณทางกายภาพ \( x \) ถูกแปลงเป็นสัญญาณไฟฟ้า \( v \) ปรับสภาพเป็น \( v' \) แล้วแปลงเป็นเลขรหัส \( n \) ส่วนขาออก คำสั่ง \( u \) ถูกขยายกำลังเป็น \( P \) เพื่อขับแอคชูเอเตอร์ ทุกลูกศรคือโอกาสที่ความคลาดเคลื่อนจะเข้ามา</span>
+          <span data-lang-en> A physical quantity \( x \) becomes an electrical signal \( v \), is conditioned to \( v' \), and is digitised to a code \( n \). On the way out, a command \( u \) is amplified to power \( P \) that drives the actuator. Every arrow is a chance for error to creep in.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-lightbulb"></i> <span data-lang-th>หลักคิดสำคัญ</span><span data-lang-en>The governing idea</span></div>
+        <p>
+          <span data-lang-th>คุณภาพของระบบควบคุมถูกจำกัดด้วย “ด่านที่แย่ที่สุด” ในห่วงโซ่นี้เสมอ ใช้คอนโทรลเลอร์ราคาแพงกับเซนเซอร์ที่คลาดเคลื่อน ±2 °C ก็ยังควบคุมได้ไม่ดีกว่า ±2 °C</span>
+          <span data-lang-en>The quality of a control system is capped by the <em>worst</em> stage in this chain. An expensive controller fed by a sensor accurate to ±2 °C still cannot control better than ±2 °C.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ในระบบให้ปุ๋ยไปพร้อมน้ำ (fertigation) ห่วงโซ่นี้คือ ค่า EC ของสารละลาย → หัววัดคอนดักทิวิตี → วงจรชดเชยอุณหภูมิ → ADC 12 บิต → PLC → เอาต์พุตอนาล็อก → ปั๊มจ่ายสารเข้มข้น หากหัววัดมีตะกรันเกาะเพียงเล็กน้อย ค่าที่อ่านได้จะต่ำกว่าจริง ระบบจะจ่ายปุ๋ยเกินทั้งวันโดยที่ทุกด่านหลังจากนั้นทำงานถูกต้องสมบูรณ์</span>
+          <span data-lang-en>In a fertigation system the chain runs: solution EC → conductivity probe → temperature compensation → 12-bit ADC → PLC → analogue output → dosing pump. Let a little scale build on the probe and the reading falls below truth, so the system over-doses all day while every stage after it works flawlessly.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 3.2 --------- -->
+    <section id="sensor-spec">
+      <h2><span data-lang-th>3.2 คุณลักษณะของเซนเซอร์ที่ต้องอ่านให้เป็น</span><span data-lang-en>3.2 Reading what a sensor really promises</span></h2>
+
+      <p>
+        <span data-lang-th>สเปกในแคตตาล็อกมักดูคล้ายกันไปหมด สิ่งที่แยกเซนเซอร์ดีออกจากเซนเซอร์ถูกคือตัวเลขห้าตัวต่อไปนี้</span>
+        <span data-lang-en>Catalogue specifications tend to look alike. What separates a good sensor from a cheap one is these five numbers.</span>
+      </p>
+
+      <h3><span data-lang-th>3.2.1 ความไวและแบบจำลองเชิงเส้น</span><span data-lang-en>3.2.1 Sensitivity and the linear model</span></h3>
+      <p>
+        <span data-lang-th>เซนเซอร์ส่วนใหญ่ถูกออกแบบให้ตอบสนองเป็นเส้นตรงในช่วงใช้งาน จึงเขียนแบบจำลองได้ว่า</span>
+        <span data-lang-en>Most sensors are designed to respond linearly across their working range, so we model them as</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ v \;=\; S\,x + b $$</div>
+        <div class="eq__num">(3.1)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( v \) — <span data-lang-th>สัญญาณขาออก (V หรือ mA)</span><span data-lang-en>output signal (V or mA)</span></li>
+          <li>\( x \) — <span data-lang-th>ปริมาณทางกายภาพที่วัด</span><span data-lang-en>the physical quantity being measured</span></li>
+          <li>\( S = \dfrac{\Delta v}{\Delta x} \) — <span data-lang-th><strong>ความไว</strong> ความชันของเส้นสอบเทียบ</span><span data-lang-en><strong>sensitivity</strong>, the slope of the calibration line</span></li>
+          <li>\( b \) — <span data-lang-th>ค่าออฟเซตที่ \( x = 0 \)</span><span data-lang-en>the offset at \( x = 0 \)</span></li>
+        </ul>
+      </div>
+
+      <p>
+        <span data-lang-th>การสอบเทียบ (calibration) คือการหา \( S \) และ \( b \) จากจุดอ้างอิงที่ทราบค่าแน่นอน แล้วเขียนค่าผกผันลงในโปรแกรมเพื่อแปลงสัญญาณกลับเป็นหน่วยทางวิศวกรรม</span>
+        <span data-lang-en>Calibration means finding \( S \) and \( b \) from known reference points, then programming the inverse so the signal can be converted back into engineering units.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \hat{x} \;=\; \frac{v - b}{S} $$</div>
+        <div class="eq__num">(3.2)</div>
+      </div>
+
+      <h3><span data-lang-th>3.2.2 ตัวเลขห้าตัวที่ต้องดูเสมอ</span><span data-lang-en>3.2.2 The five numbers to check</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ช่วงวัด (Range / span)</span><span data-lang-en>Range and span</span></div>
+          <div class="deflist__def"><span data-lang-th>ขอบเขตที่สเปกยังใช้ได้ เช่น −40 ถึง 80 °C เซนเซอร์ที่ใช้นอกช่วงนี้อาจให้ค่าที่ดูสมเหตุสมผลแต่ผิดสิ้นเชิง</span><span data-lang-en>The limits over which the specification holds, e.g. −40 to 80 °C. Outside it a sensor can return a plausible-looking but completely wrong value.</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ความแม่นยำ (Accuracy)</span><span data-lang-en>Accuracy</span></div>
+          <div class="deflist__def"><span data-lang-th>ค่าที่อ่านได้ห่างจากค่าจริงเท่าใด มักระบุเป็น \( \pm \) เปอร์เซ็นต์ของสเกลเต็ม (%FS) — เป็นตัวเลขที่สำคัญที่สุด</span><span data-lang-en>How far the reading can sit from the truth, usually quoted as \( \pm \) a percentage of full scale (%FS). This is the number that matters most.</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ความเที่ยง (Precision / repeatability)</span><span data-lang-en>Precision and repeatability</span></div>
+          <div class="deflist__def"><span data-lang-th>วัดซ้ำที่เงื่อนไขเดิมแล้วได้ค่าใกล้กันแค่ไหน เซนเซอร์อาจเที่ยงแต่ไม่แม่น ซึ่งแก้ได้ด้วยการสอบเทียบ</span><span data-lang-en>How close repeated readings are under identical conditions. A sensor can be precise but inaccurate — and that is curable by calibration.</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ความละเอียด (Resolution)</span><span data-lang-en>Resolution</span></div>
+          <div class="deflist__def"><span data-lang-th>การเปลี่ยนแปลงที่เล็กที่สุดที่ระบบยังแยกออกได้ ถูกกำหนดร่วมกันโดยตัวเซนเซอร์และจำนวนบิตของ ADC (หัวข้อ 3.4)</span><span data-lang-en>The smallest change the system can still distinguish, set jointly by the sensor and by the ADC bit depth (§3.4).</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>เวลาตอบสนอง (Response time)</span><span data-lang-en>Response time</span></div>
+          <div class="deflist__def"><span data-lang-th>เซนเซอร์ส่วนใหญ่มีพฤติกรรมอันดับหนึ่ง ใช้เวลา \( \tau \) จึงจะถึง 63.2% ของการเปลี่ยนแปลง และราว \( 5\tau \) จึงเข้าที่</span><span data-lang-en>Most sensors behave first-order: they need \( \tau \) to cover 63.2% of a change, and about \( 5\tau \) to settle.</span></div>
+        </div>
+      </div>
+
+      <div class="eq">
+        <div class="eq__body">$$ v(t) \;=\; v_\infty \left( 1 - e^{-t/\tau} \right) $$</div>
+        <div class="eq__num">(3.3)</div>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>เวลาตอบสนองสำคัญกว่าที่คิดในงานเกษตร</span><span data-lang-en>Response time matters more than students expect</span></div>
+        <p>
+          <span data-lang-th>เซนเซอร์อุณหภูมิในปลอกสเตนเลสหนาอาจมี \( \tau \) ถึง 30 วินาที ถ้านำไปใช้ควบคุมโรงเรือนที่อุณหภูมิเปลี่ยนเร็ว ตัวควบคุมจะได้ข้อมูลที่ “ช้ากว่าความจริง” และการชดเชยจะมาผิดจังหวะจนเกิดการแกว่ง ความหน่วงในวงรอบคือศัตรูตัวจริงของเสถียรภาพ ซึ่งเราจะพิสูจน์ในบทที่ 6</span>
+          <span data-lang-en>A temperature probe in a thick stainless sheath can have \( \tau \) of 30 s. Used to control a fast-changing greenhouse, it feeds the controller information that lags reality, so corrections arrive out of step and the loop hunts. Delay inside a loop is the real enemy of stability, as Chapter 6 will show.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>เซนเซอร์ความชื้นดินราคาประหยัดมักระบุความแม่นยำ ±3 %VWC ซึ่งฟังดูดี แต่เมื่อเกณฑ์สั่งรดน้ำอยู่ที่ 60 %VWC ความคลาดเคลื่อนนี้แปลว่าระบบอาจเริ่มรดน้ำจริงที่ 57% หรือ 63% ก็ได้ สำหรับพืชที่ไวต่อน้ำขังอย่างเมล่อน ช่วง 6% นี้ใหญ่พอจะทำให้รากเน่าได้ จึงต้องสอบเทียบกับดินที่ใช้จริงเสมอ</span>
+          <span data-lang-en>A budget soil-moisture probe may be specified at ±3 %VWC, which sounds fine — until the irrigation threshold is 60 %VWC, at which point the system may in truth start watering anywhere between 57% and 63%. For a crop as sensitive to waterlogging as melon, that 6% window is wide enough to rot roots, which is why calibration against your own soil is not optional.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>3.2.3 ฮิสเทอรีซิสและความไม่เป็นเชิงเส้น</span><span data-lang-en>3.2.3 Hysteresis and nonlinearity</span></h3>
+      <p>
+        <span data-lang-th>เซนเซอร์บางชนิดให้ค่าต่างกันเมื่อเข้าใกล้จุดวัดจากด้านล่างกับจากด้านบน ผลต่างสูงสุดนี้เรียกว่าฮิสเทอรีซิส รายงานเป็นเปอร์เซ็นต์ของสเกลเต็ม</span>
+        <span data-lang-en>Some sensors read differently when approaching a point from below than from above. The largest such gap is the hysteresis, reported as a percentage of full scale.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ H \;=\; \frac{\max \left| v_{\text{up}} - v_{\text{down}} \right|}{v_{\text{FS}}} \times 100\% $$</div>
+        <div class="eq__num">(3.4)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>สาเหตุทางกายภาพของฮิสเทอรีซิสคือ “ความจำ” ของวัสดุและกลไก เช่น แรงเสียดทานในกลไก ระยะฟรีของเฟือง (backlash) หรือการที่ฟิล์มดูดความชื้นคายน้ำช้ากว่าตอนดูดซับ ผลคือค่าที่อ่านได้ไม่ได้ขึ้นกับปริมาณจริงเพียงอย่างเดียว แต่ขึ้นกับ <em>เส้นทางที่เดินทางมาถึงจุดนั้น</em> ด้วย</span>
+        <span data-lang-en>Physically, hysteresis is the memory held by a material or a mechanism: friction in a linkage, backlash in a gear train, or a humidity film that releases water more slowly than it absorbs it. The consequence is that a reading depends not only on the present quantity but on <em>the path taken to reach it</em>.</span>
+      </p>
+
+      <!-- ===================== Animation 3.2 (hysteresis) ===================== -->
+      <figure class="anim" data-anim="ch03-hyst">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 3.1 — ฮิสเทอรีซิส เมื่อค่าที่อ่านได้ขึ้นกับทิศทางที่มา</span>
+          <span data-lang-en>Animation 3.1 — Hysteresis: when the reading depends on which way you came</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 320" role="img" aria-label="A hysteresis loop traced by a sweeping operating point, with the gap measured">
+            <defs>
+              <marker id="arH" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" class="dg-arrow"/>
+              </marker>
+            </defs>
+
+            <!-- ============ left: the loop ============ -->
+            <line x1="80" y1="268" x2="470" y2="268" class="dg-stroke" stroke-width="2"/>
+            <line x1="80" y1="268" x2="80" y2="42" class="dg-stroke" stroke-width="2"/>
+            <g class="dg-stroke" stroke-width="1" opacity="0.3">
+              <line x1="80" y1="212" x2="470" y2="212"/>
+              <line x1="80" y1="155" x2="470" y2="155"/>
+              <line x1="80" y1="98" x2="470" y2="98"/>
+            </g>
+
+            <!-- ideal, then the two branches -->
+            <line x1="80" y1="268" x2="450" y2="60" class="dg-stroke-green" stroke-width="2" stroke-dasharray="6 5" opacity="0.7"/>
+            <path id="a3h-up" class="dg-stroke-gold" stroke-width="3.5" fill="none" marker-mid="url(#arH)"/>
+            <path id="a3h-down" class="dg-stroke" stroke-width="3" fill="none" stroke-dasharray="5 4"/>
+
+            <!-- the measured gap at mid-range -->
+            <line id="a3h-gap" x1="265" y1="120" x2="265" y2="180" class="dg-stroke-green" stroke-width="2.5"/>
+            <circle id="a3h-dot" cx="265" cy="150" r="8" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+
+            <text class="dg-text-sm" x="275" y="296" text-anchor="middle" data-lang-th>ปริมาณจริง (ขาขึ้น → แล้วขาลง ←)</text>
+            <text class="dg-text-sm" x="275" y="296" text-anchor="middle" data-lang-en>true quantity (rising → then falling ←)</text>
+            <text class="dg-text-sm" x="408" y="86" text-anchor="middle" data-lang-th>อุดมคติ</text>
+            <text class="dg-text-sm" x="408" y="86" text-anchor="middle" data-lang-en>ideal</text>
+
+            <!-- ============ right: where it comes from ============ -->
+            <rect x="512" y="42" width="336" height="106" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+            <text class="dg-text-b" x="680" y="68" text-anchor="middle" data-lang-th>ที่มา: ระยะฟรีของเฟือง (backlash)</text>
+            <text class="dg-text-b" x="680" y="68" text-anchor="middle" data-lang-en>Source: gear backlash</text>
+            <!-- two gear teeth with a gap between them -->
+            <rect x="566" y="92" width="86" height="34" rx="5" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <rect id="a3h-tooth" x="676" y="92" width="86" height="34" rx="5" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <line id="a3h-gaparrow" x1="652" y1="109" x2="676" y2="109" class="dg-stroke-gold" stroke-width="2.5"/>
+            <text class="dg-text-sm" x="680" y="142" text-anchor="middle" data-lang-th>ต้องเดินฟรีก่อน จึงจะผลักได้</text>
+            <text class="dg-text-sm" x="680" y="142" text-anchor="middle" data-lang-en>free travel first, then it pushes</text>
+
+            <rect x="512" y="162" width="336" height="128" rx="10" class="dg-fill-green dg-stroke-green" stroke-width="1.5" opacity="0.9"/>
+            <text class="dg-text-b" x="680" y="188" text-anchor="middle" data-lang-th>ในงานเกษตร</text>
+            <text class="dg-text-b" x="680" y="188" text-anchor="middle" data-lang-en>On the farm</text>
+            <g class="dg-text-sm">
+              <text x="532" y="212" data-lang-th>• ชุดเฟืองเปิดช่องระบายอากาศโรงเรือน</text>
+              <text x="532" y="212" data-lang-en>• the gearbox that opens a greenhouse vent</text>
+              <text x="532" y="236" data-lang-th>• เซนเซอร์ความชื้นแบบฟิล์มตอนคายน้ำ</text>
+              <text x="532" y="236" data-lang-en>• a film humidity sensor as it dries out</text>
+              <text x="532" y="260" data-lang-th>• ดินที่คายน้ำช้ากว่าตอนรับน้ำ</text>
+              <text x="532" y="260" data-lang-en>• soil releasing water more slowly than it takes it</text>
+              <text x="532" y="284" data-lang-th>• วาล์วที่เปิดและปิดที่แรงดันไม่เท่ากัน</text>
+              <text x="532" y="284" data-lang-en>• a valve that opens and closes at different pressures</text>
+            </g>
+          </svg>
+
+          <span class="fig-label fig-label--bare" style="left:5.5%;top:12%">\( v \)</span>
+          <span class="fig-label fig-label--bare" style="left:55.5%;top:84%">\( x \)</span>
+          <span class="fig-label fig-label--muted" style="left:33.5%;top:47%">\( H \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ขนาดฮิสเทอรีซิส</span><span data-lang-en>Hysteresis</span> \( H \)
+            <input type="range" data-anim-param="h" data-unit="%FS" min="0" max="20" step="1" value="10">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 3.1</span><span data-lang-en>Animation 3.1</span></b>
+          <span data-lang-th> จุดทำงานไต่ขึ้นตามเส้นทึบสีทอง แล้วไต่ลงตามเส้นประ ทำให้เกิด “วง” แทนที่จะเป็นเส้นเดียว ที่ปริมาณจริงค่าเดียวกัน เซนเซอร์ให้ค่าต่างกันตามทิศทางที่เดินทางมา ช่องว่างแนวตั้งที่วัดได้คือ \( H \) ตามสมการ (3.4) ลองตั้ง \( H = 0 \) แล้ววงจะยุบกลับเป็นเส้นเดียว ฝั่งขวาอธิบายที่มาทางกลไก: เฟืองต้องเดินฟรีข้ามระยะว่างก่อนจึงจะผลักอีกฝั่งได้ ทุกครั้งที่กลับทิศทาง</span>
+          <span data-lang-en> The operating point climbs the solid gold branch and returns along the dashed one, so the characteristic becomes a <em>loop</em> rather than a line: at one and the same true quantity the sensor reports different values depending on the direction of travel. The vertical gap is \( H \) of equation (3.4). Set \( H = 0 \) and the loop collapses back to a single line. On the right is the mechanical origin — a gear must cross its free play before it pushes again, every time the direction reverses.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ — ฮิสเทอรีซิสที่เป็นโทษ และที่จงใจใส่เข้าไป</span><span data-lang-en>In smart-farm practice — the harmful kind, and the kind we add on purpose</span></div>
+        <p>
+          <span data-lang-th><strong>แบบที่เป็นโทษ:</strong> ชุดเฟืองที่เปิดช่องระบายอากาศโรงเรือนซึ่งใช้งานมานานจะมีระยะฟรีเพิ่มขึ้น เมื่อตัวควบคุมสั่งให้ปิดลง 5% ช่องอาจไม่ขยับเลยในครั้งแรก เพราะเฟืองยังเดินอยู่ในระยะว่าง ตัวควบคุมจึงสั่งเพิ่มขึ้นเรื่อย ๆ จนกลไกขยับแรงเกินไป ผลคืออุณหภูมิแกว่งรอบค่าเป้าหมายตลอดวัน</span>
+          <span data-lang-en><strong>The harmful kind:</strong> an ageing vent gearbox develops free play. When the controller asks for 5% closed, nothing moves at first because the gears are still crossing the gap; the controller keeps adding until the mechanism lurches too far. The greenhouse temperature then swings around its setpoint all day.</span>
+        </p>
+        <p class="mb-0">
+          <span data-lang-th><strong>แบบที่จงใจใส่:</strong> ในทางกลับกัน เราจะ <em>เพิ่ม</em> ฮิสเทอรีซิสเข้าไปเองในตัวควบคุมแบบ ON–OFF เรียกว่าแถบตาย (deadband) เช่น สั่งพัดลมทำงานที่ 30 °C แต่ให้หยุดที่ 28 °C ไม่ใช่ 30 °C เพื่อไม่ให้รีเลย์กระพริบเปิด–ปิดถี่ ๆ จนหน้าสัมผัสพัง เรื่องนี้จะเรียนเต็มรูปแบบในบทที่ 7</span>
+          <span data-lang-en><strong>The deliberate kind:</strong> conversely, we <em>add</em> hysteresis inside an ON–OFF controller and call it a deadband — starting a fan at 30 °C but stopping it at 28 °C rather than 30 °C, so the relay does not chatter itself to destruction. Chapter 7 takes this up properly.</span>
+        </p>
+      </div>
+
+
+      <!-- ===================== Animation 3.2 ===================== -->
+      <figure class="anim" data-anim="ch03-sensor">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 3.2 — เซนเซอร์ในอุดมคติ กับ เซนเซอร์ของจริง</span>
+          <span data-lang-en>Animation 3.2 — The ideal sensor versus the real one</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 300" role="img" aria-label="Calibration curve showing sensitivity, offset, hysteresis and noise">
+            <!-- axes -->
+            <line x1="90" y1="255" x2="700" y2="255" class="dg-stroke" stroke-width="2"/>
+            <line x1="90" y1="255" x2="90" y2="35" class="dg-stroke" stroke-width="2"/>
+            <g class="dg-stroke" stroke-width="1" opacity="0.35">
+              <line x1="90" y1="200" x2="700" y2="200"/>
+              <line x1="90" y1="145" x2="700" y2="145"/>
+              <line x1="90" y1="90" x2="700" y2="90"/>
+              <line x1="212" y1="255" x2="212" y2="35"/>
+              <line x1="334" y1="255" x2="334" y2="35"/>
+              <line x1="456" y1="255" x2="456" y2="35"/>
+              <line x1="578" y1="255" x2="578" y2="35"/>
+            </g>
+
+            <!-- ideal straight line -->
+            <line id="a31-ideal" x1="90" y1="255" x2="700" y2="55" class="dg-stroke-green" stroke-width="2.5" stroke-dasharray="7 5"/>
+            <!-- real curve, drawn by script -->
+            <path id="a31-up" class="dg-stroke-gold" stroke-width="3" fill="none"/>
+            <path id="a31-down" class="dg-stroke" stroke-width="2.5" fill="none" stroke-dasharray="4 4"/>
+            <!-- operating point -->
+            <line id="a31-vline" x1="300" y1="255" x2="300" y2="120" class="dg-stroke" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.7"/>
+            <line id="a31-hline" x1="90" y1="120" x2="300" y2="120" class="dg-stroke" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.7"/>
+            <circle id="a31-dot" cx="300" cy="120" r="7" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+
+            <text class="dg-text-sm" x="395" y="285" text-anchor="middle" data-lang-th>ปริมาณจริงที่ต้องการวัด</text>
+            <text class="dg-text-sm" x="395" y="285" text-anchor="middle" data-lang-en>true physical quantity</text>
+            <text class="dg-text-sm" x="640" y="45" text-anchor="middle" data-lang-th>อุดมคติ</text>
+            <text class="dg-text-sm" x="640" y="45" text-anchor="middle" data-lang-en>ideal</text>
+            <text class="dg-text-sm" x="640" y="90" text-anchor="middle" data-lang-th>ของจริง</text>
+            <text class="dg-text-sm" x="640" y="90" text-anchor="middle" data-lang-en>real</text>
+          </svg>
+
+          <span class="fig-label fig-label--bare" style="left:6.0%;top:12%">\( v \)</span>
+          <span class="fig-label fig-label--bare" style="left:83.0%;top:88%">\( x \)</span>
+          <span class="fig-label fig-label--muted" style="left:30.0%;top:20%">\( v = Sx + b \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ความไว</span><span data-lang-en>Sensitivity</span> \( S \)
+            <input type="range" data-anim-param="s" min="0.4" max="1.6" step="0.05" value="1">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ออฟเซต</span><span data-lang-en>Offset</span> \( b \)
+            <input type="range" data-anim-param="b" min="-25" max="25" step="1" value="0">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ฮิสเทอรีซิส</span><span data-lang-en>Hysteresis</span> \( H \)
+            <input type="range" data-anim-param="h" data-unit="%FS" min="0" max="12" step="0.5" value="0">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>สัญญาณรบกวน</span><span data-lang-en>Noise</span>
+            <input type="range" data-anim-param="n" data-unit="%FS" min="0" max="6" step="0.5" value="0">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 3.2</span><span data-lang-en>Animation 3.2</span></b>
+          <span data-lang-th> จุดทำงานกวาดไปมาตลอดช่วงวัด เส้นประเขียวคือเซนเซอร์ในอุดมคติตามสมการ (3.1) เส้นทองคือค่าที่อ่านได้จริง ลองเลื่อน \( S \) และ \( b \) ดูว่าทำไมการสอบเทียบจึงแก้ทั้งสองอย่างนี้ได้ จากนั้นเพิ่ม \( H \) แล้วสังเกตว่าเส้นขาขึ้นกับขาลงแยกออกจากกัน — ฮิสเทอรีซิสคือความคลาดเคลื่อนที่การสอบเทียบด้วยจุดเดียวแก้ไม่ได้</span>
+          <span data-lang-en> The operating point sweeps back and forth across the range. The green dashed line is the ideal sensor of equation (3.1); the gold line is what you actually read. Move \( S \) and \( b \) to see why calibration cures both, then raise \( H \) and watch the rising and falling paths separate — hysteresis is the error a single-point calibration can never remove.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 3.3 --------- -->
+    <section id="agri-sensors">
+      <h2><span data-lang-th>3.3 เซนเซอร์ที่ใช้จริงในระบบเกษตร</span><span data-lang-en>3.3 The sensors actually used in agricultural systems</span></h2>
+
+      <p>
+        <span data-lang-th>ตารางต่อไปนี้รวบรวมเซนเซอร์ที่พบบ่อยที่สุดในโรงเรือน แปลงเกษตร และโรงคัดบรรจุ พร้อมชนิดสัญญาณที่ต้องเตรียมช่องอินพุตไว้รองรับ</span>
+        <span data-lang-en>The table below gathers the sensors you will most often meet in greenhouses, fields and packhouses, together with the signal type your input card must accept.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ปริมาณที่วัด</span><span data-lang-en>Quantity</span></th>
+              <th><span data-lang-th>อุปกรณ์ที่นิยม</span><span data-lang-en>Common device</span></th>
+              <th><span data-lang-th>สัญญาณขาออก</span><span data-lang-en>Output</span></th>
+              <th><span data-lang-th>ข้อควรระวังในงานเกษตร</span><span data-lang-en>Agricultural caveat</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>อุณหภูมิ</span><span data-lang-en>Temperature</span></td>
+              <td>PT100 / PT1000, <span data-lang-th>เทอร์โมคัปเปิล K, DS18B20</span><span data-lang-en>type-K thermocouple, DS18B20</span></td>
+              <td><span data-lang-th>ความต้านทาน, mV, ดิจิทัล</span><span data-lang-en>resistance, mV, digital</span></td>
+              <td><span data-lang-th>ต้องกันแดดส่องตรง มิฉะนั้นอ่านค่าสูงกว่าอากาศจริงหลายองศา</span><span data-lang-en>Needs a radiation shield, or it reads several degrees above true air temperature</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ความชื้นสัมพัทธ์</span><span data-lang-en>Relative humidity</span></td>
+              <td>SHT3x, DHT22</td>
+              <td><span data-lang-th>ดิจิทัล I²C</span><span data-lang-en>digital, I²C</span></td>
+              <td><span data-lang-th>ฟิล์มเซนเซอร์เสื่อมเมื่อโดนละอองสารเคมี ต้องเปลี่ยนตามรอบ</span><span data-lang-en>The polymer film degrades in chemical mist; plan replacements</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ความชื้นดิน</span><span data-lang-en>Soil moisture</span></td>
+              <td><span data-lang-th>แบบ capacitive, TDR, FDR</span><span data-lang-en>capacitive, TDR, FDR</span></td>
+              <td>0–3 V, SDI-12</td>
+              <td><span data-lang-th>ต้องสอบเทียบกับชนิดดินที่ใช้จริง ค่าจากโรงงานใช้กับดินไทยไม่ได้ตรง</span><span data-lang-en>Must be calibrated to your own soil; factory curves rarely transfer</span></td>
+            </tr>
+            <tr>
+              <td>EC / pH</td>
+              <td><span data-lang-th>หัววัดแบบจุ่ม</span><span data-lang-en>immersion probes</span></td>
+              <td>mV, 4–20 mA</td>
+              <td><span data-lang-th>ต้องชดเชยอุณหภูมิ และทำความสะอาดหัววัดสม่ำเสมอ</span><span data-lang-en>Needs temperature compensation and regular cleaning</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ความเข้มแสง / PAR</span><span data-lang-en>Light / PAR</span></td>
+              <td><span data-lang-th>ไพราโนมิเตอร์, เซนเซอร์ควอนตัม</span><span data-lang-en>pyranometer, quantum sensor</span></td>
+              <td>mV, 4–20 mA</td>
+              <td><span data-lang-th>ฝุ่นบนโดมทำให้อ่านค่าต่ำลงอย่างเงียบ ๆ ต้องเช็ดตามกำหนด</span><span data-lang-en>Dust on the dome quietly biases readings low; schedule cleaning</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ตำแหน่ง / มุม</span><span data-lang-en>Position / angle</span></td>
+              <td><span data-lang-th>เอนโคเดอร์, โพเทนชิโอมิเตอร์, ลิมิตสวิตช์</span><span data-lang-en>encoder, potentiometer, limit switch</span></td>
+              <td><span data-lang-th>พัลส์, อนาล็อก, ดิจิทัล</span><span data-lang-en>pulses, analogue, digital</span></td>
+              <td><span data-lang-th>การสั่นสะเทือนในแปลงทำให้เกิดพัลส์หลอก ต้องกรองสัญญาณ</span><span data-lang-en>Field vibration creates false pulses; filtering is required</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>การมีวัตถุ</span><span data-lang-en>Object presence</span></td>
+              <td><span data-lang-th>พร็อกซิมิตีแบบเหนี่ยวนำ/เก็บประจุ, โฟโตอิเล็กทริก</span><span data-lang-en>inductive/capacitive proximity, photoelectric</span></td>
+              <td><span data-lang-th>ดิจิทัล PNP/NPN</span><span data-lang-en>digital, PNP/NPN</span></td>
+              <td><span data-lang-th>แบบเหนี่ยวนำตรวจจับได้เฉพาะโลหะ ผลไม้ต้องใช้แบบเก็บประจุหรือแสง</span><span data-lang-en>Inductive types see only metal; fruit needs capacitive or optical</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>น้ำหนัก / แรง</span><span data-lang-en>Weight / force</span></td>
+              <td><span data-lang-th>โหลดเซลล์แบบสเตรนเกจ</span><span data-lang-en>strain-gauge load cell</span></td>
+              <td><span data-lang-th>mV/V ผ่านวงจรบริดจ์</span><span data-lang-en>mV/V via a bridge</span></td>
+              <td><span data-lang-th>สัญญาณเล็กมาก ต้องขยายและกันสัญญาณรบกวนอย่างจริงจัง</span><span data-lang-en>The signal is tiny; amplification and shielding are mandatory</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>อัตราการไหล</span><span data-lang-en>Flow rate</span></td>
+              <td><span data-lang-th>แบบใบพัด, แม่เหล็กไฟฟ้า</span><span data-lang-en>turbine, electromagnetic</span></td>
+              <td><span data-lang-th>พัลส์, 4–20 mA</span><span data-lang-en>pulses, 4–20 mA</span></td>
+              <td><span data-lang-th>ตะกอนและสาหร่ายในน้ำเกษตรทำให้ใบพัดติดขัด</span><span data-lang-en>Silt and algae in irrigation water jam turbine types</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ภาพ</span><span data-lang-en>Vision</span></td>
+              <td><span data-lang-th>กล้อง RGB, มัลติสเปกตรัม, กล้องความลึก</span><span data-lang-en>RGB, multispectral, depth cameras</span></td>
+              <td>USB / GigE / MIPI</td>
+              <td><span data-lang-th>แสงกลางแจ้งเปลี่ยนนับร้อยเท่าในวันเดียว ต้องคุมแสงหรือปรับสมดุลขาวเสมอ</span><span data-lang-en>Outdoor light varies by orders of magnitude daily; control it or re-balance constantly</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-plug"></i> <span data-lang-th>ทำไมงานอุตสาหกรรมจึงนิยม 4–20 mA</span><span data-lang-en>Why industry loves the 4–20 mA loop</span></div>
+        <p>
+          <span data-lang-th>สัญญาณกระแสไม่ลดทอนตามความยาวสาย ต่างจากแรงดันที่ตกตามความต้านทานสาย และเนื่องจากค่าต่ำสุดคือ 4 mA ไม่ใช่ 0 mA ระบบจึงแยกออกได้ทันทีว่า “อ่านค่าต่ำสุด” กับ “สายขาด” ต่างกัน — คุณสมบัตินี้เรียกว่า live zero ซึ่งมีค่ามากในแปลงที่สายยาวหลายร้อยเมตร</span>
+          <span data-lang-en>A current signal does not decay with cable length the way a voltage does. And because the bottom of the range is 4 mA rather than 0 mA, the system can tell “lowest reading” apart from “broken wire” — the live-zero property, worth a great deal when cables run hundreds of metres across a field.</span>
+        </p>
+      </div>
+
+      <p>
+        <span data-lang-th>การแปลงกระแสในลูป 4–20 mA กลับเป็นหน่วยทางวิศวกรรมใช้สมการเชิงเส้นตรง ๆ</span>
+        <span data-lang-en>Converting a 4–20 mA loop current back into engineering units is a straight linear map:</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ x \;=\; x_{\min} + \frac{I - 4\ \text{mA}}{16\ \text{mA}} \left( x_{\max} - x_{\min} \right) $$</div>
+        <div class="eq__num">(3.5)</div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 3.4 --------- -->
+    <section id="conditioning">
+      <h2><span data-lang-th>3.4 การปรับสภาพสัญญาณและการแปลงเป็นดิจิทัล</span><span data-lang-en>3.4 Signal conditioning and digitisation</span></h2>
+
+      <p>
+        <span data-lang-th>สัญญาณดิบจากตัวรับรู้แทบไม่เคยพร้อมใช้งานทันที โหลดเซลล์ให้สัญญาณระดับมิลลิโวลต์ เทอร์มิสเตอร์ให้ความต้านทาน ทั้งคู่ต้องแปลงให้เป็นแรงดันในช่วงที่ ADC รับได้ก่อน</span>
+        <span data-lang-en>A raw transducer signal is almost never usable as it stands. A load cell gives millivolts, a thermistor gives resistance; both must become a voltage inside the ADC's input window.</span>
+      </p>
+
+      <h3><span data-lang-th>3.4.1 วงจรแบ่งแรงดันและวงจรบริดจ์</span><span data-lang-en>3.4.1 Dividers and bridges</span></h3>
+      <p>
+        <span data-lang-th>เซนเซอร์ที่เปลี่ยนค่าความต้านทาน เช่น เทอร์มิสเตอร์หรือ LDR มักต่อร่วมกับตัวต้านทานคงที่เป็นวงจรแบ่งแรงดัน</span>
+        <span data-lang-en>Resistive sensors such as a thermistor or an LDR are usually paired with a fixed resistor to form a divider:</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ v_{\text{out}} \;=\; V_{cc}\, \frac{R_{\text{sensor}}}{R_{\text{sensor}} + R_{\text{fixed}}} $$</div>
+        <div class="eq__num">(3.6)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ส่วนสเตรนเกจในโหลดเซลล์เปลี่ยนความต้านทานเพียงเศษเสี้ยวเปอร์เซ็นต์ จึงต้องใช้วงจรบริดจ์วีทสโตนเพื่อหักล้างค่าพื้นฐานออก แล้วขยายเฉพาะส่วนต่างที่เหลือด้วยอินสตรูเมนเทชันแอมป์</span>
+        <span data-lang-en>A load-cell strain gauge changes by a small fraction of a percent, so a Wheatstone bridge is used to cancel the baseline, leaving only the difference for an instrumentation amplifier to magnify.</span>
+      </p>
+
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 260" role="img" aria-labelledby="fig32-title">
+            <title id="fig32-title">A resistive divider and a Wheatstone bridge</title>
+
+            <!-- ============================ left: voltage divider ======== -->
+            <rect x="12" y="12" width="400" height="236" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="212" y="38" text-anchor="middle" data-lang-th>วงจรแบ่งแรงดัน</text>
+            <text class="dg-text-b" x="212" y="38" text-anchor="middle" data-lang-en>Voltage divider</text>
+
+            <!-- supply rail -->
+            <line x1="130" y1="62" x2="300" y2="62" class="dg-stroke" stroke-width="2"/>
+            <circle cx="130" cy="62" r="4" class="dg-arrow"/>
+            <!-- upper resistor R1 (fixed) -->
+            <line x1="215" y1="62" x2="215" y2="82" class="dg-stroke" stroke-width="2"/>
+            <rect x="197" y="82" width="36" height="46" rx="4" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <line x1="215" y1="128" x2="215" y2="150" class="dg-stroke" stroke-width="2"/>
+            <!-- output tap -->
+            <line x1="215" y1="139" x2="330" y2="139" class="dg-stroke" stroke-width="2"/>
+            <circle cx="330" cy="139" r="4" class="dg-arrow"/>
+            <text class="dg-text-sm" x="332" y="160" data-lang-th>ไปยัง ADC</text>
+            <text class="dg-text-sm" x="332" y="160" data-lang-en>to ADC</text>
+            <!-- lower resistor R2 (the sensor) -->
+            <rect x="197" y="150" width="36" height="46" rx="4" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <line x1="215" y1="196" x2="215" y2="216" class="dg-stroke" stroke-width="2"/>
+            <!-- ground -->
+            <line x1="190" y1="216" x2="240" y2="216" class="dg-stroke" stroke-width="2.5"/>
+            <line x1="198" y1="223" x2="232" y2="223" class="dg-stroke" stroke-width="2"/>
+            <line x1="207" y1="230" x2="223" y2="230" class="dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="266" y="178" data-lang-th>เซนเซอร์</text>
+            <text class="dg-text-sm" x="266" y="178" data-lang-en>sensor</text>
+
+            <!-- ============================ right: Wheatstone bridge ===== -->
+            <rect x="436" y="12" width="412" height="236" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="642" y="38" text-anchor="middle" data-lang-th>วงจรบริดจ์วีทสโตน (โหลดเซลล์)</text>
+            <text class="dg-text-b" x="642" y="38" text-anchor="middle" data-lang-en>Wheatstone bridge (load cell)</text>
+
+            <!-- diamond nodes: top(642,62) left(542,140) right(742,140) bottom(642,218) -->
+            <line x1="642" y1="62" x2="576" y2="113" class="dg-stroke" stroke-width="2"/>
+            <rect x="576" y="84" width="34" height="32" rx="4" transform="rotate(38 593 100)" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <line x1="576" y1="113" x2="542" y2="140" class="dg-stroke" stroke-width="2"/>
+
+            <line x1="642" y1="62" x2="708" y2="113" class="dg-stroke" stroke-width="2"/>
+            <rect x="674" y="84" width="34" height="32" rx="4" transform="rotate(-38 691 100)" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <line x1="708" y1="113" x2="742" y2="140" class="dg-stroke" stroke-width="2"/>
+
+            <line x1="542" y1="140" x2="576" y2="167" class="dg-stroke" stroke-width="2"/>
+            <rect x="576" y="164" width="34" height="32" rx="4" transform="rotate(-38 593 180)" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <line x1="576" y1="167" x2="642" y2="218" class="dg-stroke" stroke-width="2"/>
+
+            <line x1="742" y1="140" x2="708" y2="167" class="dg-stroke" stroke-width="2"/>
+            <rect x="674" y="164" width="34" height="32" rx="4" transform="rotate(38 691 180)" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <line x1="708" y1="167" x2="642" y2="218" class="dg-stroke" stroke-width="2"/>
+
+            <!-- excitation and measurement taps -->
+            <circle cx="642" cy="62" r="4" class="dg-arrow"/>
+            <circle cx="642" cy="218" r="4" class="dg-arrow"/>
+            <circle cx="542" cy="140" r="4" class="dg-arrow"/>
+            <circle cx="742" cy="140" r="4" class="dg-arrow"/>
+            <line x1="612" y1="218" x2="672" y2="218" class="dg-stroke" stroke-width="2.5"/>
+            <line x1="620" y1="225" x2="664" y2="225" class="dg-stroke" stroke-width="2"/>
+            <line x1="629" y1="232" x2="655" y2="232" class="dg-stroke" stroke-width="2"/>
+
+            <!-- instrumentation amplifier -->
+            <line x1="542" y1="140" x2="500" y2="140" class="dg-stroke" stroke-width="2"/>
+            <line x1="742" y1="140" x2="790" y2="140" class="dg-stroke" stroke-width="2"/>
+            <path d="M 792 118 L 838 140 L 792 162 Z" class="dg-fill-gold dg-stroke-gold" stroke-width="2"/>
+            <text class="dg-text-sm" x="806" y="186" text-anchor="middle" data-lang-th>ขยายสัญญาณ</text>
+            <text class="dg-text-sm" x="806" y="186" text-anchor="middle" data-lang-en>amplifier</text>
+            <text class="dg-text-sm" x="498" y="120" text-anchor="end" data-lang-th>แขนที่ถูกยืด</text>
+            <text class="dg-text-sm" x="498" y="120" text-anchor="end" data-lang-en>strained arms</text>
+          </svg>
+
+          <span class="fig-label fig-label--bare" style="left:13.0%;top:21%">\( V_{cc} \)</span>
+          <span class="fig-label fig-label--bare" style="left:29.5%;top:40%">\( R_1 \)</span>
+          <span class="fig-label fig-label--bare" style="left:29.5%;top:66%">\( R_2 \)</span>
+          <span class="fig-label fig-label--bare" style="left:40.0%;top:49%">\( v_{\text{out}} \)</span>
+          <span class="fig-label fig-label--bare" style="left:74.5%;top:20%">\( V_{ex} \)</span>
+          <span class="fig-label fig-label--bare" style="left:67.0%;top:37%">\( R_1 \)</span>
+          <span class="fig-label fig-label--bare" style="left:81.5%;top:37%">\( R_2 \)</span>
+          <span class="fig-label fig-label--bare" style="left:67.0%;top:69%">\( R_3 \)</span>
+          <span class="fig-label fig-label--bare" style="left:81.5%;top:69%">\( R_4 \)</span>
+          <span class="fig-label fig-label--bare" style="left:97.0%;top:50%">\( v_o \)</span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 3.2</span><span data-lang-en>Figure 3.2</span></b>
+          <span data-lang-th> ซ้าย: เซนเซอร์ที่เปลี่ยนความต้านทาน (สีเขียว) ต่ออนุกรมกับตัวต้านทานคงที่ แรงดันที่จุดกลางคือสัญญาณที่ ADC อ่าน ขวา: โหลดเซลล์ใช้สเตรนเกจสี่ตัวต่อเป็นบริดจ์ แขนตรงข้ามกันถูกยืด (สีเขียว) อีกคู่ถูกกด ทำให้ผลต่างแรงดันเป็นสัดส่วนกับน้ำหนักโดยตรง</span>
+          <span data-lang-en> Left: a resistive sensor (green) in series with a fixed resistor; the midpoint voltage is what the ADC reads. Right: a load cell wires four strain gauges as a bridge — one opposing pair stretches (green), the other compresses — so the differential voltage is directly proportional to the applied weight.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 3.1 — โหนดวัดอุณหภูมิในโรงเรือน</span><span data-lang-en>Worked example 3.1 — A greenhouse temperature node</span></div>
+        <p>
+          <span data-lang-th>ใช้เทอร์มิสเตอร์ NTC ที่มีความต้านทาน 10 kΩ ที่ 25 °C และ 3.6 kΩ ที่ 50 °C ต่อเป็นวงจรแบ่งแรงดันกับ \( R_1 = 10 \) kΩ ที่ \( V_{cc} = 3.3 \) V จงหาสัญญาณขาออกที่ทั้งสองอุณหภูมิ และความไวเฉลี่ยของโหนดนี้</span>
+          <span data-lang-en>An NTC thermistor reads 10 kΩ at 25 °C and 3.6 kΩ at 50 °C. It sits in a divider with \( R_1 = 10 \) kΩ on \( V_{cc} = 3.3 \) V. Find the output at both temperatures and the node's average sensitivity.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ v_{25} = 3.3 \times \frac{10}{10+10} = 1.650\ \text{V}, \qquad
+                                v_{50} = 3.3 \times \frac{3.6}{3.6+10} = 0.874\ \text{V} $$</div>
+          <div class="eq__num">(3.6a)</div>
+        </div>
+        <p>
+          <span data-lang-th>ความไวเฉลี่ยในช่วงนี้คือ \( S = (0.874 - 1.650)/(50-25) = -31 \) mV/°C เครื่องหมายลบเป็นเรื่องปกติของ NTC เพราะความต้านทานลดเมื่ออุณหภูมิสูงขึ้น</span>
+          <span data-lang-en>The average sensitivity is \( S = (0.874 - 1.650)/(50-25) = -31 \) mV/°C. The negative sign is normal for an NTC, whose resistance falls as it warms.</span>
+        </p>
+        <p>
+          <span data-lang-th>เทียบกับ ADC 10 บิตที่ \( V_{\text{ref}} = 3.3 \) V ซึ่งมีขั้นละ \( 3.3/1024 = 3.22 \) mV จะได้ความละเอียดทางอุณหภูมิ \( 3.22/31 \approx 0.10 \) °C ซึ่งเพียงพอมากสำหรับการควบคุมโรงเรือนที่ต้องการความละเอียดระดับ 0.5 °C</span>
+          <span data-lang-en>Against a 10-bit ADC on 3.3 V, whose step is \( 3.3/1024 = 3.22 \) mV, the temperature resolution is \( 3.22/31 \approx 0.10 \) °C — comfortably finer than the 0.5 °C a greenhouse loop needs.</span>
+        </p>
+        <p class="mb-0">
+          <span data-lang-th><strong>ข้อสังเกตสำคัญ:</strong> ความไวของวงจรแบ่งแรงดันไม่คงที่ตลอดช่วง เพราะความสัมพันธ์เป็นเศษส่วนไม่ใช่เส้นตรง การเลือก \( R_1 \) ให้เท่ากับความต้านทานของเซนเซอร์ที่กึ่งกลางช่วงใช้งาน จะให้ความไวสูงสุดในบริเวณที่เราสนใจ</span>
+          <span data-lang-en><strong>Note carefully:</strong> a divider's sensitivity is not constant across the range, because the relation is a ratio rather than a straight line. Choosing \( R_1 \) equal to the sensor's resistance at the middle of the working range puts peak sensitivity where you need it.</span>
+        </p>
+      </div>
+
+      <p>
+        <span data-lang-th>สำหรับโหลดเซลล์ สเตรนเกจทั้งสี่ตัวถูกจัดวางให้สองตัวถูกยืดและสองตัวถูกกดพร้อมกัน ผลต่างแรงดันที่ออกจากบริดจ์แบบเต็ม (full bridge) คือ</span>
+        <span data-lang-en>In a load cell the four gauges are arranged so that two stretch while two compress. The differential output of such a full bridge is</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ v_o \;=\; V_{ex} \left( \frac{R_2}{R_1 + R_2} - \frac{R_4}{R_3 + R_4} \right)
+                     \;\approx\; V_{ex} \, \frac{\Delta R}{R} \;=\; V_{ex} \, GF \, \varepsilon $$</div>
+        <div class="eq__num">(3.6b)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( V_{ex} \) — <span data-lang-th>แรงดันกระตุ้นบริดจ์ โดยทั่วไป 5 หรือ 10 V</span><span data-lang-en>the bridge excitation, typically 5 or 10 V</span></li>
+          <li>\( GF \) — <span data-lang-th>เกจแฟกเตอร์ของสเตรนเกจ ราว 2.0 สำหรับโลหะ</span><span data-lang-en>the gauge factor, about 2.0 for a metal foil gauge</span></li>
+          <li>\( \varepsilon \) — <span data-lang-th>ความเครียดเชิงกลของคานรับน้ำหนัก</span><span data-lang-en>the mechanical strain in the load beam</span></li>
+        </ul>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 3.2 — เครื่องคัดขนาดทุเรียน</span><span data-lang-en>Worked example 3.2 — A durian grading scale</span></div>
+        <p>
+          <span data-lang-th>โหลดเซลล์พิกัด 20 kg ระบุสเปกไว้ที่ 2 mV/V กระตุ้นด้วย \( V_{ex} = 5 \) V ต่อเข้ากับ ADC 16 บิตที่ \( V_{\text{ref}} = 3.3 \) V จงหา (ก) สัญญาณขาออกที่พิกัดเต็ม (ข) อัตราขยายที่ควรใช้ และ (ค) ความละเอียดทางน้ำหนักที่ได้</span>
+          <span data-lang-en>A 20 kg load cell rated 2 mV/V is excited at \( V_{ex} = 5 \) V and feeds a 16-bit ADC with \( V_{\text{ref}} = 3.3 \) V. Find (a) the full-scale output, (b) a suitable amplifier gain, and (c) the resulting weight resolution.</span>
+        </p>
+        <ul>
+          <li><span data-lang-th>(ก) สัญญาณเต็มพิกัด \( v_o = 2\ \text{mV/V} \times 5\ \text{V} = 10 \) mV — เล็กมากจนต่อเข้า ADC ตรง ๆ ไม่ได้</span><span data-lang-en>(a) Full-scale output \( v_o = 2\ \text{mV/V} \times 5\ \text{V} = 10 \) mV — far too small to feed an ADC directly.</span></li>
+          <li><span data-lang-th>(ข) เพื่อใช้ช่วงของ ADC ให้เต็ม อัตราขยายที่ต้องการคือ \( G = 3.3\ \text{V} / 10\ \text{mV} = 330 \) เท่า ในทางปฏิบัติมักเลือก \( G = 128 \) หรือ 256 ของโมดูล HX711 แล้วยอมใช้ช่วง ADC ไม่เต็ม</span><span data-lang-en>(b) To fill the ADC span you need \( G = 3.3\ \text{V} / 10\ \text{mV} = 330 \). In practice one takes the HX711's \( G = 128 \) or 256 and accepts using part of the span.</span></li>
+          <li><span data-lang-th>(ค) ที่ \( G = 330 \) และ 16 บิต ความละเอียดคือ \( 20\,000\ \text{g} / 2^{16} = 0.31 \) g ซึ่งเกินพอสำหรับเกณฑ์คัดเกรดทุเรียนที่ห่างกันทีละ 100 g</span><span data-lang-en>(c) At \( G = 330 \) with 16 bits the resolution is \( 20\,000\ \text{g} / 2^{16} = 0.31 \) g, far finer than the 100 g steps a durian grade requires.</span></li>
+        </ul>
+        <p class="mb-0">
+          <span data-lang-th>ข้อควรระวังในโรงคัดบรรจุคือสายสัญญาณระดับมิลลิโวลต์ต้องเป็นสายชีลด์และเดินแยกจากสายมอเตอร์ มิฉะนั้นสัญญาณรบกวนจากอินเวอร์เตอร์จะกลบสัญญาณจริงได้ทั้งหมด</span>
+          <span data-lang-en>The practical caveat in a packhouse: millivolt-level wiring must be shielded and routed away from motor cables, or inverter noise will swamp the signal entirely.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>3.4.2 ความละเอียดของ ADC</span><span data-lang-en>3.4.2 ADC resolution</span></h3>
+      <p>
+        <span data-lang-th>ตัวแปลงอนาล็อกเป็นดิจิทัลแบ่งช่วงแรงดันอ้างอิงออกเป็นขั้นเท่า ๆ กัน จำนวน \( 2^n \) ขั้น ขนาดของหนึ่งขั้นคือความละเอียดที่แท้จริงของระบบ</span>
+        <span data-lang-en>An analogue-to-digital converter splits its reference span into \( 2^n \) equal steps. The size of one step is the system's true resolution.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \Delta V \;=\; \frac{V_{\text{ref}}}{2^{\,n}}, \qquad
+                          n_{\text{code}} \;=\; \left\lfloor \frac{v_{\text{in}}}{\Delta V} \right\rfloor $$</div>
+        <div class="eq__num">(3.7)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( n \) — <span data-lang-th>จำนวนบิตของ ADC (10 บิตในไมโครคอนโทรลเลอร์ทั่วไป 12–16 บิตในโมดูล PLC)</span><span data-lang-en>the ADC bit depth: 10 bits on a typical microcontroller, 12–16 on a PLC module</span></li>
+          <li>\( V_{\text{ref}} \) — <span data-lang-th>แรงดันอ้างอิงเต็มสเกล</span><span data-lang-en>the full-scale reference voltage</span></li>
+          <li>\( \Delta V \) — <span data-lang-th>ขนาดหนึ่งขั้น หรือค่า LSB</span><span data-lang-en>one step, the LSB</span></li>
+        </ul>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่าง — พอหรือไม่กับงานชั่งผลไม้</span><span data-lang-en>Worked example — is 10 bits enough to weigh fruit?</span></div>
+        <p>
+          <span data-lang-th>โหลดเซลล์พิสัย 0–5 kg ต่อกับ ADC 10 บิต \( V_{\text{ref}} = 3.3 \) V ได้ความละเอียดทางน้ำหนัก</span>
+          <span data-lang-en>A 0–5 kg load cell on a 10-bit ADC with \( V_{\text{ref}} = 3.3 \) V resolves</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ \frac{5000\ \text{g}}{2^{10}} \;=\; 4.9\ \text{g} \qquad\text{vs}\qquad \frac{5000\ \text{g}}{2^{16}} \;=\; 0.076\ \text{g} $$</div>
+          <div class="eq__num">(3.8)</div>
+        </div>
+        <p>
+          <span data-lang-th>ถ้าเกณฑ์คัดเกรดทุเรียนต่างกันทีละ 100 g ADC 10 บิตก็เพียงพอ แต่ถ้าต้องชั่งเมล็ดพันธุ์ทีละกรัม ต้องขยับไปใช้ 16 บิตหรือใช้โมดูลชั่งน้ำหนักเฉพาะทาง</span>
+          <span data-lang-en>If durian grades differ by 100 g steps, 10 bits is ample. If you must weigh seed to the gram, move to 16 bits or to a dedicated weighing module.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>3.4.3 อัตราสุ่มและการสูญเสียข้อมูล</span><span data-lang-en>3.4.3 Sample rate and lost information</span></h3>
+      <p>
+        <span data-lang-th>นอกจากความละเอียดในแกนแนวตั้ง ยังมีความถี่ในการสุ่มตามแกนเวลา ทฤษฎีบทของไนควิสต์ระบุว่าต้องสุ่มเร็วกว่าสองเท่าของความถี่สูงสุดในสัญญาณ มิฉะนั้นจะเกิด <strong>อะไลอะซิง</strong> คือสัญญาณความถี่สูงปลอมตัวเป็นความถี่ต่ำจนแยกไม่ออก</span>
+        <span data-lang-en>Besides vertical resolution there is the rate of sampling along time. Nyquist's theorem says you must sample faster than twice the highest frequency present, or <strong>aliasing</strong> occurs: a high-frequency signal masquerades as a low one and cannot be told apart.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ f_s \;>\; 2 f_{\max} $$</div>
+        <div class="eq__num">(3.9)</div>
+      </div>
+
+      <!-- ===================== Animation 3.3 ===================== -->
+      <figure class="anim" data-anim="ch03-adc">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 3.3 — อะไรหายไปตอนแปลงเป็นดิจิทัล</span>
+          <span data-lang-en>Animation 3.3 — What digitising throws away</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <canvas class="anim__scope" id="adc-scope" style="height:230px" aria-label="Analogue signal, its sampled staircase and the quantisation error"></canvas>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--sky-500)"><i></i><span data-lang-th>สัญญาณอนาล็อกจริง</span><span data-lang-en>true analogue signal</span></span>
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>ค่าที่คอนโทรลเลอร์เห็น</span><span data-lang-en>what the controller sees</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>ความคลาดเคลื่อนจากการปัดขั้น</span><span data-lang-en>quantisation error</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>จำนวนบิต</span><span data-lang-en>Bits</span> \( n \)
+            <input type="range" data-anim-param="bits" data-unit="bit" min="2" max="10" step="1" value="3">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>อัตราสุ่ม</span><span data-lang-en>Sample rate</span> \( f_s \)
+            <input type="range" data-anim-param="fs" data-unit="Hz" min="1" max="40" step="1" value="12">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ความถี่สัญญาณ</span><span data-lang-en>Signal</span> \( f \)
+            <input type="range" data-anim-param="f" data-unit="Hz" min="0.5" max="8" step="0.5" value="1.5">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 3.3</span><span data-lang-en>Animation 3.3</span></b>
+          <span data-lang-th> ลดจำนวนบิตลงเหลือ 2–3 บิต แล้วดูว่าเส้นขั้นบันไดหยาบขึ้นเพียงใด และแถบสีทองซึ่งคือความคลาดเคลื่อนจากการปัดขั้นก็โตตาม จากนั้นลองตั้ง \( f_s \) ให้น้อยกว่า \( 2f \) ตามสมการ (3.9) — เส้นเขียวจะกลายเป็นคลื่นช้า ๆ ที่ไม่มีอยู่จริงในสัญญาณต้นฉบับ นั่นคืออะไลอะซิง และไม่มีซอฟต์แวร์ใดกู้คืนได้</span>
+          <span data-lang-en> Drop to 2–3 bits and watch the staircase coarsen while the gold band — the quantisation error — grows with it. Then set \( f_s \) below \( 2f \) as in equation (3.9): the green trace becomes a slow wave that never existed in the original. That is aliasing, and no software can undo it.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>กรองก่อนสุ่มเสมอ</span><span data-lang-en>Filter before you sample</span></div>
+        <p>
+          <span data-lang-th>เพราะอะไลอะซิงกู้คืนไม่ได้ ระบบจริงจึงต้องใส่วงจรกรองความถี่ต่ำผ่าน (anti-aliasing filter) ไว้ก่อนเข้า ADC เสมอ ในงานเกษตรต้นตอสัญญาณรบกวนความถี่สูงที่พบบ่อยคือ 50 Hz จากสายไฟกำลัง และสัญญาณจาก PWM ของอินเวอร์เตอร์</span>
+          <span data-lang-en>Because aliasing is irreversible, a real system always places an anti-aliasing low-pass filter ahead of the ADC. On a farm the usual high-frequency culprits are 50 Hz mains pickup and the PWM switching of a nearby inverter.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>เครื่องชั่งผลไม้บนสายพานเป็นตัวอย่างที่ชัดที่สุด สัญญาณจากโหลดเซลล์มีทั้งน้ำหนักจริงและการสั่นของสายพานปนกันมา ถ้าสุ่มช้าเกินไปการสั่นจะกลายเป็นคลื่นช้าที่แยกไม่ออกจากน้ำหนักจริง วิธีที่ใช้จริงคือสุ่มเร็ว ๆ แล้วเฉลี่ยหลายค่าในช่วงที่ผลไม้อยู่นิ่งบนแป้นชั่ง</span>
+          <span data-lang-en>A conveyor fruit scale shows this most clearly: the load-cell signal carries both the true weight and the belt vibration. Sample too slowly and the vibration becomes a slow wave indistinguishable from weight. The practical answer is to sample fast and average over the window in which the fruit sits still on the platform.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 3.5 --------- -->
+    <section id="actuators">
+      <h2><span data-lang-th>3.5 แอคชูเอเตอร์ที่ใช้ในงานเกษตร</span><span data-lang-en>3.5 Actuators in agricultural machinery</span></h2>
+
+      <p>
+        <span data-lang-th>แอคชูเอเตอร์แบ่งตามแหล่งพลังงานได้สามตระกูล การเลือกผิดตระกูลตั้งแต่ต้นแก้ยากที่สุด เพราะกระทบทั้งโครงสร้าง ระบบจ่ายพลังงาน และการบำรุงรักษา</span>
+        <span data-lang-en>Actuators divide into three families by energy source. Choosing the wrong family at the outset is the hardest mistake to undo, because it drives the structure, the power system and the maintenance regime alike.</span>
+      </p>
+
+      <div class="grid grid--3">
+        <div class="card">
+          <div class="card__icon"><i class="fa-solid fa-bolt"></i></div>
+          <h3><span data-lang-th>ไฟฟ้า</span><span data-lang-en>Electrical</span></h3>
+          <p><span data-lang-th>มอเตอร์ DC, สเต็ปเปอร์, เซอร์โว, โซลินอยด์ — ควบคุมละเอียด ติดตั้งง่าย เหมาะกับงานในโรงเรือนและโรงคัดบรรจุ</span><span data-lang-en>DC motors, steppers, servos, solenoids — precise, easy to install, the default indoors and in packhouses.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--sky"><i class="fa-solid fa-wind"></i></div>
+          <h3><span data-lang-th>นิวแมติกส์</span><span data-lang-en>Pneumatic</span></h3>
+          <p><span data-lang-th>กระบอกลม วาล์วลม — เร็ว สะอาด ทนการฉีดล้าง เหมาะกับงานผลัก–ดัน–คีบซ้ำ ๆ แต่ควบคุมตำแหน่งกลางทางได้ยาก</span><span data-lang-en>Cylinders and valves — fast, clean, wash-down tolerant, ideal for repetitive push, clamp and eject moves, but hard to stop mid-stroke.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--gold"><i class="fa-solid fa-oil-can"></i></div>
+          <h3><span data-lang-th>ไฮดรอลิกส์</span><span data-lang-en>Hydraulic</span></h3>
+          <p><span data-lang-th>กระบอกและมอเตอร์ไฮดรอลิก — ให้แรงมหาศาลต่อขนาด เป็นมาตรฐานของรถแทรกเตอร์และอุปกรณ์ต่อพ่วง แต่มีความเสี่ยงน้ำมันรั่ว</span><span data-lang-en>Hydraulic rams and motors — enormous force for their size, the standard on tractors and implements, at the price of leak risk.</span></p>
+        </div>
+      </div>
+
+      <h3><span data-lang-th>3.5.1 มอเตอร์ไฟฟ้ากระแสตรง</span><span data-lang-en>3.5.1 The DC motor</span></h3>
+      <p>
+        <span data-lang-th>มอเตอร์ DC เป็นแอคชูเอเตอร์ที่พบบ่อยที่สุดในงานเรียนการสอน ความสัมพันธ์พื้นฐานสองข้อที่ต้องจำคือ แรงบิดแปรตามกระแส และแรงเคลื่อนไฟฟ้าย้อนกลับแปรตามความเร็ว</span>
+        <span data-lang-en>The DC motor is the actuator you will meet most often in the laboratory. Two relations carry most of the understanding: torque follows current, and back-EMF follows speed.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ T \;=\; k_t\, i, \qquad e_b \;=\; k_e\, \omega, \qquad
+                          \omega \;=\; \frac{V - i R_a}{k_e} $$</div>
+        <div class="eq__num">(3.10)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( T \) — <span data-lang-th>แรงบิดที่เพลา (N&middot;m)</span><span data-lang-en>shaft torque (N&middot;m)</span></li>
+          <li>\( k_t,\ k_e \) — <span data-lang-th>ค่าคงที่แรงบิดและค่าคงที่แรงเคลื่อนย้อนกลับ ซึ่งมีค่าเท่ากันในหน่วย SI</span><span data-lang-en>torque and back-EMF constants, numerically equal in SI units</span></li>
+          <li>\( R_a \) — <span data-lang-th>ความต้านทานขดลวดอาร์เมเจอร์</span><span data-lang-en>armature resistance</span></li>
+          <li>\( \omega \) — <span data-lang-th>ความเร็วเชิงมุม (rad/s)</span><span data-lang-en>angular speed (rad/s)</span></li>
+        </ul>
+      </div>
+
+      <p>
+        <span data-lang-th>ผลจากสมการ (3.10) คือเส้นโค้งแรงบิด–ความเร็วที่ลาดลงเป็นเส้นตรง: ยิ่งต้องออกแรงมาก ความเร็วยิ่งตก จุดตัดสองจุดที่ต้องรู้เสมอคือแรงบิดขณะหยุดนิ่ง \( T_{\text{stall}} \) และความเร็วขณะไม่มีภาระ \( \omega_{\text{nl}} \) ส่วนกำลังทางกลคือ</span>
+        <span data-lang-en>Equation (3.10) produces the familiar straight, falling torque–speed line: the harder the motor pushes, the slower it turns. The two endpoints worth memorising are the stall torque \( T_{\text{stall}} \) and the no-load speed \( \omega_{\text{nl}} \). Mechanical power is</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ P_{\text{mech}} \;=\; T \omega $$</div>
+        <div class="eq__num">(3.11)</div>
+      </div>
+
+      <h3><span data-lang-th>3.5.2 สเต็ปเปอร์และเซอร์โว</span><span data-lang-en>3.5.2 Steppers and servos</span></h3>
+      <p>
+        <span data-lang-th>สเต็ปเปอร์หมุนทีละขั้นตามจำนวนพัลส์ที่ป้อน จึงระบุตำแหน่งได้โดยไม่ต้องใช้เซนเซอร์ป้อนกลับ ซึ่งก็คือระบบเปิดตามนิยามในบทที่ 2 มุมต่อหนึ่งขั้นคือ</span>
+        <span data-lang-en>A stepper turns one increment per pulse, so it can hold a position with no feedback sensor at all — an open-loop system by the definition in Chapter 2. Its step angle is</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \theta_{\text{step}} \;=\; \frac{360^{\circ}}{N_s \, m} $$</div>
+        <div class="eq__num">(3.12)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( N_s \) — <span data-lang-th>จำนวนขั้นเต็มต่อรอบ (โดยทั่วไป 200 ขั้น เท่ากับ \( 1.8^{\circ} \) ต่อขั้น)</span><span data-lang-en>full steps per revolution, typically 200, i.e. \( 1.8^{\circ} \) each</span></li>
+          <li>\( m \) — <span data-lang-th>ตัวคูณไมโครสเต็ป เช่น 1, 2, 4, 8, 16</span><span data-lang-en>the microstepping factor: 1, 2, 4, 8, 16</span></li>
+        </ul>
+      </div>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>จุดอ่อนของสเต็ปเปอร์ที่ต้องรู้</span><span data-lang-en>The stepper's built-in weakness</span></div>
+        <p>
+          <span data-lang-th>ถ้าภาระเกินแรงบิดที่จ่ายได้ สเต็ปเปอร์จะ “ตกขั้น” โดยไม่มีสัญญาณเตือนใด ๆ ตัวควบคุมยังนับพัลส์ต่อไปและเชื่อว่าอยู่ถูกตำแหน่ง ทั้งที่กลไกเคลื่อนไปไม่ถึง ในเครื่องหยอดเมล็ดสิ่งนี้แปลว่าระยะปลูกเพี้ยนทั้งแถวโดยไม่มีใครรู้จนกว่าจะเก็บเกี่ยว ส่วนเซอร์โวมอเตอร์มีเอนโคเดอร์ป้อนกลับ จึงตรวจจับและแจ้งเตือนได้ทันที</span>
+          <span data-lang-en>Overload a stepper and it silently <em>loses steps</em>. The controller keeps counting pulses and believes it is on target while the mechanism has fallen behind. On a seeder that means a whole row planted at the wrong spacing, undetected until harvest. A servo motor carries an encoder, so it notices and raises an alarm immediately.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>3.5.3 เลือกอย่างไรระหว่าง DC, สเต็ปเปอร์ และเซอร์โว</span><span data-lang-en>3.5.3 Choosing between DC, stepper and servo</span></h3>
+
+      <p>
+        <span data-lang-th>มอเตอร์ทั้งสามชนิดนี้ครอบคลุมงานเกษตรอัตโนมัติเกือบทั้งหมด ความต่างที่แท้จริงไม่ได้อยู่ที่ตัวมอเตอร์ แต่อยู่ที่ <strong>ระบบรู้ตำแหน่งจริงของตัวเองหรือไม่</strong> ซึ่งย้อนกลับไปที่แนวคิดระบบเปิดกับระบบปิดในบทที่ 2 พอดี</span>
+        <span data-lang-en>These three cover nearly all automated agricultural work. The real difference is not the motor itself but <strong>whether the system knows its own true position</strong> — which takes us straight back to the open- and closed-loop distinction of Chapter 2.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ประเด็น</span><span data-lang-en>Aspect</span></th>
+              <th><span data-lang-th>มอเตอร์ DC</span><span data-lang-en>DC motor</span></th>
+              <th><span data-lang-th>สเต็ปเปอร์</span><span data-lang-en>Stepper</span></th>
+              <th><span data-lang-th>เซอร์โว</span><span data-lang-en>Servo</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>หลักการสั่งงาน</span><span data-lang-en>How it is commanded</span></td>
+              <td><span data-lang-th>สั่งแรงดัน ได้ความเร็ว</span><span data-lang-en>command voltage, get speed</span></td>
+              <td><span data-lang-th>สั่งจำนวนพัลส์ ได้มุม</span><span data-lang-en>command pulses, get angle</span></td>
+              <td><span data-lang-th>สั่งตำแหน่งเป้าหมาย ระบบไปเอง</span><span data-lang-en>command a target, the drive gets there</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>การป้อนกลับตำแหน่ง</span><span data-lang-en>Position feedback</span></td>
+              <td><span data-lang-th>ไม่มี เว้นแต่ติดเอนโคเดอร์เพิ่ม</span><span data-lang-en>none, unless an encoder is added</span></td>
+              <td><span data-lang-th>ไม่มี (ระบบเปิด)</span><span data-lang-en>none — open loop</span></td>
+              <td><span data-lang-th>มีเสมอ (ระบบปิด)</span><span data-lang-en>always present — closed loop</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ความแม่นยำตำแหน่ง</span><span data-lang-en>Positional accuracy</span></td>
+              <td><span data-lang-th>ต่ำ ถ้าไม่มีเอนโคเดอร์</span><span data-lang-en>poor without an encoder</span></td>
+              <td><span data-lang-th>ดี ตราบใดที่ไม่ตกขั้น</span><span data-lang-en>good, as long as no step is lost</span></td>
+              <td><span data-lang-th>ดีที่สุด และตรวจสอบตัวเองได้</span><span data-lang-en>best, and self-verifying</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>แรงบิดที่ความเร็วสูง</span><span data-lang-en>Torque at speed</span></td>
+              <td><span data-lang-th>ลดลงเป็นเส้นตรง</span><span data-lang-en>falls linearly</span></td>
+              <td><span data-lang-th>ตกเร็วมากเมื่อรอบสูง</span><span data-lang-en>drops sharply at high step rates</span></td>
+              <td><span data-lang-th>คงที่ได้ในช่วงกว้าง</span><span data-lang-en>held flat over a wide range</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>พฤติกรรมเมื่อโหลดเกิน</span><span data-lang-en>Behaviour on overload</span></td>
+              <td><span data-lang-th>ช้าลง กระแสพุ่ง อาจไหม้</span><span data-lang-en>slows, current surges, may burn out</span></td>
+              <td><span data-lang-th><strong>ตกขั้นเงียบ ๆ ไม่มีสัญญาณเตือน</strong></span><span data-lang-en><strong>silently loses steps, no warning</strong></span></td>
+              <td><span data-lang-th>แจ้งเตือนความผิดพลาดของตำแหน่งทันที</span><span data-lang-en>raises a following-error alarm at once</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ราคาต่อแกน</span><span data-lang-en>Cost per axis</span></td>
+              <td><span data-lang-th>ต่ำที่สุด</span><span data-lang-en>lowest</span></td>
+              <td><span data-lang-th>ปานกลาง</span><span data-lang-en>moderate</span></td>
+              <td><span data-lang-th>สูงที่สุด</span><span data-lang-en>highest</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>งานเกษตรที่เหมาะ</span><span data-lang-en>Agricultural fit</span></td>
+              <td><span data-lang-th>ล้อขับหุ่นยนต์ พัดลม ปั๊ม สายพาน</span><span data-lang-en>robot drive wheels, fans, pumps, conveyors</span></td>
+              <td><span data-lang-th>เครื่องหยอดเมล็ด ปั๊มจ่ายปุ๋ยแบบเข็ม แกนกล้องสแกนแถว</span><span data-lang-en>seed metering, syringe-type dosing pumps, camera scan axes</span></td>
+              <td><span data-lang-th>แขนเก็บเกี่ยว หุ่นยนต์เดลต้าคัดผลไม้ แกนที่มีคนอยู่ใกล้</span><span data-lang-en>harvesting arms, delta fruit sorters, any axis near people</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <span data-lang-th>เซอร์โวไม่ใช่มอเตอร์ชนิดใหม่ แต่คือ <em>ระบบ</em> ที่ประกอบด้วยมอเตอร์ เอนโคเดอร์ และไดรฟ์ที่ปิดวงรอบให้ ค่าความคลาดเคลื่อนที่ไดรฟ์เฝ้าดูตลอดเวลาเรียกว่า following error</span>
+        <span data-lang-en>A servo is not a new kind of motor but a <em>system</em>: motor, encoder and a drive that closes the loop. The quantity the drive watches continuously is the following error,</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ e_{\theta}(t) \;=\; \theta_{\text{cmd}}(t) - \theta_{\text{enc}}(t) $$</div>
+        <div class="eq__num">(3.12a)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>หาก \( \left| e_{\theta} \right| \) เกินค่าที่ตั้งไว้ ไดรฟ์จะหยุดและแจ้งเตือนทันที นี่คือคุณสมบัติที่ทำให้เซอร์โวปลอดภัยพอจะใช้กับแกนที่มีคนทำงานอยู่ใกล้ ส่วนความละเอียดของตำแหน่งมาจากเอนโคเดอร์โดยตรง</span>
+        <span data-lang-en>If \( \left| e_{\theta} \right| \) exceeds a set limit the drive stops and alarms — the property that makes a servo safe enough for an axis with people nearby. Its positional resolution comes straight from the encoder:</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \Delta\theta_{\text{enc}} \;=\; \frac{360^{\circ}}{4 \, \text{PPR} \times N} $$</div>
+        <div class="eq__num">(3.12b)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>PPR — <span data-lang-th>จำนวนพัลส์ต่อรอบของเอนโคเดอร์</span><span data-lang-en>encoder pulses per revolution</span></li>
+          <li><span data-lang-th>เลข 4 มาจากการถอดรหัสแบบควอเดรเจอร์ ซึ่งนับได้ทั้งขอบขาขึ้นและขาลงของสัญญาณสองเฟส</span><span data-lang-en>the 4 comes from quadrature decoding, which counts both edges of both phases</span></li>
+          <li>\( N \) — <span data-lang-th>อัตราทดของเกียร์ระหว่างมอเตอร์กับแกนที่ต้องการวัด</span><span data-lang-en>the gear ratio between motor and the axis of interest</span></li>
+        </ul>
+      </div>
+
+      <!-- ===================== Animation 3.4 ===================== -->
+      <figure class="anim" data-anim="ch03-motors3">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 3.4 — สั่งมุมเดียวกันให้มอเตอร์สามชนิด</span>
+          <span data-lang-en>Animation 3.4 — The same angle commanded to three motors</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 300" role="img" aria-label="DC, stepper and servo motors driven to the same target angle under load">
+            <!-- ========== panel 1: DC ========== -->
+            <rect x="8" y="8" width="268" height="284" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="142" y="34" text-anchor="middle" data-lang-th>มอเตอร์ DC (ไม่มีป้อนกลับ)</text>
+            <text class="dg-text-b" x="142" y="34" text-anchor="middle" data-lang-en>DC motor (no feedback)</text>
+            <circle cx="142" cy="150" r="76" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <circle cx="142" cy="150" r="7" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+            <line id="m3-dc-target" x1="142" y1="150" x2="142" y2="80" class="dg-stroke-gold" stroke-width="3" stroke-dasharray="6 4"/>
+            <g id="m3-dc"><line x1="0" y1="0" x2="0" y2="-66" class="dg-stroke-green" stroke-width="6" stroke-linecap="round"/></g>
+            <text class="dg-text-sm" x="142" y="252" text-anchor="middle" data-lang-th>สั่งเป็นเวลา ไม่ใช่ตำแหน่ง</text>
+            <text class="dg-text-sm" x="142" y="252" text-anchor="middle" data-lang-en>commanded by time, not position</text>
+            <text class="dg-text-sm" x="142" y="272" text-anchor="middle" data-lang-th>โหลดเปลี่ยน → ตำแหน่งเพี้ยน</text>
+            <text class="dg-text-sm" x="142" y="272" text-anchor="middle" data-lang-en>load changes → position drifts</text>
+
+            <!-- ========== panel 2: stepper ========== -->
+            <rect x="296" y="8" width="268" height="284" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="430" y="34" text-anchor="middle" data-lang-th>สเต็ปเปอร์ (ระบบเปิด)</text>
+            <text class="dg-text-b" x="430" y="34" text-anchor="middle" data-lang-en>Stepper (open loop)</text>
+            <circle cx="430" cy="150" r="76" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <g id="m3-ticks"></g>
+            <circle cx="430" cy="150" r="7" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+            <line id="m3-st-target" x1="430" y1="150" x2="430" y2="80" class="dg-stroke-gold" stroke-width="3" stroke-dasharray="6 4"/>
+            <g id="m3-st"><line x1="0" y1="0" x2="0" y2="-66" class="dg-stroke-green" stroke-width="6" stroke-linecap="round"/></g>
+            <text id="m3-lost" class="dg-text-sm" x="430" y="252" text-anchor="middle" fill="#d94848" opacity="0"></text>
+            <text class="dg-text-sm" x="430" y="272" text-anchor="middle" data-lang-th>นับพัลส์ แต่ไม่รู้ตำแหน่งจริง</text>
+            <text class="dg-text-sm" x="430" y="272" text-anchor="middle" data-lang-en>counts pulses, never checks reality</text>
+
+            <!-- ========== panel 3: servo ========== -->
+            <rect x="584" y="8" width="268" height="284" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="718" y="34" text-anchor="middle" data-lang-th>เซอร์โว (ระบบปิด)</text>
+            <text class="dg-text-b" x="718" y="34" text-anchor="middle" data-lang-en>Servo (closed loop)</text>
+            <circle cx="718" cy="150" r="76" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <circle cx="718" cy="150" r="7" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+            <line id="m3-sv-target" x1="718" y1="150" x2="718" y2="80" class="dg-stroke-gold" stroke-width="3" stroke-dasharray="6 4"/>
+            <g id="m3-sv"><line x1="0" y1="0" x2="0" y2="-66" class="dg-stroke-green" stroke-width="6" stroke-linecap="round"/></g>
+            <!-- encoder ring -->
+            <circle cx="718" cy="150" r="88" class="dg-stroke-green" stroke-width="2" stroke-dasharray="3 5" opacity="0.75" fill="none"/>
+            <text class="dg-text-sm" x="718" y="252" text-anchor="middle" data-lang-th>เอนโคเดอร์วัดกลับทุกรอบควบคุม</text>
+            <text class="dg-text-sm" x="718" y="252" text-anchor="middle" data-lang-en>the encoder reports back every cycle</text>
+            <text class="dg-text-sm" x="718" y="272" text-anchor="middle" data-lang-th>โหลดเกิน → แจ้งเตือน ไม่ใช่เงียบ</text>
+            <text class="dg-text-sm" x="718" y="272" text-anchor="middle" data-lang-en>overload → an alarm, not silence</text>
+          </svg>
+
+          <span class="fig-label fig-label--muted" style="left:16.5%;top:66%">\( \theta_{\text{cmd}} \)</span>
+          <span class="fig-label fig-label--muted" style="left:83.0%;top:66%">\( e_{\theta} \to 0 \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="load" aria-pressed="false"><i class="fa-solid fa-weight-hanging"></i><span data-lang-th>ใส่ภาระเกินพิกัด</span><span data-lang-en>Apply overload</span></button>
+          <label class="anim__param">
+            <span data-lang-th>มุมเป้าหมาย</span><span data-lang-en>Target</span> \( \theta_{\text{cmd}} \)
+            <input type="range" data-anim-param="target" data-unit="°" min="0" max="330" step="15" value="120">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 3.4</span><span data-lang-en>Animation 3.4</span></b>
+          <span data-lang-th> เส้นประสีทองคือมุมที่สั่ง เส้นเขียวคือมุมจริงของเพลา กดปุ่ม “ใส่ภาระเกินพิกัด” แล้วสังเกตทีละตัว: มอเตอร์ DC หมุนช้าลงจนไปไม่ถึง สเต็ปเปอร์ตกขั้นและค้างอยู่กลางทางทั้งที่ตัวควบคุมยังเชื่อว่าถึงแล้ว ส่วนเซอร์โวใช้เวลานานขึ้นแต่ยังไปถึงและรู้ตัวว่ามีความคลาดเคลื่อนเกิดขึ้น ตัวเลข \( e_{\theta} \) ในแผงด้านล่างคือหลักฐาน</span>
+          <span data-lang-en> The gold dashed line is the commanded angle, the green line the shaft's real angle. Press “Apply overload” and watch each in turn: the DC motor slows and falls short; the stepper loses steps and stalls part-way while its controller still believes it arrived; the servo takes longer but gets there, and knows an error occurred. The \( e_{\theta} \) readout is the evidence.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 3.3 — เครื่องหยอดเมล็ดขับด้วยสเต็ปเปอร์</span><span data-lang-en>Worked example 3.3 — A stepper-driven seeder</span></div>
+        <p>
+          <span data-lang-th>เครื่องหยอดเมล็ดใช้สเต็ปเปอร์ 200 ขั้นต่อรอบ ตั้งไมโครสเต็ป \( m = 16 \) ขับสกรูส่งกำลังระยะพิทช์ 5 mm จงหา (ก) ความละเอียดเชิงเส้น (ข) จำนวนพัลส์ที่ต้องส่งเพื่อเลื่อน 120 mm</span>
+          <span data-lang-en>A seeder uses a 200 step/rev stepper at \( m = 16 \) microstepping, driving a 5 mm pitch lead screw. Find (a) the linear resolution and (b) the pulses needed to travel 120 mm.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ \Delta s = \frac{5\ \text{mm}}{200 \times 16} = 1.56\ \mu\text{m}, \qquad
+                                 n = \frac{120\ \text{mm}}{5\ \text{mm}} \times 3200 = 76\,800\ \text{pulses} $$</div>
+          <div class="eq__num">(3.12c)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ความละเอียดระดับไมครอนนี้ไร้ความหมายในทางปฏิบัติ เพราะความคลาดเคลื่อนของกลไกและการลื่นไถลของล้อวัดระยะมีขนาดใหญ่กว่ามาก บทเรียนคือ <strong>ไมโครสเต็ปช่วยให้เดินเรียบขึ้น ไม่ได้ช่วยให้แม่นขึ้น</strong></span>
+          <span data-lang-en>That micron-level figure is meaningless in practice: mechanical backlash and wheel slip are far larger. The lesson is that <strong>microstepping buys smoothness, not accuracy</strong>.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 3.4 — ความละเอียดโอดอมิเตอร์ของหุ่นยนต์ในแปลง</span><span data-lang-en>Worked example 3.4 — Odometry resolution of a field robot</span></div>
+        <p>
+          <span data-lang-th>หุ่นยนต์กำจัดวัชพืชใช้มอเตอร์ DC พร้อมเอนโคเดอร์ 500 PPR ต่อเกียร์ทด 30:1 เข้าล้อเส้นผ่านศูนย์กลาง 120 mm จงหาระยะทางที่เดินได้ต่อหนึ่งนับของเอนโคเดอร์</span>
+          <span data-lang-en>A weeding robot uses a DC motor with a 500 PPR encoder through a 30:1 gearbox to a 120 mm wheel. How far does one encoder count represent?</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ \Delta d = \frac{\pi D}{4\,\text{PPR} \times N}
+                              = \frac{\pi (0.12)}{4(500)(30)} = 6.28\ \mu\text{m} $$</div>
+          <div class="eq__num">(3.12d)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ความละเอียดสูงมาก แต่ในดินจริงล้ออาจลื่นไถลได้ถึง 10–15% ความแม่นยำที่ได้จริงจึงถูกจำกัดด้วยการลื่น ไม่ใช่ด้วยเอนโคเดอร์ — เหตุผลที่หุ่นยนต์ในแปลงต้องรวมข้อมูลจาก GNSS หรือ IMU เพิ่ม ซึ่งเราจะเรียนในบทที่ 10</span>
+          <span data-lang-en>The resolution is superb, but on real soil a wheel can slip by 10–15%, so achievable accuracy is set by slip, not by the encoder — the reason field robots fuse GNSS or IMU data as well, the subject of Chapter 10.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-pen-to-square"></i> <span data-lang-th>แบบฝึกหัดท้ายหัวข้อ</span><span data-lang-en>Exercises for this section</span></div>
+        <ol class="mb-0">
+          <li>
+            <span data-lang-th>แขนเก็บสตรอว์เบอร์รีต้องยกน้ำหนัก 1.2 kg ที่ระยะ 0.35 m จากแกนหมุน ถ้าใช้เกียร์ทด 50:1 ประสิทธิภาพ 70% มอเตอร์ต้องให้แรงบิดเท่าใด และควรเลือกสเต็ปเปอร์หรือเซอร์โว เพราะเหตุใด <em>(ตอบ: 0.118 N·m ก่อนเผื่อความปลอดภัย; เลือกเซอร์โวเพราะแขนทำงานใกล้คนและต้องรู้เมื่อชนกิ่งไม้)</em></span>
+            <span data-lang-en>A strawberry-picking arm must lift 1.2 kg at 0.35 m from its pivot through a 50:1 gearbox at 70% efficiency. What motor torque is needed, and would you specify a stepper or a servo? <em>(Answer: 0.118 N·m before any safety factor; a servo, because the arm works near people and must detect a collision with a branch.)</em></span>
+          </li>
+          <li>
+            <span data-lang-th>ปั๊มจ่ายปุ๋ยแบบเข็มใช้สเต็ปเปอร์ 1.8° ต่อขั้น ขับสกรูพิทช์ 2 mm กระบอกพื้นที่หน้าตัด 1.5 cm² ต้องการจ่ายสารละลาย 0.25 mL ต้องส่งกี่พัลส์ที่ไมโครสเต็ป 1/8 <em>(ตอบ: ระยะเลื่อน 1.667 mm ต้องใช้ 1,333 พัลส์)</em></span>
+            <span data-lang-en>A syringe dosing pump uses a 1.8° stepper on a 2 mm pitch screw with a 1.5 cm² barrel, and must deliver 0.25 mL. How many pulses at 1/8 microstepping? <em>(Answer: a 1.667 mm stroke, so 1,333 pulses.)</em></span>
+          </li>
+        </ol>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>เครื่องคัดผลไม้หนึ่งเครื่องมักใช้ทั้งสามชนิดพร้อมกัน: มอเตอร์ DC ขับสายพานลำเลียงด้วยความเร็วคงที่ สเต็ปเปอร์ขับแกนกล้องให้สแกนทีละแถวอย่างสม่ำเสมอ และเซอร์โวขับแขนเดลต้าที่ต้องหยิบผลไม้ให้ตรงตำแหน่ง 100 ครั้งต่อนาทีโดยไม่ทำผลช้ำ วิศวกรที่เลือกได้ถูกตั้งแต่ต้นจะประหยัดงบได้มาก เพราะเซอร์โวแพงกว่าสเต็ปเปอร์หลายเท่า</span>
+          <span data-lang-en>A single fruit-grading line typically uses all three: a DC motor runs the conveyor at constant speed, a stepper sweeps the camera axis evenly row by row, and servos drive the delta arm that must land on a fruit 100 times a minute without bruising it. Choosing correctly at the design stage saves a great deal, since a servo axis costs several times a stepper one.</span>
+        </p>
+      </div>
+
+    </section>
+
+    <!-- ---------------------------------------------------- 3.6 --------- -->
+    <section id="driving">
+      <h2><span data-lang-th>3.6 การขับแอคชูเอเตอร์และการเลือกขนาด</span><span data-lang-en>3.6 Driving an actuator and sizing it</span></h2>
+
+      <h3><span data-lang-th>3.6.1 ขาออกของคอนโทรลเลอร์ขับโหลดโดยตรงไม่ได้</span><span data-lang-en>3.6.1 A controller pin cannot drive a load</span></h3>
+      <p>
+        <span data-lang-th>ขาเอาต์พุตของไมโครคอนโทรลเลอร์จ่ายกระแสได้ราว 20–40 mA ขณะที่โซลินอยด์วาล์วต้องการ 300 mA และปั๊มน้ำต้องการหลายแอมแปร์ จึงต้องมีวงจรขับกำลังคั่นกลางเสมอ</span>
+        <span data-lang-en>A microcontroller pin supplies perhaps 20–40 mA, while a solenoid valve wants 300 mA and a pump several amperes. A power stage in between is not optional.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>วงจรขับ</span><span data-lang-en>Driver</span></th>
+              <th><span data-lang-th>เหมาะกับ</span><span data-lang-en>Suited to</span></th>
+              <th><span data-lang-th>ข้อดี</span><span data-lang-en>Strength</span></th>
+              <th><span data-lang-th>ข้อจำกัด</span><span data-lang-en>Limitation</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>รีเลย์</span><span data-lang-en>Relay</span></td>
+              <td><span data-lang-th>ปั๊ม ฮีตเตอร์ ไฟ AC 220 V</span><span data-lang-en>pumps, heaters, 220 V AC loads</span></td>
+              <td><span data-lang-th>แยกวงจรทางไฟฟ้าสมบูรณ์ ใช้กับ AC ได้</span><span data-lang-en>full galvanic isolation, handles AC</span></td>
+              <td><span data-lang-th>สลับช้า หน้าสัมผัสสึก ใช้กับ PWM ไม่ได้</span><span data-lang-en>slow, contacts wear, unusable for PWM</span></td>
+            </tr>
+            <tr>
+              <td>MOSFET</td>
+              <td><span data-lang-th>มอเตอร์ DC ทิศทางเดียว, LED, ฮีตเตอร์ DC</span><span data-lang-en>one-direction DC motors, LEDs, DC heaters</span></td>
+              <td><span data-lang-th>สลับเร็วมาก ใช้ PWM ได้ ไม่มีชิ้นส่วนเคลื่อนไหว</span><span data-lang-en>very fast, PWM-capable, no moving parts</span></td>
+              <td><span data-lang-th>กลับทิศไม่ได้ ต้องระวังความร้อนสะสม</span><span data-lang-en>cannot reverse, needs thermal care</span></td>
+            </tr>
+            <tr>
+              <td>H-bridge</td>
+              <td><span data-lang-th>มอเตอร์ที่ต้องกลับทิศ เช่น ล้อหุ่นยนต์ ช่องระบายอากาศ</span><span data-lang-en>reversible motors: robot wheels, vent openers</span></td>
+              <td><span data-lang-th>กลับทิศและปรับความเร็วได้ในวงจรเดียว</span><span data-lang-en>direction and speed in one circuit</span></td>
+              <td><span data-lang-th>ซับซ้อนกว่า ต้องกันการนำกระแสพร้อมกันสองฝั่ง</span><span data-lang-en>more complex; shoot-through must be prevented</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>อินเวอร์เตอร์ (VFD)</span><span data-lang-en>Inverter / VFD</span></td>
+              <td><span data-lang-th>มอเตอร์เหนี่ยวนำ 3 เฟส เช่น พัดลมโรงเรือน สายพานใหญ่</span><span data-lang-en>three-phase induction motors: house fans, large conveyors</span></td>
+              <td><span data-lang-th>ปรับความเร็วได้ พร้อมระบบป้องกันในตัว</span><span data-lang-en>variable speed with built-in protection</span></td>
+              <td><span data-lang-th>ราคาสูง และเป็นแหล่งสัญญาณรบกวนทางไฟฟ้า</span><span data-lang-en>costly, and a significant source of electrical noise</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-bolt"></i> <span data-lang-th>ไดโอดฟลายแบ็ก — ลืมแล้วพัง</span><span data-lang-en>The flyback diode — omit it and something dies</span></div>
+        <p>
+          <span data-lang-th>ขดลวดของรีเลย์ โซลินอยด์ และมอเตอร์เก็บพลังงานไว้ในสนามแม่เหล็ก เมื่อตัดกระแสทันที พลังงานนั้นจะปล่อยออกมาเป็นแรงดันสูงหลายสิบถึงหลายร้อยโวลต์ ซึ่งเพียงพอจะทำลายทรานซิสเตอร์ที่ขับมันได้ในครั้งเดียว ต้องต่อไดโอดขนานย้อนทางคร่อมขดลวดเสมอ เพื่อเปิดทางให้กระแสไหลวนจนหมดพลังงาน</span>
+          <span data-lang-en>The coil of a relay, solenoid or motor stores energy in its magnetic field. Cut the current abruptly and that energy returns as a spike of tens to hundreds of volts — quite enough to destroy the transistor driving it, first time. Always fit a diode reverse-biased across the coil so the current has a path to circulate until the energy is gone.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>3.6.2 PWM และแรงดันเฉลี่ย</span><span data-lang-en>3.6.2 PWM and average voltage</span></h3>
+      <p>
+        <span data-lang-th>วิธีปรับกำลังที่ประหยัดที่สุดคือการสลับเปิด–ปิดอย่างรวดเร็วแล้วเปลี่ยนสัดส่วนเวลาเปิด เรียกว่าดิวตี้ไซเคิล \( D \) เพราะสวิตช์อยู่ในสถานะเปิดสนิทหรือปิดสนิทเสมอ กำลังสูญเสียจึงต่ำกว่าการหรี่ด้วยตัวต้านทานมาก</span>
+        <span data-lang-en>The cheapest way to vary power is to switch fully on and off quickly and change the fraction of on-time, the duty cycle \( D \). Because the switch is always either fully on or fully off, losses are far lower than dimming with a resistor.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ V_{\text{avg}} \;=\; D\, V_s, \qquad D = \frac{t_{\text{on}}}{t_{\text{on}} + t_{\text{off}}} $$</div>
+        <div class="eq__num">(3.13)</div>
+      </div>
+
+      <h3><span data-lang-th>3.6.3 การเลือกขนาดมอเตอร์</span><span data-lang-en>3.6.3 Sizing the motor</span></h3>
+      <p>
+        <span data-lang-th>มอเตอร์แทบไม่เคยต่อกับภาระโดยตรง เพราะความเร็วสูงเกินและแรงบิดน้อยเกิน จึงต้องผ่านชุดเกียร์ทดอัตราส่วน \( N \) ที่มีประสิทธิภาพ \( \eta \)</span>
+        <span data-lang-en>A motor is rarely coupled straight to its load: it spins too fast and pulls too little. A gearbox of ratio \( N \) and efficiency \( \eta \) sits in between.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ T_{\text{motor}} \;=\; \frac{T_{\text{load}}}{N \, \eta}, \qquad
+                          \omega_{\text{motor}} \;=\; N \, \omega_{\text{load}} $$</div>
+        <div class="eq__num">(3.14)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่าง — ล้อขับของหุ่นยนต์กำจัดวัชพืช</span><span data-lang-en>Worked example — the drive wheel of a weeding robot</span></div>
+        <p>
+          <span data-lang-th>หุ่นยนต์มวล 40 kg ล้อรัศมี 0.12 m ต้องไต่ทางลาด 10° และมีแรงต้านการหมุนรวมสัมประสิทธิ์ 0.15 ใช้ล้อขับ 2 ล้อ</span>
+          <span data-lang-en>A 40 kg robot on 0.12 m wheels must climb a 10° slope against a rolling resistance coefficient of 0.15, with two driven wheels.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ F \;=\; mg\,(\sin\alpha + \mu\cos\alpha) \;=\; 40(9.81)(0.174 + 0.148) \;\approx\; 126\ \text{N} $$</div>
+          <div class="eq__num">(3.15)</div>
+        </div>
+        <p>
+          <span data-lang-th>แรงบิดรวมที่ล้อคือ \( T = F r = 126 \times 0.12 \approx 15.1 \) N&middot;m หารด้วยล้อขับสองล้อได้ 7.6 N&middot;m ต่อล้อ หากใช้เกียร์ทด \( N = 30 \) ที่ \( \eta = 0.75 \) มอเตอร์แต่ละตัวต้องให้แรงบิด \( 7.6/(30 \times 0.75) \approx 0.34 \) N&middot;m ซึ่งควรเผื่อความปลอดภัยอีกอย่างน้อย 1.5 เท่า</span>
+          <span data-lang-en>Wheel torque is \( T = F r = 126 \times 0.12 \approx 15.1 \) N&middot;m, or 7.6 N&middot;m per driven wheel. With \( N = 30 \) at \( \eta = 0.75 \), each motor must deliver \( 7.6/(30 \times 0.75) \approx 0.34 \) N&middot;m — and you should then add a safety factor of at least 1.5.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>หุ่นยนต์ในแปลงมักถูกออกแบบให้มอเตอร์ทำงานที่ราว 50–60% ของแรงบิดพิกัด ไม่ใช่ 90% เพราะดินในแปลงจริงไม่สม่ำเสมอ ล้ออาจตกร่องหรือเจอดินเหนียวติดล้อ ทำให้แรงบิดที่ต้องการพุ่งขึ้นชั่วขณะ การเผื่อไว้ตั้งแต่ออกแบบถูกกว่าการเปลี่ยนมอเตอร์ทั้งชุดหลังลงแปลงไปแล้วมาก</span>
+          <span data-lang-en>Field robots are normally designed to run their motors at 50–60% of rated torque rather than 90%, because real soil is uneven: a wheel drops into a rut or picks up sticky clay and the torque demand spikes. Building in that margin at design time is far cheaper than re-motorising a machine already working in the field.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 3.5 ===================== -->
+      <figure class="anim" data-anim="ch03-motor">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 3.5 — PWM เส้นโค้งแรงบิด–ความเร็ว และภาระ</span>
+          <span data-lang-en>Animation 3.5 — PWM, the torque–speed line and the load</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 280" role="img" aria-label="PWM waveform driving a motor, with its torque-speed curve and operating point">
+            <!-- ---------- left: PWM + motor ---------- -->
+            <text class="dg-text-b" x="30" y="26" data-lang-th>สัญญาณ PWM และมอเตอร์</text>
+            <text class="dg-text-b" x="30" y="26" data-lang-en>PWM signal and motor</text>
+
+            <line x1="40" y1="120" x2="380" y2="120" class="dg-stroke" stroke-width="1.5" opacity="0.5"/>
+            <line x1="40" y1="56" x2="40" y2="120" class="dg-stroke" stroke-width="1.5" opacity="0.5"/>
+            <path id="a33-pwm" class="dg-stroke-gold" stroke-width="2.5" fill="none"/>
+            <line id="a33-avg" x1="40" y1="100" x2="380" y2="100" class="dg-stroke-green" stroke-width="2" stroke-dasharray="6 4"/>
+
+            <!-- motor body + rotating shaft -->
+            <rect x="120" y="170" width="96" height="70" rx="10" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <circle cx="168" cy="205" r="26" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+            <g id="a33-rotor">
+              <line x1="-20" y1="0" x2="20" y2="0" class="dg-stroke-green" stroke-width="4" stroke-linecap="round"/>
+              <line x1="0" y1="-20" x2="0" y2="20" class="dg-stroke-green" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+            </g>
+            <rect x="216" y="196" width="60" height="18" rx="4" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+            <circle cx="310" cy="205" r="34" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <circle cx="310" cy="205" r="8" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+            <text class="dg-text-sm" x="310" y="258" text-anchor="middle" data-lang-th>ภาระ</text>
+            <text class="dg-text-sm" x="310" y="258" text-anchor="middle" data-lang-en>load</text>
+            <text class="dg-text-sm" x="168" y="258" text-anchor="middle" data-lang-th>มอเตอร์</text>
+            <text class="dg-text-sm" x="168" y="258" text-anchor="middle" data-lang-en>motor</text>
+
+            <!-- ---------- right: torque-speed plane ---------- -->
+            <text class="dg-text-b" x="470" y="26" data-lang-th>ระนาบแรงบิด–ความเร็ว</text>
+            <text class="dg-text-b" x="470" y="26" data-lang-en>Torque–speed plane</text>
+
+            <line x1="500" y1="240" x2="820" y2="240" class="dg-stroke" stroke-width="2"/>
+            <line x1="500" y1="240" x2="500" y2="50" class="dg-stroke" stroke-width="2"/>
+            <!-- motor line, redrawn as duty changes -->
+            <line id="a33-tsline" x1="500" y1="70" x2="800" y2="240" class="dg-stroke-green" stroke-width="3"/>
+            <!-- load line -->
+            <line id="a33-loadline" x1="500" y1="240" x2="800" y2="140" class="dg-stroke-gold" stroke-width="2.5" stroke-dasharray="6 4"/>
+            <circle id="a33-op" cx="650" cy="160" r="7" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+
+            <text class="dg-text-sm" x="660" y="266" text-anchor="middle" data-lang-th>ความเร็ว</text>
+            <text class="dg-text-sm" x="660" y="266" text-anchor="middle" data-lang-en>speed</text>
+            <text class="dg-text-sm" x="812" y="132" text-anchor="end" data-lang-th>เส้นภาระ</text>
+            <text class="dg-text-sm" x="812" y="132" text-anchor="end" data-lang-en>load line</text>
+          </svg>
+
+          <span class="fig-label fig-label--bare" style="left:2.6%;top:22%">\( V \)</span>
+          <span class="fig-label fig-label--bare" style="left:45.5%;top:41%">\( t \)</span>
+          <span class="fig-label fig-label--muted" style="left:16.0%;top:36%">\( V_{\text{avg}} = D V_s \)</span>
+          <span class="fig-label fig-label--bare" style="left:56.5%;top:16%">\( T \)</span>
+          <span class="fig-label fig-label--bare" style="left:96.0%;top:86%">\( \omega \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ดิวตี้ไซเคิล</span><span data-lang-en>Duty cycle</span> \( D \)
+            <input type="range" data-anim-param="duty" data-unit="%" min="0" max="100" step="5" value="60">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ภาระ</span><span data-lang-en>Load</span>
+            <input type="range" data-anim-param="load" min="0" max="100" step="5" value="35">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 3.5</span><span data-lang-en>Animation 3.5</span></b>
+          <span data-lang-th> ดิวตี้ไซเคิลเลื่อนเส้นแรงบิด–ความเร็วทั้งเส้นขึ้นลงตามสมการ (3.13) ส่วนภาระกำหนดความชันของเส้นประสีทอง จุดตัดของสองเส้นคือจุดทำงานจริงของมอเตอร์ ลองเพิ่มภาระจนเส้นตัดกันใกล้แกนตั้ง — นั่นคือสภาวะใกล้หยุดนิ่ง ซึ่งกระแสสูงสุดและมอเตอร์ร้อนเร็วที่สุด</span>
+          <span data-lang-en> Duty cycle slides the whole torque–speed line up and down, following equation (3.13); the load sets the slope of the gold dashed line. Where they cross is the motor's actual operating point. Raise the load until the crossing approaches the vertical axis — that is near-stall, where current peaks and the motor heats fastest.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 3.7 --------- -->
+    <section id="controllers">
+      <h2><span data-lang-th>3.7 เลือกคอนโทรลเลอร์อย่างไร</span><span data-lang-en>3.7 Choosing the controller</span></h2>
+
+      <p>
+        <span data-lang-th>คำถามนี้ไม่มีคำตอบเดียว แต่มีเกณฑ์ที่ชัดเจน ตารางต่อไปนี้เปรียบเทียบสามทางเลือกที่ใช้จริงในงานเกษตร</span>
+        <span data-lang-en>There is no single answer, but there are clear criteria. The table compares the three options genuinely used in agricultural work.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ประเด็น</span><span data-lang-en>Aspect</span></th>
+              <th><span data-lang-th>ไมโครคอนโทรลเลอร์</span><span data-lang-en>Microcontroller</span></th>
+              <th>PLC</th>
+              <th><span data-lang-th>คอมพิวเตอร์บอร์ดเดี่ยว</span><span data-lang-en>Single-board computer</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>ตัวอย่าง</span><span data-lang-en>Example</span></td>
+              <td>ESP32, STM32, Arduino</td>
+              <td>Siemens S7-1200, Mitsubishi FX, Delta DVP</td>
+              <td>Raspberry Pi, Jetson</td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ความน่าเชื่อถือในสภาพแวดล้อมรุนแรง</span><span data-lang-en>Reliability in harsh conditions</span></td>
+              <td><span data-lang-th>ปานกลาง ต้องออกแบบตู้และวงจรป้องกันเอง</span><span data-lang-en>moderate; you design the enclosure and protection yourself</span></td>
+              <td><span data-lang-th>สูงมาก ออกแบบมาเพื่อโรงงานโดยเฉพาะ</span><span data-lang-en>very high; built for industry</span></td>
+              <td><span data-lang-th>ต่ำ ไวต่อไฟดับขณะเขียนข้อมูล</span><span data-lang-en>low; vulnerable to power loss during writes</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ความแน่นอนของเวลา</span><span data-lang-en>Timing determinism</span></td>
+              <td><span data-lang-th>ดี ถ้าเขียนโปรแกรมระวัง</span><span data-lang-en>good, with careful programming</span></td>
+              <td><span data-lang-th>ดีมาก รอบสแกนคงที่</span><span data-lang-en>excellent; a fixed scan cycle</span></td>
+              <td><span data-lang-th>ไม่แน่นอน เพราะระบบปฏิบัติการสลับงาน</span><span data-lang-en>poor; the operating system preempts</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>งานที่ถนัด</span><span data-lang-en>Natural fit</span></td>
+              <td><span data-lang-th>อ่านเซนเซอร์ ควบคุมเฉพาะจุด IoT</span><span data-lang-en>sensor nodes, point control, IoT</span></td>
+              <td><span data-lang-th>ควบคุมลำดับเครื่องจักร งานที่เกี่ยวกับความปลอดภัย</span><span data-lang-en>machine sequence control, safety-related duties</span></td>
+              <td><span data-lang-th>ประมวลผลภาพ ปัญญาประดิษฐ์ ฐานข้อมูล</span><span data-lang-en>vision, machine learning, databases</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>การเขียนโปรแกรม</span><span data-lang-en>Programming</span></td>
+              <td>C/C++, MicroPython</td>
+              <td><span data-lang-th>Ladder, SFC ตาม IEC 61131-3</span><span data-lang-en>ladder and SFC, per IEC 61131-3</span></td>
+              <td>Python, C++, ROS</td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ช่างในพื้นที่ซ่อมได้หรือไม่</span><span data-lang-en>Can a local technician service it?</span></td>
+              <td><span data-lang-th>มักไม่ได้</span><span data-lang-en>usually not</span></td>
+              <td><span data-lang-th>ได้ เป็นมาตรฐานที่ช่างคุ้นเคย</span><span data-lang-en>yes; it is the standard they know</span></td>
+              <td><span data-lang-th>ไม่ได้</span><span data-lang-en>no</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ต้นทุนต่อจุดควบคุม</span><span data-lang-en>Cost per control point</span></td>
+              <td><span data-lang-th>ต่ำที่สุด</span><span data-lang-en>lowest</span></td>
+              <td><span data-lang-th>สูง</span><span data-lang-en>high</span></td>
+              <td><span data-lang-th>ปานกลาง</span><span data-lang-en>moderate</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-sitemap"></i> <span data-lang-th>ระบบจริงมักใช้ร่วมกัน</span><span data-lang-en>Real systems combine them</span></div>
+        <p>
+          <span data-lang-th>สถาปัตยกรรมที่พบบ่อยในโรงเรือนสมัยใหม่คือ PLC ทำหน้าที่ควบคุมและดูแลความปลอดภัยของเครื่องจักร ไมโครคอนโทรลเลอร์กระจายตัวเป็นโหนดเซนเซอร์ไร้สายทั่วแปลง และคอมพิวเตอร์บอร์ดเดี่ยวทำงานประมวลผลภาพและเก็บข้อมูล โดยทั้งสามคุยกันผ่าน Modbus หรือ MQTT</span>
+          <span data-lang-en>A common modern greenhouse architecture puts a PLC in charge of machine control and safety, scatters microcontroller nodes as wireless sensors across the crop, and gives a single-board computer the vision and data-logging work — the three talking over Modbus or MQTT.</span>
+        </p>
+      </div>
+
+      <p>
+        <span data-lang-th>สิ่งที่ต้องจำสำหรับ PLC คือมันทำงานเป็นรอบสแกนคงที่ ไม่ได้ตอบสนองทันทีต่อการเปลี่ยนแปลงของอินพุต ความหน่วงที่แย่ที่สุดจึงเท่ากับหนึ่งรอบสแกนเต็ม</span>
+        <span data-lang-en>The point to remember about a PLC is that it runs a fixed scan cycle rather than reacting instantly to an input change, so its worst-case latency equals one full scan.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ t_{\text{response}} \;\le\; t_{\text{scan}} \;=\; t_{\text{read I/O}} + t_{\text{program}} + t_{\text{write I/O}} $$</div>
+        <div class="eq__num">(3.16)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>รายละเอียดของรอบสแกน การจัดวาง I/O และการเขียนแลดเดอร์ จะเรียนเต็มรูปแบบในบทที่ 4 และ 5</span>
+        <span data-lang-en>The scan cycle, I/O mapping and ladder programming are taken up in full in Chapters 4 and 5.</span>
+      </p>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>โรงเรือนเมล่อนขนาด 1 ไร่ที่ใช้งานจริงมักวาง PLC หนึ่งตัวคุมพัดลม ม่านพราง และวาล์วน้ำ 4 โซน โดยมีรอบสแกนราว 5–10 ms ซึ่งเร็วกว่าพลวัตของอุณหภูมิอากาศหลายพันเท่า ความเร็วจึงไม่ใช่ประเด็น ประเด็นคือมันต้องทำงานต่อเนื่องหลายฤดูโดยไม่ต้องรีบูต และช่างในอำเภอต้องเปิดฝาตู้แล้วไล่วงจรตามแลดเดอร์ได้เอง</span>
+          <span data-lang-en>A one-rai melon house in service typically has a single PLC running the fans, shade screen and four irrigation zones on a 5–10 ms scan — thousands of times faster than the air temperature can move, so speed is never the issue. The issue is that it must run for seasons without a reboot, and that a technician from the district town can open the cabinet and trace the ladder unaided.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 3.8 --------- -->
+    <section id="interfacing">
+      <h2><span data-lang-th>3.8 การต่อร่วมและการอยู่รอดในสภาพแวดล้อมจริง</span><span data-lang-en>3.8 Interfacing, and surviving the real environment</span></h2>
+
+      <h3><span data-lang-th>3.8.1 ระดับสัญญาณต้องตรงกัน</span><span data-lang-en>3.8.1 Signal levels must match</span></h3>
+      <p>
+        <span data-lang-th>ข้อผิดพลาดที่ทำให้อุปกรณ์เสียหายบ่อยที่สุดในห้องปฏิบัติการคือการต่อสัญญาณ 5 V เข้ากับขาที่รับได้เพียง 3.3 V หรือการต่อสัญญาณอุตสาหกรรม 24 V เข้ากับไมโครคอนโทรลเลอร์โดยตรง ต้องตรวจระดับแรงดันของทั้งสองฝั่งก่อนเสมอ และใช้ตัวแบ่งแรงดันหรือออปโตคัปเปลอร์คั่น</span>
+        <span data-lang-en>The commonest way to destroy hardware in the laboratory is to feed a 5 V signal into a 3.3 V pin, or to wire an industrial 24 V signal straight into a microcontroller. Check both sides first, and insert a divider or an optocoupler.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>มาตรฐานสัญญาณ</span><span data-lang-en>Signal standard</span></th>
+              <th><span data-lang-th>พบที่ใด</span><span data-lang-en>Where you meet it</span></th>
+              <th><span data-lang-th>ข้อสังเกต</span><span data-lang-en>Note</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0–3.3 V / 0–5 V</td><td><span data-lang-th>ไมโครคอนโทรลเลอร์ เซนเซอร์ราคาประหยัด</span><span data-lang-en>microcontrollers, low-cost sensors</span></td><td><span data-lang-th>สายยาวเกิน 2–3 m เริ่มมีปัญหาสัญญาณรบกวน</span><span data-lang-en>noise becomes a problem beyond 2–3 m of cable</span></td></tr>
+            <tr><td>0–10 V</td><td><span data-lang-th>อินพุตอนาล็อกของ PLC และอินเวอร์เตอร์</span><span data-lang-en>PLC analogue inputs and inverters</span></td><td><span data-lang-th>ทนสัญญาณรบกวนดีกว่า แต่ยังตกตามความยาวสาย</span><span data-lang-en>more noise-tolerant, but still drops along a long cable</span></td></tr>
+            <tr><td>4–20 mA</td><td><span data-lang-th>เซนเซอร์อุตสาหกรรม ทรานสมิตเตอร์</span><span data-lang-en>industrial sensors and transmitters</span></td><td><span data-lang-th>เหมาะกับระยะไกล ตรวจสายขาดได้</span><span data-lang-en>the choice for long runs; detects a broken wire</span></td></tr>
+            <tr><td>24 VDC <span data-lang-th>ดิจิทัล</span><span data-lang-en>digital</span></td><td><span data-lang-th>I/O มาตรฐานของ PLC</span><span data-lang-en>standard PLC I/O</span></td><td><span data-lang-th>ต้องรู้ว่าเป็นแบบ PNP หรือ NPN ก่อนเดินสาย (บทที่ 5)</span><span data-lang-en>know whether it is PNP or NPN before wiring (Chapter 5)</span></td></tr>
+            <tr><td>RS-485 / Modbus</td><td><span data-lang-th>อินเวอร์เตอร์ มิเตอร์ โหนดในแปลง</span><span data-lang-en>inverters, meters, field nodes</span></td><td><span data-lang-th>สายคู่บิดเกลียวเดียวรองรับอุปกรณ์หลายตัว ระยะได้ถึง 1 km</span><span data-lang-en>one twisted pair serves many devices, up to 1 km</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3><span data-lang-th>3.8.2 ระดับการป้องกัน IP</span><span data-lang-en>3.8.2 IP protection ratings</span></h3>
+      <p>
+        <span data-lang-th>รหัส IP ตามมาตรฐาน IEC 60529 ประกอบด้วยตัวเลขสองหลักที่เป็นอิสระต่อกัน หลักแรกบอกการป้องกันของแข็งและฝุ่น หลักที่สองบอกการป้องกันน้ำ การอ่านรหัสให้เป็นช่วยให้เลือกอุปกรณ์ได้ตรงกับจุดติดตั้งจริง แทนที่จะจ่ายแพงเกินจำเป็นหรือประหยัดผิดที่</span>
+        <span data-lang-en>The IP code of IEC 60529 is two independent digits: the first for solids and dust, the second for water. Reading it properly lets you match a device to where it will actually live, instead of overpaying or economising in the wrong place.</span>
+      </p>
+
+      <figure class="figure">
+        <svg viewBox="0 0 860 400" role="img" aria-labelledby="fig34-title">
+          <title id="fig34-title">How an IP code is built from its two digits</title>
+
+          <!-- the code itself -->
+          <text class="dg-text-b" x="430" y="42" text-anchor="middle" style="font-size:16px" data-lang-th>โครงสร้างของรหัส IP</text>
+          <text class="dg-text-b" x="430" y="42" text-anchor="middle" style="font-size:16px" data-lang-en>How an IP code is built</text>
+
+          <rect x="286" y="58" width="288" height="66" rx="12" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+          <text class="dg-text-b" x="330" y="103" text-anchor="middle" style="font-size:30px">IP</text>
+          <text class="dg-text-b" x="420" y="103" text-anchor="middle" style="font-size:30px">6</text>
+          <text class="dg-text-b" x="500" y="103" text-anchor="middle" style="font-size:30px">5</text>
+
+          <line x1="420" y1="124" x2="300" y2="158" class="dg-stroke" stroke-width="2"/>
+          <line x1="500" y1="124" x2="620" y2="158" class="dg-stroke" stroke-width="2"/>
+          <text class="dg-text-sm" x="230" y="154" text-anchor="middle" data-lang-th>หลักที่ 1 — ของแข็งและฝุ่น</text>
+          <text class="dg-text-sm" x="230" y="154" text-anchor="middle" data-lang-en>1st digit — solids and dust</text>
+          <text class="dg-text-sm" x="690" y="154" text-anchor="middle" data-lang-th>หลักที่ 2 — น้ำ</text>
+          <text class="dg-text-sm" x="690" y="154" text-anchor="middle" data-lang-en>2nd digit — water</text>
+
+          <!-- ================= left column: solids ================= -->
+          <rect x="24" y="166" width="392" height="216" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+          <g class="dg-text-sm">
+            <text x="48" y="192">0</text><text x="86" y="192" data-lang-th>ไม่ป้องกัน</text><text x="86" y="192" data-lang-en>no protection</text>
+            <text x="48" y="218">1</text><text x="86" y="218" data-lang-th>ของแข็ง &gt; 50 mm (มือ)</text><text x="86" y="218" data-lang-en>solids &gt; 50 mm (a hand)</text>
+            <text x="48" y="244">2</text><text x="86" y="244" data-lang-th>ของแข็ง &gt; 12.5 mm (นิ้วมือ)</text><text x="86" y="244" data-lang-en>solids &gt; 12.5 mm (a finger)</text>
+            <text x="48" y="270">3</text><text x="86" y="270" data-lang-th>ของแข็ง &gt; 2.5 mm (เครื่องมือ)</text><text x="86" y="270" data-lang-en>solids &gt; 2.5 mm (a tool)</text>
+            <text x="48" y="296">4</text><text x="86" y="296" data-lang-th>ของแข็ง &gt; 1 mm (ลวด แมลง)</text><text x="86" y="296" data-lang-en>solids &gt; 1 mm (wire, insects)</text>
+            <text x="48" y="322">5</text><text x="86" y="322" data-lang-th>กันฝุ่นได้บางส่วน ไม่กระทบการทำงาน</text><text x="86" y="322" data-lang-en>dust-protected, no harmful ingress</text>
+          </g>
+          <rect x="34" y="334" width="372" height="30" rx="7" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+          <g class="dg-text-b">
+            <text x="48" y="354">6</text>
+            <text x="86" y="354" data-lang-th>กันฝุ่นสนิท — มาตรฐานของอุปกรณ์ในแปลง</text>
+            <text x="86" y="354" data-lang-en>dust-tight — the field-equipment standard</text>
+          </g>
+
+          <!-- ================= right column: water ================= -->
+          <rect x="444" y="166" width="392" height="216" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+          <g class="dg-text-sm">
+            <text x="468" y="192">0</text><text x="506" y="192" data-lang-th>ไม่ป้องกัน</text><text x="506" y="192" data-lang-en>no protection</text>
+            <text x="468" y="215">1–2</text><text x="506" y="215" data-lang-th>หยดน้ำตกตรง ๆ</text><text x="506" y="215" data-lang-en>dripping water</text>
+            <text x="468" y="238">3</text><text x="506" y="238" data-lang-th>น้ำฉีดเฉียง 60°</text><text x="506" y="238" data-lang-en>spray up to 60° from vertical</text>
+            <text x="468" y="261">4</text><text x="506" y="261" data-lang-th>น้ำสาดทุกทิศทาง</text><text x="506" y="261" data-lang-en>splashing from any direction</text>
+          </g>
+          <rect x="454" y="270" width="372" height="28" rx="7" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+          <g class="dg-text-b">
+            <text x="468" y="289">5</text>
+            <text x="506" y="289" data-lang-th>น้ำฉีดจากหัวฉีด 6.3 mm ทุกทิศ</text>
+            <text x="506" y="289" data-lang-en>jets from a 6.3 mm nozzle, any direction</text>
+          </g>
+          <g class="dg-text-sm">
+            <text x="468" y="318">6</text><text x="506" y="318" data-lang-th>น้ำฉีดแรงจากหัวฉีด 12.5 mm</text><text x="506" y="318" data-lang-en>powerful jets, 12.5 mm nozzle</text>
+            <text x="468" y="341">7</text><text x="506" y="341" data-lang-th>จุ่มน้ำลึก 1 m นาน 30 นาที</text><text x="506" y="341" data-lang-en>immersion to 1 m for 30 min</text>
+            <text x="468" y="364">8</text><text x="506" y="364" data-lang-th>จุ่มต่อเนื่องตามที่ผู้ผลิตระบุ</text><text x="506" y="364" data-lang-en>continuous immersion, as specified</text>
+          </g>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 3.4</span><span data-lang-en>Figure 3.4</span></b>
+          <span data-lang-th> รหัส IP ตามมาตรฐาน IEC 60529 หลักแรกคือการป้องกันของแข็งและฝุ่น หลักที่สองคือน้ำ ตัวเลขทั้งสองเป็นอิสระต่อกัน IP65 จึงหมายถึงกันฝุ่นสนิทและทนน้ำฉีด แต่ <strong>จุ่มน้ำไม่ได้</strong> ส่วนรหัสพิเศษ IP69K หมายถึงทนน้ำร้อนแรงดันสูงจากเครื่องฉีดล้าง ซึ่งจำเป็นในโรงคัดบรรจุและโรงเรือนสัตว์</span>
+          <span data-lang-en> The IP code of IEC 60529. The first digit covers solids and dust, the second water, and the two are independent — so IP65 means dust-tight and jet-proof but <strong>not</strong> submersible. The special code IP69K denotes resistance to high-pressure hot-water washing, a requirement in packhouses and livestock buildings.</span>
+        </figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ตำแหน่งติดตั้งในฟาร์ม</span><span data-lang-en>Location on the farm</span></th>
+              <th><span data-lang-th>ระดับที่แนะนำ</span><span data-lang-en>Recommended rating</span></th>
+              <th><span data-lang-th>เหตุผล</span><span data-lang-en>Reason</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>ตู้ควบคุมในอาคารที่มีหลังคา</span><span data-lang-en>Control cabinet, under a roof</span></td>
+              <td>IP54</td>
+              <td><span data-lang-th>มีฝุ่นและความชื้นควบแน่น แต่ไม่โดนน้ำฉีดโดยตรง</span><span data-lang-en>dust and condensation, but no direct water</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>เซนเซอร์และกล่องต่อสายกลางแปลง</span><span data-lang-en>Field sensors and junction boxes</span></td>
+              <td>IP65 <span data-lang-th>ขึ้นไป</span><span data-lang-en>or better</span></td>
+              <td><span data-lang-th>ฝุ่น ฝน และละอองจากสปริงเกลอร์</span><span data-lang-en>dust, rain and sprinkler spray</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>เซนเซอร์ความชื้นที่ฝังในดิน</span><span data-lang-en>Soil-moisture probes, buried</span></td>
+              <td>IP67 <span data-lang-th>หรือ</span><span data-lang-en>or</span> IP68</td>
+              <td><span data-lang-th>อาจจมน้ำเมื่อให้น้ำหรือฝนตกหนัก</span><span data-lang-en>may sit under water during irrigation or heavy rain</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>สายการคัดบรรจุที่ต้องฉีดล้างทุกวัน</span><span data-lang-en>Packing line with daily wash-down</span></td>
+              <td>IP69K</td>
+              <td><span data-lang-th>น้ำร้อนแรงดันสูงและน้ำยาฆ่าเชื้อ</span><span data-lang-en>high-pressure hot water and sanitiser</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>อุปกรณ์ในโรงเรือนสัตว์</span><span data-lang-en>Equipment in livestock housing</span></td>
+              <td>IP66 <span data-lang-th>ขึ้นไป</span><span data-lang-en>or better</span></td>
+              <td><span data-lang-th>ฝุ่นอินทรีย์หนาแน่น แอมโมเนีย และการล้างด้วยแรงดัน</span><span data-lang-en>dense organic dust, ammonia and pressure washing</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ความผิดพลาดที่พบบ่อยคือซื้อเซนเซอร์ IP67 มาใช้ในแปลง แต่ต่อสายด้วยขั้วต่อธรรมดาและกล่องพลาสติกที่ไม่มีซีล ระดับการป้องกันของทั้งระบบเท่ากับจุดที่อ่อนแอที่สุดเสมอ ไม่ใช่ตัวเลขบนฉลากของเซนเซอร์ ควรใช้ขั้วต่อชนิด M12 ที่ระบุ IP67 และเจาะช่องเดินสายด้วยเคเบิลแกลนด์ที่มีซีล พร้อมเดินสายให้ห้อยเป็นรูปตัวยูก่อนเข้ากล่อง เพื่อให้น้ำหยดลงที่จุดต่ำสุดแทนที่จะไหลตามสายเข้าไปในกล่อง</span>
+          <span data-lang-en>A frequent mistake is buying an IP67 sensor and then wiring it with ordinary connectors into an unsealed plastic box. A system's protection equals its weakest point, never the number printed on the sensor. Use M12 connectors rated IP67, fit sealed cable glands, and always dress the cable into a drip loop before it enters the enclosure, so water falls from the lowest point instead of running along the cable into the box.</span>
+        </p>
+      </div>
+
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-shield-halved"></i> <span data-lang-th>สามศัตรูของอิเล็กทรอนิกส์ในฟาร์ม</span><span data-lang-en>Three enemies of farm electronics</span></div>
+        <ul>
+          <li><span data-lang-th><strong>ความชื้นควบแน่น</strong> — อุณหภูมิกลางวันกลางคืนต่างกันมากทำให้เกิดหยดน้ำในตู้ ควรใส่ช่องระบายหรือฮีตเตอร์เล็กในตู้</span><span data-lang-en><strong>Condensation</strong> — a wide day–night swing forms droplets inside the cabinet; fit a breather or a small cabinet heater.</span></li>
+          <li><span data-lang-th><strong>หนูและแมลง</strong> — กัดสายและทำรังในตู้ ควรปิดช่องเดินสายด้วยซีลและใช้ท่อร้อยสาย</span><span data-lang-en><strong>Rodents and insects</strong> — they chew cable and nest in enclosures; seal every gland and use conduit.</span></li>
+          <li><span data-lang-th><strong>ฟ้าผ่าและไฟกระชาก</strong> — สายที่เดินยาวกลางแจ้งทำหน้าที่เหมือนเสาอากาศ ต้องมีอุปกรณ์ป้องกันไฟกระชากและการต่อลงดินที่ดี</span><span data-lang-en><strong>Lightning and surges</strong> — long outdoor runs act as antennas; surge protection and proper earthing are essential.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 3.9 --------- -->
+    <section id="activity">
+      <h2><span data-lang-th>3.9 กิจกรรมในชั้นเรียน</span><span data-lang-en>3.9 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 3.1 — เลือกอุปกรณ์ให้โจทย์จริง</span><span data-lang-en>Activity 3.1 — Specify the hardware for a real brief</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3 คน &middot; 35 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Groups of 3 &middot; 35 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>โจทย์</span><span data-lang-en>The brief</span></h4>
+          <p>
+            <span data-lang-th>โรงเรือนเมล่อนขนาด 8 × 30 m ต้องการระบบที่ (ก) รักษาอุณหภูมิไม่เกิน 32 °C ด้วยพัดลมดูดอากาศ (ข) ให้น้ำตามความชื้นดินในแปลง 4 โซนแยกกัน และ (ค) แจ้งเตือนเมื่อระดับน้ำในถังต่ำกว่า 20%</span>
+            <span data-lang-en>An 8 × 30 m melon greenhouse needs a system that (a) holds temperature below 32 °C using an extraction fan, (b) irrigates four zones independently on soil moisture, and (c) raises an alarm when the tank falls below 20%.</span>
+          </p>
+
+          <h4><span data-lang-th>ขั้นตอน</span><span data-lang-en>Steps</span></h4>
+          <ol>
+            <li><span data-lang-th>ระบุเซนเซอร์ที่ต้องใช้ทั้งหมด พร้อมชนิดสัญญาณและจำนวนช่องอินพุตที่ต้องการ</span><span data-lang-en>List every sensor needed, with its signal type and the number of input channels required.</span></li>
+            <li><span data-lang-th>ระบุแอคชูเอเตอร์และวงจรขับที่เหมาะสมของแต่ละตัว พร้อมเหตุผลว่าทำไมไม่ใช้แบบอื่น</span><span data-lang-en>Name each actuator and its driver, stating why the alternatives were rejected.</span></li>
+            <li><span data-lang-th>เลือกคอนโทรลเลอร์จากตารางในหัวข้อ 3.7 พร้อมเหตุผลอย่างน้อย 3 ข้อ</span><span data-lang-en>Choose a controller using the table in §3.7, with at least three reasons.</span></li>
+            <li><span data-lang-th>คำนวณความละเอียดที่ได้จาก ADC 10 บิต สำหรับเซนเซอร์อุณหภูมิช่วง 0–50 °C ตามสมการ (3.7) แล้วตอบว่าเพียงพอหรือไม่</span><span data-lang-en>Using equation (3.7), compute the resolution a 10-bit ADC gives a 0–50 °C sensor, and say whether it suffices.</span></li>
+            <li><span data-lang-th>ระบุจุดเสี่ยงด้านสภาพแวดล้อม 2 จุด พร้อมระดับ IP ที่ควรใช้</span><span data-lang-en>Identify two environmental risk points and the IP rating each demands.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ตารางรายการอุปกรณ์ (bill of materials) อย่างย่อ พร้อมชนิดสัญญาณทุกบรรทัด</span><span data-lang-en>A short bill of materials with the signal type on every line.</span></li>
+            <li><span data-lang-th>แผนภาพห่วงโซ่สัญญาณตามรูปที่ 3.1 สำหรับหนึ่งวงรอบที่เลือกมา</span><span data-lang-en>A signal-chain diagram, after Figure 3.1, for one chosen loop.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- 3.10 --------- -->
+    <section id="lab">
+      <h2><span data-lang-th>3.10 ปฏิบัติการที่ 3</span><span data-lang-en>3.10 Laboratory 3</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <h3><span data-lang-th>ปฏิบัติการที่ 3 — สอบเทียบเซนเซอร์และขับแอคชูเอเตอร์ด้วย PWM</span><span data-lang-en>Laboratory 3 — Calibrating a sensor and driving an actuator with PWM</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 4 ชั่วโมง (2 คาบ) &middot; ห้องปฏิบัติการระบบอัตโนมัติ</span><span data-lang-en>Groups of 3–4 &middot; 4 hours across two sessions &middot; Automation laboratory</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ข้อ 1–5</span><span data-lang-en>Maps to objectives 1–5</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 8% ของคะแนนรวม</span><span data-lang-en>8% of the course total</span></span>
+          </div>
+
+          <h4><span data-lang-th>ตอนที่ 1 — สอบเทียบเซนเซอร์ความชื้นดิน (2 ชม.)</span><span data-lang-en>Part 1 — Calibrating a soil-moisture sensor (2 h)</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>เตรียมตัวอย่างอ้างอิง</span><span data-lang-en>Prepare reference samples</span></b><br>
+              <span data-lang-th>อบดินให้แห้งสนิท ชั่งน้ำหนัก แล้วเติมน้ำเพื่อสร้างตัวอย่างที่ทราบค่าความชื้นเชิงมวล 5 ระดับ ตั้งแต่แห้งจนถึงอิ่มตัว</span>
+              <span data-lang-en>Oven-dry the soil, weigh it, then add water to build five samples of known gravimetric moisture, from dry to saturated.</span></li>
+            <li><b><span data-lang-th>เก็บข้อมูลสอบเทียบ</span><span data-lang-en>Take calibration data</span></b><br>
+              <span data-lang-th>จุ่มเซนเซอร์ในแต่ละตัวอย่าง อ่านค่าดิบจาก ADC 3 ครั้งต่อจุด บันทึกลงตารางที่ 3.1</span>
+              <span data-lang-en>Insert the probe in each sample, take three raw ADC readings per point, and record in data sheet 3.1.</span></li>
+            <li><b><span data-lang-th>หาเส้นสอบเทียบ</span><span data-lang-en>Fit the calibration line</span></b><br>
+              <span data-lang-th>พล็อตค่าดิบเทียบกับความชื้นจริง หาค่า \( S \) และ \( b \) ด้วยการถดถอยเชิงเส้น แล้วเขียนสมการ (3.2) ลงในโปรแกรม</span>
+              <span data-lang-en>Plot raw against true, obtain \( S \) and \( b \) by linear regression, and implement equation (3.2) in your program.</span></li>
+            <li><b><span data-lang-th>ตรวจสอบความถูกต้อง</span><span data-lang-en>Validate</span></b><br>
+              <span data-lang-th>สร้างตัวอย่างใหม่ที่ไม่ได้ใช้สอบเทียบ 2 ตัวอย่าง วัดแล้วคำนวณความคลาดเคลื่อนเป็น %FS</span>
+              <span data-lang-en>Make two fresh samples not used in the fit, measure them, and express the error as %FS.</span></li>
+            <li><b><span data-lang-th>วัดเวลาตอบสนอง</span><span data-lang-en>Measure the response time</span></b><br>
+              <span data-lang-th>ย้ายเซนเซอร์จากอากาศลงในดินเปียกทันที บันทึกค่าทุก 1 วินาที หาค่า \( \tau \) จากจุดที่ไปถึง 63.2% ตามสมการ (3.3)</span>
+              <span data-lang-en>Move the probe abruptly from air into wet soil, log every second, and extract \( \tau \) at the 63.2% point using equation (3.3).</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตอนที่ 2 — ขับมอเตอร์ด้วย PWM (2 ชม.)</span><span data-lang-en>Part 2 — Driving a motor with PWM (2 h)</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>ต่อวงจรขับ</span><span data-lang-en>Build the drive circuit</span></b><br>
+              <span data-lang-th>ต่อมอเตอร์ DC ผ่านโมดูล MOSFET หรือ H-bridge พร้อม <strong>ไดโอดฟลายแบ็ก</strong> ให้อาจารย์ตรวจวงจรก่อนจ่ายไฟทุกครั้ง</span>
+              <span data-lang-en>Wire the DC motor through a MOSFET or H-bridge module <strong>with its flyback diode</strong>. Have the circuit checked before power is applied.</span></li>
+            <li><b><span data-lang-th>วัดความสัมพันธ์ดิวตี้–ความเร็ว</span><span data-lang-en>Map duty to speed</span></b><br>
+              <span data-lang-th>ตั้งดิวตี้ไซเคิลที่ 20, 40, 60, 80, 100% วัดความเร็วรอบด้วยเอนโคเดอร์หรือแทโคมิเตอร์ พร้อมวัดกระแสที่แต่ละจุด</span>
+              <span data-lang-en>Set duty to 20, 40, 60, 80 and 100%, measure shaft speed with an encoder or tachometer, and record current at each point.</span></li>
+            <li><b><span data-lang-th>ใส่ภาระ</span><span data-lang-en>Add load</span></b><br>
+              <span data-lang-th>ใส่ภาระเบรกที่เพลาแล้ววัดซ้ำที่ดิวตี้ 60% สังเกตว่าความเร็วลดลงและกระแสเพิ่มขึ้นอย่างไร</span>
+              <span data-lang-en>Apply a brake load at the shaft and repeat at 60% duty, noting how speed falls and current rises.</span></li>
+            <li><b><span data-lang-th>ตรวจสอบสมการ (3.13)</span><span data-lang-en>Test equation (3.13)</span></b><br>
+              <span data-lang-th>วัดแรงดันเฉลี่ยคร่อมมอเตอร์ด้วยมัลติมิเตอร์ที่แต่ละดิวตี้ แล้วเทียบกับ \( D V_s \)</span>
+              <span data-lang-en>Measure the average voltage across the motor at each duty and compare with \( D V_s \).</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 3.1</span><span data-lang-en>Data sheet 3.1</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>ตัวอย่างที่</span><span data-lang-en>Sample</span></th>
+                  <th><span data-lang-th>ความชื้นจริง (%)</span><span data-lang-en>True moisture (%)</span></th>
+                  <th><span data-lang-th>ค่าดิบ ADC (3 ครั้ง)</span><span data-lang-en>Raw ADC (×3)</span></th>
+                  <th><span data-lang-th>ค่าเฉลี่ย</span><span data-lang-en>Mean</span></th>
+                  <th><span data-lang-th>ค่าที่คำนวณกลับ</span><span data-lang-en>Back-computed</span></th>
+                  <th><span data-lang-th>ความคลาดเคลื่อน (%FS)</span><span data-lang-en>Error (%FS)</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>4</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>การวิเคราะห์ผล</span><span data-lang-en>Analysis</span></h4>
+          <ol>
+            <li><span data-lang-th>รายงานค่า \( S \) และ \( b \) พร้อมหน่วย และค่าสหสัมพันธ์ \( R^2 \) ของเส้นถดถอย</span><span data-lang-en>Report \( S \) and \( b \) with units, and the \( R^2 \) of the fit.</span></li>
+            <li><span data-lang-th>ความคลาดเคลื่อนที่วัดได้จากตัวอย่างตรวจสอบ เทียบกับสเปกของผู้ผลิตเป็นอย่างไร</span><span data-lang-en>How does the validation error compare with the manufacturer's specification?</span></li>
+            <li><span data-lang-th>คำนวณความละเอียดของระบบตามสมการ (3.7) แล้วตอบว่าความคลาดเคลื่อนที่พบมาจากการปัดขั้นของ ADC หรือจากตัวเซนเซอร์เอง</span><span data-lang-en>Compute the system resolution from equation (3.7) and decide whether the observed error comes from quantisation or from the sensor itself.</span></li>
+            <li><span data-lang-th>จากค่า \( \tau \) ที่วัดได้ ควรตั้งคาบการสุ่มของระบบให้น้อยกว่าเท่าใดจึงจะไม่พลาดการเปลี่ยนแปลง</span><span data-lang-en>From the measured \( \tau \), how short must the sampling interval be so that changes are not missed?</span></li>
+            <li><span data-lang-th>ความสัมพันธ์ดิวตี้–ความเร็วเป็นเส้นตรงหรือไม่ อธิบายสาเหตุที่ช่วงดิวตี้ต่ำมักไม่เป็นเชิงเส้น</span><span data-lang-en>Is the duty–speed relation linear? Explain why the low-duty region usually is not.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>Deliverables</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานปฏิบัติการไม่เกิน 6 หน้า ส่งภายใน 1 สัปดาห์</span><span data-lang-en>A report of at most six pages, due within one week.</span></li>
+            <li><span data-lang-th>กราฟเส้นสอบเทียบพร้อมสมการและ \( R^2 \)</span><span data-lang-en>The calibration plot with its equation and \( R^2 \).</span></li>
+            <li><span data-lang-th>กราฟการตอบสนองเชิงเวลาพร้อมจุด \( \tau \) ที่ระบุไว้ชัดเจน</span><span data-lang-en>The time-response plot with \( \tau \) clearly marked.</span></li>
+            <li><span data-lang-th>ตารางดิวตี้–ความเร็ว–กระแส และภาพถ่ายวงจรขับที่ต่อจริง</span><span data-lang-en>The duty–speed–current table and a photograph of the drive circuit as built.</span></li>
+            <li><span data-lang-th>โค้ดที่ใช้ พร้อมบรรทัดที่ใช้สมการ (3.2) ทำเครื่องหมายไว้</span><span data-lang-en>The code, with the line implementing equation (3.2) highlighted.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>คุณภาพของการสอบเทียบและการตรวจสอบความถูกต้อง</span><span data-lang-en>Quality of the calibration and its validation</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>การวัดเวลาตอบสนองและการตีความค่า \( \tau \)</span><span data-lang-en>Response-time measurement and interpretation of \( \tau \)</span></td><td>15</td></tr>
+                <tr><td><span data-lang-th>วงจรขับถูกต้องและปลอดภัย รวมถึงไดโอดฟลายแบ็ก</span><span data-lang-en>A correct, safe drive circuit including the flyback diode</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>ข้อมูลดิวตี้–ความเร็ว และการอภิปรายความเป็นเชิงเส้น</span><span data-lang-en>Duty–speed data and the linearity discussion</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ความปลอดภัยและความเป็นระเบียบในการปฏิบัติงาน</span><span data-lang-en>Safe and orderly laboratory practice</span></td><td>15</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--danger" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></div>
+            <p>
+              <span data-lang-th>ห้ามจ่ายไฟให้วงจรขับมอเตอร์ก่อนอาจารย์หรือผู้ช่วยสอนตรวจสอบ โดยเฉพาะการมีไดโอดฟลายแบ็กและขั้วของแหล่งจ่าย เพลาที่หมุนต้องไม่มีเสื้อผ้าหรือผมยาวเข้าใกล้ ให้รวบผมและถอดสร้อยทุกครั้ง ระวังมอเตอร์และตัวต้านทานภาระร้อนจัดหลังเดินเครื่องต่อเนื่อง และตัดไฟทุกครั้งก่อนเปลี่ยนการต่อสายตามหลัก lockout–tagout</span>
+              <span data-lang-en>Do not energise the motor drive until an instructor has checked it, in particular the flyback diode and supply polarity. Keep clothing and long hair away from the rotating shaft: tie hair back and remove jewellery. The motor and load resistor become hot after continuous running. Always kill power before changing any connection, following lockout–tagout.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>คุณภาพของระบบถูกจำกัดด้วยด่านที่แย่ที่สุดในห่วงโซ่สัญญาณ ไม่ใช่ด่านที่ดีที่สุด</span><span data-lang-en>A system is capped by the worst stage in its signal chain, not the best one.</span></li>
+        <li><span data-lang-th>แบบจำลองเซนเซอร์ \( v = Sx + b \) ทำให้การสอบเทียบกลายเป็นการหาสองตัวเลข และการอ่านค่ากลับเป็นสมการ (3.2)</span><span data-lang-en>The model \( v = Sx + b \) reduces calibration to finding two numbers, and reading back to equation (3.2).</span></li>
+        <li><span data-lang-th>ความเที่ยงแก้ด้วยการสอบเทียบได้ แต่ฮิสเทอรีซิสและสัญญาณรบกวนแก้ไม่ได้ด้วยวิธีเดียวกัน</span><span data-lang-en>Calibration can fix a bias, but neither hysteresis nor noise yields to it.</span></li>
+        <li><span data-lang-th>ความละเอียดของระบบมาจากทั้งตัวเซนเซอร์และจำนวนบิตของ ADC ตามสมการ (3.7)</span><span data-lang-en>System resolution comes jointly from the sensor and the ADC bit depth, equation (3.7).</span></li>
+        <li><span data-lang-th>อะไลอะซิงกู้คืนไม่ได้ ต้องกรองก่อนสุ่มเสมอ และสุ่มเร็วกว่า \( 2f_{\max} \)</span><span data-lang-en>Aliasing is irreversible: filter before sampling, and sample faster than \( 2f_{\max} \).</span></li>
+        <li><span data-lang-th>ขาของคอนโทรลเลอร์ไม่เคยขับโหลดได้โดยตรง และขดลวดทุกตัวต้องมีไดโอดฟลายแบ็ก</span><span data-lang-en>A controller pin never drives a load directly, and every coil needs a flyback diode.</span></li>
+        <li><span data-lang-th>จุดทำงานของมอเตอร์คือจุดตัดระหว่างเส้นแรงบิด–ความเร็วกับเส้นภาระ</span><span data-lang-en>A motor's operating point is where its torque–speed line meets the load line.</span></li>
+        <li><span data-lang-th>PLC ชนะเรื่องความทนทานและความแน่นอนของเวลา ไมโครคอนโทรลเลอร์ชนะเรื่องต้นทุน คอมพิวเตอร์บอร์ดเดี่ยวชนะเรื่องการประมวลผลหนัก</span><span data-lang-en>A PLC wins on ruggedness and timing, a microcontroller on cost, a single-board computer on heavy computation.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term">Sensitivity \( S \)</div>
+          <div class="deflist__def"><span data-lang-th>ความไว ความชันของเส้นสอบเทียบ \( \Delta v / \Delta x \)</span><span data-lang-en>The slope of the calibration line, \( \Delta v / \Delta x \)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Accuracy vs precision</div>
+          <div class="deflist__def"><span data-lang-th>ความแม่นยำคือใกล้ค่าจริง ความเที่ยงคือวัดซ้ำได้ใกล้กัน เป็นคนละเรื่องกัน</span><span data-lang-en>Accuracy is closeness to truth; precision is repeatability. They are different properties</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Hysteresis \( H \)</div>
+          <div class="deflist__def"><span data-lang-th>ผลต่างสูงสุดระหว่างการวัดขาขึ้นกับขาลง รายงานเป็น %FS</span><span data-lang-en>The largest gap between rising and falling measurements, quoted in %FS</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Quantisation</div>
+          <div class="deflist__def"><span data-lang-th>การปัดค่าต่อเนื่องให้เป็นขั้นที่ใกล้ที่สุดของ ADC ทำให้เกิดความคลาดเคลื่อนโดยธรรมชาติ</span><span data-lang-en>Rounding a continuous value to the nearest ADC step, an inherent source of error</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Aliasing</div>
+          <div class="deflist__def"><span data-lang-th>อะไลอะซิง สัญญาณความถี่สูงปรากฏเป็นความถี่ต่ำเมื่อสุ่มช้าเกินไป</span><span data-lang-en>A high-frequency signal appearing as a low one because sampling was too slow</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Duty cycle \( D \)</div>
+          <div class="deflist__def"><span data-lang-th>สัดส่วนเวลาเปิดใน PWM ซึ่งกำหนดแรงดันเฉลี่ย \( D V_s \)</span><span data-lang-en>The on-time fraction of a PWM signal, setting the average voltage \( D V_s \)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Back-EMF</div>
+          <div class="deflist__def"><span data-lang-th>แรงเคลื่อนไฟฟ้าย้อนกลับที่มอเตอร์สร้างขึ้นตามความเร็ว \( e_b = k_e \omega \)</span><span data-lang-en>The voltage a motor generates in proportion to its speed, \( e_b = k_e \omega \)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">IP rating</div>
+          <div class="deflist__def"><span data-lang-th>รหัสสองหลักบอกความสามารถกันฝุ่นและกันน้ำ งานเกษตรควรใช้ IP65 ขึ้นไป</span><span data-lang-en>A two-digit code for dust and water resistance; agriculture wants IP65 upward</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>ทำหลังอ่านเนื้อหาครบแล้ว ระบบจะเปรียบเทียบกับคะแนนก่อนเรียนให้อัตโนมัติ เกณฑ์ผ่านคือ 70%</span>
+        <span data-lang-en>Take this after reading the chapter; your score is compared with the pre-test automatically. Pass mark 70%.</span>
+      </p>
+      <div data-quiz="ch03-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>Alciatore, D. G., &amp; Histand, M. B. (2012). <em>Introduction to Mechatronics and Measurement Systems</em> (4th ed.). McGraw-Hill. <span data-lang-th>— บทที่ 8–10 เซนเซอร์ การปรับสภาพสัญญาณ และแอคชูเอเตอร์</span><span data-lang-en>— Chapters 8–10 on sensors, conditioning and actuators.</span></li>
+        <li>Bolton, W. (2019). <em>Mechatronics: Electronic Control Systems in Mechanical and Electrical Engineering</em> (7th ed.). Pearson Education.</li>
+        <li>Morris, A. S., &amp; Langari, R. (2020). <em>Measurement and Instrumentation: Theory and Application</em> (3rd ed.). Academic Press. <span data-lang-th>— คุณลักษณะสถิตและพลวัตของเครื่องมือวัด</span><span data-lang-en>— static and dynamic instrument characteristics.</span></li>
+        <li>Fraden, J. (2016). <em>Handbook of Modern Sensors: Physics, Designs, and Applications</em> (5th ed.). Springer.</li>
+        <li>Hughes, A., &amp; Drury, B. (2019). <em>Electric Motors and Drives: Fundamentals, Types and Applications</em> (5th ed.). Newnes.</li>
+        <li>Horowitz, P., &amp; Hill, W. (2015). <em>The Art of Electronics</em> (3rd ed.). Cambridge University Press. <span data-lang-th>— วงจรขับ การป้องกัน และการลดสัญญาณรบกวน</span><span data-lang-en>— drive circuits, protection and noise reduction.</span></li>
+        <li>Bogena, H. R., Huisman, J. A., Schilling, B., Weuthen, A., &amp; Vereecken, H. (2017). Effective calibration of low-cost soil water content sensors. <em>Sensors, 17</em>(1), 208.</li>
+        <li>Kojima, Y., Shigeta, R., Miyamoto, N., Shirahama, Y., Nishioka, K., Mizoguchi, M., &amp; Kawahara, Y. (2016). Low-cost soil moisture profile probe using thin-film capacitors and a capacitive touch sensor. <em>Sensors, 16</em>(8), 1292.</li>
+        <li>International Electrotechnical Commission. (2013). <em>IEC 60529: Degrees of protection provided by enclosures (IP code)</em>. IEC.</li>
+        <li>International Electrotechnical Commission. (2013). <em>IEC 61131-2: Programmable controllers — Part 2: Equipment requirements and tests</em>. IEC.</li>
+        <li>Shamshiri, R. R., Weltzien, C., Hameed, I. A., Yule, I. J., Grift, T. E., Balasundram, S. K., Pitonakova, L., Ahmad, D., &amp; Chowdhary, G. (2018). Research and development in agricultural robotics: A perspective of digital farming. <em>International Journal of Agricultural and Biological Engineering, 11</em>(4), 1–14.</li>
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press.</li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="ch02.html">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>บทก่อนหน้า</span><span data-lang-en>Previous chapter</span></small>
+        <b><span data-lang-th>บทที่ 2 · แนวคิดระบบควบคุม</span><span data-lang-en>Chapter 2 · Control System Concepts</span></b>
+      </a>
+      <a class="is-next is-disabled" href="#">
+        <small><span data-lang-th>บทถัดไป</span><span data-lang-en>Next chapter</span> <i class="fa-solid fa-arrow-right"></i></small>
+        <b><span data-lang-th>บทที่ 4 · การควบคุมลำดับและ PLC (เร็ว ๆ นี้)</span><span data-lang-en>Chapter 4 · Sequence Control and PLC (soon)</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#conditioning"><span data-lang-th>การปรับสภาพสัญญาณและ ADC</span><span data-lang-en>Conditioning and ADC</span></a></li>
+          <li><a href="#lab"><span data-lang-th>ปฏิบัติการที่ 3</span><span data-lang-en>Laboratory 3</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script src="../js/ch03-quiz.js"></script>
+<script src="../js/ch03-anim.js"></script>
+</body>
+</html>

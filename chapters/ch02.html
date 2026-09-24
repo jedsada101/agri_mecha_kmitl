@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 2 · แนวคิดระบบควบคุม" data-title-en="Chapter 2 · Control System Concepts">Chapter 2 · Control System Concepts</title>
+<meta name="description" content="Chapter 2: Control system concepts — purpose of control, sequence versus process control, open-loop versus closed-loop, with agricultural examples.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a>
+      <a href="ch01.html"><span data-lang-th>บทที่ 1</span><span data-lang-en>Chapter 1</span></a>
+      <a href="ch02.html" class="is-active"><span data-lang-th>บทที่ 2</span><span data-lang-en>Chapter 2</span></a>
+      <a href="ch03.html"><span data-lang-th>บทที่ 3</span><span data-lang-en>Chapter 3</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 2</span><span data-lang-en>Chapter 2</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 2</span><span data-lang-en>Week 2</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 2 ชม. + ปฏิบัติ 2 ชม.</span><span data-lang-en>2 h lecture + 2 h laboratory</span></span>
+      <span class="badge badge--sky"><i class="fa-solid fa-film"></i> <span data-lang-th>แอนิเมชัน 3 ชุด</span><span data-lang-en>3 animations</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 2 · แนวคิดระบบควบคุม</span>
+      <span data-lang-en>Chapter 2 · Control System Concepts</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>ทำไมเครื่องจักรต้องมีระบบควบคุม การควบคุม “ลำดับ” ต่างจากการควบคุม “กระบวนการ” อย่างไร และเหตุใดการป้อนกลับจึงเปลี่ยนเครื่องจักรธรรมดาให้กลายเป็นระบบที่ทนต่อสิ่งรบกวนได้ บทนี้เป็นแกนกลางที่ทุกบทหลังจากนี้ต่อยอดขึ้นไป</span>
+      <span data-lang-en>Why a machine needs control at all, how <em>sequence</em> control differs from <em>process</em> control, and why feedback turns an ordinary machine into one that shrugs off disturbances. This chapter is the spine that every later chapter builds on.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#why"><span data-lang-th>2.1 ทำไมต้องควบคุม</span><span data-lang-en>2.1 Why control is needed</span></a></li>
+      <li><a href="#terms"><span data-lang-th>2.2 คำศัพท์และตัวแปรของระบบ</span><span data-lang-en>2.2 Terminology and variables</span></a></li>
+      <li><a href="#seq-proc"><span data-lang-th>2.3 ลำดับ vs กระบวนการ</span><span data-lang-en>2.3 Sequence vs process</span></a></li>
+      <li><a href="#open-closed"><span data-lang-th>2.4 ระบบเปิด vs ระบบปิด</span><span data-lang-en>2.4 Open- vs closed-loop</span></a></li>
+      <li><a href="#math"><span data-lang-th>2.5 สมการวงรอบปิด</span><span data-lang-en>2.5 The closed-loop equations</span></a></li>
+      <li><a href="#feedforward"><span data-lang-th>2.6 การป้อนไปข้างหน้า</span><span data-lang-en>2.6 Feedforward control</span></a></li>
+      <li><a href="#examples"><span data-lang-th>2.7 ตัวอย่างในงานเกษตร</span><span data-lang-en>2.7 Agricultural examples</span></a></li>
+      <li><a href="#choose"><span data-lang-th>2.8 จะเลือกแบบไหนดี</span><span data-lang-en>2.8 Choosing a scheme</span></a></li>
+      <li><a href="#activity"><span data-lang-th>2.9 กิจกรรมในชั้นเรียน</span><span data-lang-en>2.9 In-class activity</span></a></li>
+      <li><a href="#lab"><span data-lang-th>2.10 ปฏิบัติการที่ 2</span><span data-lang-en>2.10 Laboratory 2</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>อธิบายเหตุผลสี่ประการที่ระบบเกษตรจำเป็นต้องมีการควบคุม</span><span data-lang-en>Explain the four reasons an agricultural system needs control at all.</span></li>
+        <li><span data-lang-th>ใช้คำศัพท์ SP, PV, MV, CV, disturbance และ error ได้ถูกต้องกับระบบที่กำหนดให้</span><span data-lang-en>Use the terms SP, PV, MV, CV, disturbance and error correctly for a given system.</span></li>
+        <li><span data-lang-th>จำแนกงานควบคุมว่าเป็นการควบคุมลำดับหรือการควบคุมกระบวนการ พร้อมเหตุผล</span><span data-lang-en>Classify a control task as sequence or process control, with justification.</span></li>
+        <li><span data-lang-th>เปรียบเทียบระบบเปิดกับระบบปิด และระบุว่าสถานการณ์ใดควรใช้แบบใด</span><span data-lang-en>Compare open- and closed-loop schemes and decide which suits a given situation.</span></li>
+        <li><span data-lang-th>คำนวณความคลาดเคลื่อนสถานะคงตัวของระบบป้อนกลับอย่างง่าย และอธิบายผลของอัตราขยายวงรอบ</span><span data-lang-en>Compute the steady-state error of a simple feedback loop and explain the effect of loop gain.</span></li>
+        <li><span data-lang-th>เขียนแผนภาพบล็อกของระบบควบคุมในงานเกษตร พร้อมระบุตัวแปรทุกตัว</span><span data-lang-en>Draw the block diagram of an agricultural control system with every variable labelled.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ตอบก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิม ระบบเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer before reading. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch02-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 2.1 --------- -->
+    <section id="why">
+      <h2><span data-lang-th>2.1 ทำไมระบบเกษตรจึงต้องมีการควบคุม</span><span data-lang-en>2.1 Why an agricultural system needs control</span></h2>
+
+      <p>
+        <span data-lang-th>สมมติว่าเราตั้งปั๊มน้ำให้ทำงานวันละ 20 นาทีทุกเช้า ระบบนี้ทำงานได้ดีในวันที่อากาศปกติ แต่ถ้าวันนั้นฝนตกหนัก พืชก็ได้รับน้ำเกิน หรือถ้าแดดจัดผิดปกติ พืชก็ขาดน้ำ ปัญหาไม่ได้อยู่ที่ปั๊ม แต่อยู่ที่ <strong>ระบบไม่รู้ว่าเกิดอะไรขึ้นจริง</strong></span>
+        <span data-lang-en>Suppose we set a pump to run for 20 minutes every morning. On an average day it works. On a day of heavy rain the crop is over-watered; on an unusually hot day it is under-watered. The pump is not the problem — the problem is that <strong>the system has no idea what is actually happening</strong>.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>เหตุผลที่ระบบเกษตรต้องมีการควบคุมสรุปได้สี่ข้อ</span>
+        <span data-lang-en>There are four reasons control is needed:</span>
+      </p>
+
+      <div class="grid grid--2">
+        <div class="card">
+          <div class="card__icon"><i class="fa-solid fa-bullseye"></i></div>
+          <h3><span data-lang-th>1. รักษาค่าตัวแปรให้อยู่ที่เป้าหมาย</span><span data-lang-en>1. Hold a variable at its target</span></h3>
+          <p><span data-lang-th>อุณหภูมิโรงเรือน 28 °C ความชื้นดิน 60 %VWC ค่า EC ของสารละลาย 1.8 mS/cm — พืชตอบสนองต่อค่าที่ “คงที่” ดีกว่าค่าที่แกว่ง</span><span data-lang-en>28 °C in the greenhouse, 60 %VWC in the root zone, 1.8 mS/cm in the nutrient solution. Plants respond far better to a steady value than a swinging one.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--gold"><i class="fa-solid fa-cloud-sun-rain"></i></div>
+          <h3><span data-lang-th>2. ต้านทานสิ่งรบกวน</span><span data-lang-en>2. Reject disturbances</span></h3>
+          <p><span data-lang-th>แดด ลม ฝน การเปิดประตูโรงเรือน ภาระโหลดที่เปลี่ยน — ล้วนเป็นสิ่งที่เราไม่ได้สั่งแต่เกิดขึ้นเสมอ</span><span data-lang-en>Sun, wind, rain, an opened door, a changing load — none of these are commanded, yet all of them happen.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--sky"><i class="fa-solid fa-repeat"></i></div>
+          <h3><span data-lang-th>3. ทำงานซ้ำได้เหมือนเดิมทุกครั้ง</span><span data-lang-en>3. Repeat the same result every time</span></h3>
+          <p><span data-lang-th>เครื่องบรรจุต้องได้น้ำหนักเท่ากันทุกถุง เครื่องหยอดเมล็ดต้องได้ระยะห่างเท่ากันทุกหลุม ไม่ว่าจะเป็นถุงที่ 1 หรือถุงที่ 5,000</span><span data-lang-en>A packing machine must hit the same weight on bag 1 and bag 5,000; a seeder must hit the same spacing on every hill.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--steel"><i class="fa-solid fa-shield-halved"></i></div>
+          <h3><span data-lang-th>4. ความปลอดภัยและการประหยัดทรัพยากร</span><span data-lang-en>4. Safety and resource economy</span></h3>
+          <p><span data-lang-th>หยุดเครื่องเมื่อมีคนเข้าเขตอันตราย ปิดวาล์วเมื่อถังเต็ม ใช้น้ำและปุ๋ยเท่าที่พืชต้องการจริง</span><span data-lang-en>Stop when a person enters the danger zone, close the valve when the tank is full, apply only the water and fertiliser the crop truly needs.</span></p>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-lightbulb"></i> <span data-lang-th>คำถามที่ใช้ตัดสินใจได้เสมอ</span><span data-lang-en>The question that always decides it</span></div>
+        <p>
+          <span data-lang-th>ถามตัวเองว่า <em>“ถ้าสภาพแวดล้อมเปลี่ยนไปจากที่คาดไว้ เครื่องจะรู้ตัวหรือไม่”</em> ถ้าคำตอบคือไม่รู้ แปลว่าคุณกำลังมีระบบเปิด และต้องประเมินว่ายอมรับความเสี่ยงนั้นได้หรือไม่</span>
+          <span data-lang-en>Ask yourself: <em>“if conditions drift away from what I assumed, would the machine notice?”</em> If the answer is no, you have an open-loop system, and you must decide whether that risk is acceptable.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 2.2 --------- -->
+    <section id="terms">
+      <h2><span data-lang-th>2.2 คำศัพท์และตัวแปรของระบบควบคุม</span><span data-lang-en>2.2 Terminology and system variables</span></h2>
+
+      <p>
+        <span data-lang-th>วิศวกรควบคุมใช้คำศัพท์ชุดเดียวกันทั่วโลก การใช้คำให้ตรงตั้งแต่ต้นจะช่วยให้อ่านคู่มือเครื่องจักรและเอกสาร PLC ได้เข้าใจทันที</span>
+        <span data-lang-en>Control engineers everywhere use the same vocabulary. Getting these words right now makes machine manuals and PLC documentation immediately readable.</span>
+      </p>
+
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term">Setpoint (SP), \( r \)</div>
+          <div class="deflist__def"><span data-lang-th>ค่าที่เราต้องการให้ระบบไปถึง เช่น 28 °C — เป็นสิ่งที่ผู้ใช้กำหนด ไม่ใช่สิ่งที่วัดได้</span><span data-lang-en>The value we want the system to reach, e.g. 28 °C. It is chosen by the operator, never measured.</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Process variable (PV), \( y \)</div>
+          <div class="deflist__def"><span data-lang-th>ค่าที่เกิดขึ้นจริงและวัดได้จากเซนเซอร์ บางตำราเรียกว่า controlled variable (CV)</span><span data-lang-en>The value that actually occurs and is measured by the sensor; some texts call it the controlled variable (CV).</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Manipulated variable (MV), \( u \)</div>
+          <div class="deflist__def"><span data-lang-th>สิ่งที่คอนโทรลเลอร์ “ปรับได้” เช่น ระดับการเปิดวาล์ว กำลังฮีตเตอร์ ความเร็วพัดลม</span><span data-lang-en>What the controller is able to move: valve opening, heater power, fan speed.</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Disturbance, \( d \)</div>
+          <div class="deflist__def"><span data-lang-th>สิ่งที่กระทบผลลัพธ์แต่เราไม่ได้สั่งและมักควบคุมไม่ได้ เช่น ความเข้มแสงอาทิตย์ อุณหภูมิภายนอก</span><span data-lang-en>Anything that affects the output but is not commanded and usually cannot be controlled: solar radiation, outside temperature.</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Error, \( e \)</div>
+          <div class="deflist__def"><span data-lang-th>ผลต่าง \( e = r - y \) เป็นเชื้อเพลิงของระบบป้อนกลับทั้งหมด ถ้าไม่มีความคลาดเคลื่อน ตัวควบคุมก็ไม่มีอะไรให้แก้</span><span data-lang-en>The difference \( e = r - y \). It is the fuel of every feedback system: with no error, a controller has nothing to correct.</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Plant / process, \( G \)</div>
+          <div class="deflist__def"><span data-lang-th>สิ่งที่ถูกควบคุม เช่น อากาศในโรงเรือน น้ำในถัง ดินในแปลง หรือกลไกของเครื่องจักร</span><span data-lang-en>The thing being controlled: greenhouse air, water in a tank, soil in a bed, or a machine mechanism.</span></div>
+        </div>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>ข้อผิดพลาดที่พบบ่อย</span><span data-lang-en>A common mix-up</span></div>
+        <p>
+          <span data-lang-th>นักศึกษามักสับสนระหว่าง MV กับ PV จำง่าย ๆ ว่า <strong>MV คือสิ่งที่เรา “หมุน” ได้ ส่วน PV คือสิ่งที่เรา “อยากได้”</strong> ในระบบให้น้ำ MV คือเวลาเปิดวาล์ว ส่วน PV คือความชื้นดิน เราสนใจความชื้นดิน แต่เราสั่งได้แค่วาล์ว</span>
+          <span data-lang-en>Students routinely confuse MV with PV. Remember: <strong>MV is what you can turn; PV is what you care about.</strong> In irrigation, the MV is valve-open time and the PV is soil moisture. You care about moisture but can only command the valve.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 2.3 --------- -->
+    <section id="seq-proc">
+      <h2><span data-lang-th>2.3 การควบคุมลำดับ เทียบกับ การควบคุมกระบวนการ</span><span data-lang-en>2.3 Sequence control versus process control</span></h2>
+
+      <p>
+        <span data-lang-th>งานควบคุมในโลกจริงแบ่งออกเป็นสองตระกูลใหญ่ ซึ่งใช้เครื่องมือคิดคนละชุดกัน การแยกให้ออกตั้งแต่ต้นจะช่วยให้เลือกอุปกรณ์และวิธีออกแบบได้ถูก</span>
+        <span data-lang-en>Real control tasks fall into two families that need quite different thinking tools. Telling them apart early is what lets you pick the right hardware and the right design method.</span>
+      </p>
+
+      <div class="compare">
+        <div class="compare__col compare__col--a">
+          <h4><i class="fa-solid fa-list-ol" style="color:var(--green-500)"></i> <span data-lang-th>การควบคุมลำดับ (Sequence control)</span><span data-lang-en>Sequence control</span></h4>
+          <ul>
+            <li><span data-lang-th>ตัวแปรเป็น <strong>ค่าไม่ต่อเนื่อง</strong> (discrete): เปิด/ปิด, ถึง/ไม่ถึง, จริง/เท็จ</span><span data-lang-en>Variables are <strong>discrete</strong>: on/off, reached/not reached, true/false.</span></li>
+            <li><span data-lang-th>คำถามคือ “<em>ตอนนี้ต้องทำขั้นตอนไหน และเมื่อไรจึงไปขั้นถัดไป</em>”</span><span data-lang-en>The question is “<em>which step am I on, and when do I move to the next?</em>”</span></li>
+            <li><span data-lang-th>เครื่องมือ: พีชคณิตบูลีน, แผนภาพสถานะ, SFC, แลดเดอร์ไดอะแกรม (บทที่ 4)</span><span data-lang-en>Tools: Boolean algebra, state diagrams, SFC, ladder logic (Chapter 4).</span></li>
+            <li><span data-lang-th>อุปกรณ์หลัก: PLC, รีเลย์, ลิมิตสวิตช์, เซนเซอร์พร็อกซิมิตี</span><span data-lang-en>Typical hardware: PLC, relays, limit switches, proximity sensors.</span></li>
+            <li><span data-lang-th>ตัวอย่าง: เครื่องบรรจุเมล็ดพันธุ์ เครื่องคัดขนาด สายพานลำเลียงหลายสถานี</span><span data-lang-en>Examples: a seed packing station, a size grader, a multi-station conveyor.</span></li>
+          </ul>
+        </div>
+        <div class="compare__col compare__col--b">
+          <h4><i class="fa-solid fa-wave-square" style="color:var(--sky-500)"></i> <span data-lang-th>การควบคุมกระบวนการ (Process control)</span><span data-lang-en>Process control</span></h4>
+          <ul>
+            <li><span data-lang-th>ตัวแปรเป็น <strong>ค่าต่อเนื่อง</strong> (continuous): อุณหภูมิ ความชื้น ความดัน อัตราการไหล</span><span data-lang-en>Variables are <strong>continuous</strong>: temperature, humidity, pressure, flow.</span></li>
+            <li><span data-lang-th>คำถามคือ “<em>ต้องปรับมากแค่ไหน เพื่อให้ค่าเข้าใกล้เป้าหมายโดยไม่แกว่ง</em>”</span><span data-lang-en>The question is “<em>how much correction, so the value approaches target without oscillating?</em>”</span></li>
+            <li><span data-lang-th>เครื่องมือ: แบบจำลองเชิงพลวัต ฟังก์ชันถ่ายโอน ผลตอบสนองเชิงเวลา PID (บทที่ 6–7)</span><span data-lang-en>Tools: dynamic models, transfer functions, time response, PID (Chapters 6–7).</span></li>
+            <li><span data-lang-th>อุปกรณ์หลัก: เซนเซอร์อนาล็อก, วาล์วปรับได้, อินเวอร์เตอร์, โมดูล PID</span><span data-lang-en>Typical hardware: analogue sensors, modulating valves, inverters, PID modules.</span></li>
+            <li><span data-lang-th>ตัวอย่าง: ควบคุมอุณหภูมิโรงเรือน ควบคุม EC/pH ของสารละลาย ควบคุมความเร็วสายพาน</span><span data-lang-en>Examples: greenhouse temperature, nutrient EC/pH, conveyor speed.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-code-merge"></i> <span data-lang-th>ของจริงมักเป็นลูกผสม</span><span data-lang-en>Real machines are usually both</span></div>
+        <p>
+          <span data-lang-th>โรงคัดบรรจุผลไม้หนึ่งแห่งมีทั้งสองอย่างพร้อมกัน: สายพานและแขนคัดแยกเป็นงานควบคุมลำดับ ส่วนห้องเย็นที่รักษาอุณหภูมิ 12 °C เป็นงานควบคุมกระบวนการ วิศวกรคนเดียวกันต้องออกแบบทั้งสองส่วนให้ทำงานร่วมกันได้</span>
+          <span data-lang-en>A single packhouse contains both: the conveyors and sorting arms are sequence control, while the 12 °C cold room is process control. The same engineer has to make both halves work together.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 2.1 ===================== -->
+      <figure class="anim" data-anim="ch02-seqproc">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 2.1 — สองตระกูลของการควบคุม ทำงานพร้อมกัน</span>
+          <span data-lang-en>Animation 2.1 — The two families of control, running side by side</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 280" role="img" aria-label="Animated comparison of discrete sequence control and continuous process control">
+            <!-- ================= left: sequence control ================= -->
+            <rect x="8" y="8" width="404" height="264" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="210" y="32" text-anchor="middle" data-lang-th>การควบคุมลำดับ — เมล็ดพันธุ์บรรจุถุง</text>
+            <text class="dg-text-b" x="210" y="32" text-anchor="middle" data-lang-en>Sequence control — seed bagging</text>
+
+            <!-- hopper -->
+            <path d="M 150 52 L 262 52 L 232 104 L 180 104 Z" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <rect id="s1-valve" x="198" y="104" width="16" height="12" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <line id="s1-stream" x1="206" y1="116" x2="206" y2="150" class="dg-stroke-gold" stroke-width="6" stroke-linecap="round" opacity="0"/>
+
+            <!-- bag on conveyor -->
+            <g id="s1-bag">
+              <rect x="-24" y="-48" width="48" height="48" rx="4" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+              <rect id="s1-fill" x="-21" y="-3" width="42" height="0" class="dg-fill-gold"/>
+              <rect id="s1-cap" x="-26" y="-56" width="52" height="8" rx="3" class="dg-fill-steel dg-stroke" stroke-width="1.5" opacity="0"/>
+            </g>
+            <rect x="30" y="200" width="352" height="12" rx="6" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+
+            <!-- step chips -->
+            <g>
+              <rect id="s1-c0" x="36" y="232" width="78" height="26" rx="8" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+              <rect id="s1-c1" x="122" y="232" width="78" height="26" rx="8" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+              <rect id="s1-c2" x="208" y="232" width="78" height="26" rx="8" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+              <rect id="s1-c3" x="294" y="232" width="78" height="26" rx="8" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+              <text class="dg-text-sm" x="75" y="249" text-anchor="middle">S1</text>
+              <text class="dg-text-sm" x="161" y="249" text-anchor="middle">S2</text>
+              <text class="dg-text-sm" x="247" y="249" text-anchor="middle">S3</text>
+              <text class="dg-text-sm" x="333" y="249" text-anchor="middle">S4</text>
+              <text class="dg-text-sm" x="75" y="226" text-anchor="middle" data-lang-th>ลำเลียง</text>
+              <text class="dg-text-sm" x="75" y="226" text-anchor="middle" data-lang-en>convey</text>
+              <text class="dg-text-sm" x="161" y="226" text-anchor="middle" data-lang-th>เติม</text>
+              <text class="dg-text-sm" x="161" y="226" text-anchor="middle" data-lang-en>fill</text>
+              <text class="dg-text-sm" x="247" y="226" text-anchor="middle" data-lang-th>ปิดผนึก</text>
+              <text class="dg-text-sm" x="247" y="226" text-anchor="middle" data-lang-en>seal</text>
+              <text class="dg-text-sm" x="333" y="226" text-anchor="middle" data-lang-th>ส่งออก</text>
+              <text class="dg-text-sm" x="333" y="226" text-anchor="middle" data-lang-en>eject</text>
+            </g>
+
+            <!-- ================= right: process control ================= -->
+            <rect x="448" y="8" width="404" height="264" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="650" y="32" text-anchor="middle" data-lang-th>การควบคุมกระบวนการ — อุณหภูมิโรงเรือน</text>
+            <text class="dg-text-b" x="650" y="32" text-anchor="middle" data-lang-en>Process control — greenhouse temperature</text>
+
+            <!-- greenhouse shell -->
+            <path d="M 500 190 L 500 108 Q 650 52 800 108 L 800 190 Z" class="dg-fill-green dg-stroke-green" stroke-width="2" opacity="0.8"/>
+            <line x1="490" y1="190" x2="810" y2="190" class="dg-stroke" stroke-width="2.5"/>
+            <!-- plants -->
+            <g class="dg-stroke-green" stroke-width="3" stroke-linecap="round">
+              <line x1="540" y1="190" x2="540" y2="168"/><line x1="580" y1="190" x2="580" y2="162"/>
+              <line x1="720" y1="190" x2="720" y2="166"/><line x1="760" y1="190" x2="760" y2="172"/>
+            </g>
+            <!-- vent flap (rotates with the manipulated variable) -->
+            <g id="s2-vent" transform="rotate(0 700 86)">
+              <rect x="660" y="76" width="82" height="10" rx="3" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+            </g>
+            <!-- sun -->
+            <circle id="s2-sun" cx="522" cy="62" r="17" class="dg-fill-gold dg-stroke-gold" stroke-width="1.5"/>
+            <!-- thermometer -->
+            <rect x="820" y="72" width="16" height="112" rx="8" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+            <rect id="s2-merc" x="823" y="160" width="10" height="21" rx="5" class="dg-fill-gold"/>
+            <circle cx="828" cy="190" r="11" class="dg-fill-gold dg-stroke" stroke-width="1.5"/>
+
+            <text class="dg-text-sm" x="650" y="222" text-anchor="middle" data-lang-th>ค่าต่อเนื่อง ปรับทีละน้อยตลอดเวลา</text>
+            <text class="dg-text-sm" x="650" y="222" text-anchor="middle" data-lang-en>a continuous value, nudged all the time</text>
+            <text class="dg-text-sm" x="210" y="272" text-anchor="middle" data-lang-th>ค่าไม่ต่อเนื่อง กระโดดทีละขั้น</text>
+            <text class="dg-text-sm" x="210" y="272" text-anchor="middle" data-lang-en>a discrete value, jumping step by step</text>
+          </svg>
+
+          <span class="fig-label fig-label--muted" style="left:19.5%;top:96%">\( S_{k+1} = f(S_k,\; X) \)</span>
+          <span class="fig-label fig-label--muted" style="left:75.0%;top:88%">\( \dot{y} = \tfrac{1}{\tau}\,(K u + d - y) \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ความเร็ว</span><span data-lang-en>Speed</span>
+            <input type="range" data-anim-param="speed" data-unit="×" min="0.4" max="2.2" step="0.2" value="1">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 2.1</span><span data-lang-en>Animation 2.1</span></b>
+          <span data-lang-th> ฝั่งซ้ายสถานะกระโดดจาก \( S_1 \) ไป \( S_2 \) ทันทีเมื่อเงื่อนไขเป็นจริง ไม่มีค่ากลางระหว่างขั้น ส่วนฝั่งขวาอุณหภูมิไต่ขึ้นลงอย่างต่อเนื่องและไม่เคยถึงเป้าหมายแบบเป๊ะ ๆ สังเกตว่าช่องระบายอากาศเปิดมากน้อยตามขนาดของความคลาดเคลื่อน</span>
+          <span data-lang-en> On the left the state jumps from \( S_1 \) to \( S_2 \) the instant its condition becomes true — there is no value in between. On the right the temperature glides continuously and never sits exactly on target; notice the vent opening in proportion to the error.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 2.4 --------- -->
+    <section id="open-closed">
+      <h2><span data-lang-th>2.4 ระบบควบคุมแบบเปิด เทียบกับ แบบปิด</span><span data-lang-en>2.4 Open-loop versus closed-loop control</span></h2>
+
+      <p>
+        <span data-lang-th>นี่คือการจำแนกที่สำคัญที่สุดในวิชาระบบควบคุม คำถามเดียวที่ต้องถามคือ <strong>“ผลลัพธ์ที่วัดได้ ถูกส่งกลับมามีอิทธิพลต่อคำสั่งหรือไม่”</strong> ถ้าส่งกลับ เรียกว่าระบบปิด ถ้าไม่ส่งกลับ เรียกว่าระบบเปิด</span>
+        <span data-lang-en>This is the most important classification in control engineering, and it hinges on one question: <strong>does the measured output come back and influence the command?</strong> If it does, the loop is closed; if it does not, the loop is open.</span>
+      </p>
+
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 300" role="img" aria-labelledby="fig21-title">
+            <title id="fig21-title">Open-loop and closed-loop block diagrams compared</title>
+            <defs>
+              <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" class="dg-arrow"/>
+              </marker>
+            </defs>
+
+            <!-- open loop -->
+            <text class="dg-text-b" x="30" y="30" data-lang-th>ระบบเปิด (Open-loop)</text>
+            <text class="dg-text-b" x="30" y="30" data-lang-en>Open-loop</text>
+            <line x1="30" y1="76" x2="86" y2="76" class="dg-stroke" stroke-width="2" marker-end="url(#ar2)"/>
+            <rect x="88" y="50" width="130" height="52" rx="9" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <text class="dg-text" x="153" y="81" text-anchor="middle" data-lang-th>ตัวควบคุม</text>
+            <text class="dg-text" x="153" y="81" text-anchor="middle" data-lang-en>Controller</text>
+            <line x1="218" y1="76" x2="270" y2="76" class="dg-stroke" stroke-width="2" marker-end="url(#ar2)"/>
+            <rect x="272" y="50" width="130" height="52" rx="9" class="dg-fill-gold dg-stroke-gold" stroke-width="2"/>
+            <text class="dg-text" x="337" y="81" text-anchor="middle" data-lang-th>แอคชูเอเตอร์</text>
+            <text class="dg-text" x="337" y="81" text-anchor="middle" data-lang-en>Actuator</text>
+            <line x1="402" y1="76" x2="454" y2="76" class="dg-stroke" stroke-width="2" marker-end="url(#ar2)"/>
+            <rect x="456" y="50" width="130" height="52" rx="9" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text" x="521" y="81" text-anchor="middle" data-lang-th>กระบวนการ</text>
+            <text class="dg-text" x="521" y="81" text-anchor="middle" data-lang-en>Process</text>
+            <line x1="586" y1="76" x2="648" y2="76" class="dg-stroke" stroke-width="2" marker-end="url(#ar2)"/>
+            <line x1="521" y1="14" x2="521" y2="46" class="dg-stroke" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ar2)"/>
+            <text class="dg-text-sm" x="666" y="104" data-lang-th>ไม่มีเส้นย้อนกลับ</text>
+            <text class="dg-text-sm" x="666" y="104" data-lang-en>no return path</text>
+
+            <!-- closed loop -->
+            <text class="dg-text-b" x="30" y="176" data-lang-th>ระบบปิด (Closed-loop)</text>
+            <text class="dg-text-b" x="30" y="176" data-lang-en>Closed-loop</text>
+            <line x1="30" y1="222" x2="62" y2="222" class="dg-stroke" stroke-width="2" marker-end="url(#ar2)"/>
+            <circle cx="80" cy="222" r="17" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+            <text class="dg-text" x="80" y="227" text-anchor="middle">Σ</text>
+            <text class="dg-text-sm" x="62" y="206">+</text>
+            <text class="dg-text-sm" x="74" y="258">−</text>
+            <line x1="97" y1="222" x2="126" y2="222" class="dg-stroke" stroke-width="2" marker-end="url(#ar2)"/>
+            <rect x="128" y="196" width="120" height="52" rx="9" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <text class="dg-text" x="188" y="227" text-anchor="middle" data-lang-th>ตัวควบคุม</text>
+            <text class="dg-text" x="188" y="227" text-anchor="middle" data-lang-en>Controller</text>
+            <line x1="248" y1="222" x2="288" y2="222" class="dg-stroke" stroke-width="2" marker-end="url(#ar2)"/>
+            <rect x="290" y="196" width="120" height="52" rx="9" class="dg-fill-gold dg-stroke-gold" stroke-width="2"/>
+            <text class="dg-text" x="350" y="227" text-anchor="middle" data-lang-th>แอคชูเอเตอร์</text>
+            <text class="dg-text" x="350" y="227" text-anchor="middle" data-lang-en>Actuator</text>
+            <line x1="410" y1="222" x2="450" y2="222" class="dg-stroke" stroke-width="2" marker-end="url(#ar2)"/>
+            <rect x="452" y="196" width="130" height="52" rx="9" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text" x="517" y="227" text-anchor="middle" data-lang-th>กระบวนการ</text>
+            <text class="dg-text" x="517" y="227" text-anchor="middle" data-lang-en>Process</text>
+            <line x1="582" y1="222" x2="648" y2="222" class="dg-stroke" stroke-width="2" marker-end="url(#ar2)"/>
+            <line x1="517" y1="160" x2="517" y2="192" class="dg-stroke" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ar2)"/>
+
+            <rect x="300" y="268" width="150" height="26" rx="8" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="375" y="286" text-anchor="middle" data-lang-th>เซนเซอร์</text>
+            <text class="dg-text-sm" x="375" y="286" text-anchor="middle" data-lang-en>Sensor</text>
+            <path d="M 620 222 L 620 281 L 454 281" class="dg-stroke" stroke-width="2" fill="none" marker-end="url(#ar2)"/>
+            <path d="M 300 281 L 80 281 L 80 241" class="dg-stroke" stroke-width="2" fill="none" marker-end="url(#ar2)"/>
+          </svg>
+          <span class="fig-label fig-label--bare" style="left:3.0%;top:21.5%">\( r \)</span>
+          <span class="fig-label fig-label--bare" style="left:60.5%;top:17.0%">\( d \)</span>
+          <span class="fig-label fig-label--bare" style="left:74.0%;top:21.5%">\( y \)</span>
+          <span class="fig-label fig-label--bare" style="left:3.0%;top:70.0%">\( r \)</span>
+          <span class="fig-label fig-label--bare" style="left:12.8%;top:65.5%">\( e \)</span>
+          <span class="fig-label fig-label--bare" style="left:60.0%;top:55.0%">\( d \)</span>
+          <span class="fig-label fig-label--bare" style="left:74.0%;top:70.0%">\( y \)</span>
+          <span class="fig-label fig-label--bare" style="left:29.5%;top:93.5%">\( y_m \)</span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 2.1</span><span data-lang-en>Figure 2.1</span></b>
+          <span data-lang-th> ความต่างทั้งหมดอยู่ที่เส้นเดียว: เส้นป้อนกลับที่นำ \( y_m \) กลับมายังจุดเปรียบเทียบ ทำให้เกิด \( e = r - y_m \) ระบบเปิดไม่มีเส้นนี้ จึงไม่มีทางรู้ว่า \( d \) ทำอะไรกับผลลัพธ์</span>
+          <span data-lang-en> The entire difference is one line: the feedback path that brings \( y_m \) back to the comparator and forms \( e = r - y_m \). An open loop has no such line, so it can never know what \( d \) did to the output.</span>
+        </figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ประเด็น</span><span data-lang-en>Aspect</span></th>
+              <th><span data-lang-th>ระบบเปิด</span><span data-lang-en>Open-loop</span></th>
+              <th><span data-lang-th>ระบบปิด</span><span data-lang-en>Closed-loop</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span data-lang-th>ต้องใช้เซนเซอร์วัดผลลัพธ์</span><span data-lang-en>Needs an output sensor</span></td><td><span data-lang-th>ไม่ต้อง</span><span data-lang-en>No</span></td><td><span data-lang-th>ต้องมี</span><span data-lang-en>Yes, always</span></td></tr>
+            <tr><td><span data-lang-th>ต้านทานสิ่งรบกวน</span><span data-lang-en>Disturbance rejection</span></td><td><span data-lang-th>ไม่มีเลย</span><span data-lang-en>None</span></td><td><span data-lang-th>ลดผลได้ตามอัตราขยายวงรอบ</span><span data-lang-en>Reduced by the loop gain</span></td></tr>
+            <tr><td><span data-lang-th>ทนต่อการเปลี่ยนแปลงของตัวระบบเอง</span><span data-lang-en>Tolerance to plant changes</span></td><td><span data-lang-th>ต่ำ ต้องสอบเทียบใหม่บ่อย</span><span data-lang-en>Low; frequent recalibration</span></td><td><span data-lang-th>สูง แก้ไขตัวเองอัตโนมัติ</span><span data-lang-en>High; self-correcting</span></td></tr>
+            <tr><td><span data-lang-th>ความเสี่ยงไม่เสถียร (แกว่ง)</span><span data-lang-en>Risk of instability</span></td><td><span data-lang-th>แทบไม่มี</span><span data-lang-en>Essentially none</span></td><td><span data-lang-th>มี หากอัตราขยายสูงเกินไป</span><span data-lang-en>Real, if the gain is too high</span></td></tr>
+            <tr><td><span data-lang-th>ต้นทุนและความซับซ้อน</span><span data-lang-en>Cost and complexity</span></td><td><span data-lang-th>ต่ำ</span><span data-lang-en>Low</span></td><td><span data-lang-th>สูงกว่า</span><span data-lang-en>Higher</span></td></tr>
+            <tr><td><span data-lang-th>ตัวอย่างในงานเกษตร</span><span data-lang-en>Agricultural example</span></td><td><span data-lang-th>ตั้งเวลารดน้ำ 20 นาที/วัน, หว่านปุ๋ยอัตราคงที่</span><span data-lang-en>A 20 min/day irrigation timer; fixed-rate fertiliser spreading</span></td><td><span data-lang-th>รดน้ำตามความชื้นดิน, ควบคุมอุณหภูมิโรงเรือน</span><span data-lang-en>Irrigating on soil moisture; greenhouse temperature control</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===================== Animation 2.2 ===================== -->
+      <figure class="anim" data-anim="ch02-openclosed">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 2.2 — เมื่อมีสิ่งรบกวนเข้ามา ระบบไหนรอด</span>
+          <span data-lang-en>Animation 2.2 — When a disturbance arrives, which loop survives?</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 190" role="img" aria-label="Two greenhouses, one open-loop and one closed-loop, reacting to a disturbance">
+            <!-- open-loop house -->
+            <text class="dg-text-b" x="210" y="24" text-anchor="middle" data-lang-th>ระบบเปิด — สั่งฮีตเตอร์ค่าคงที่</text>
+            <text class="dg-text-b" x="210" y="24" text-anchor="middle" data-lang-en>Open-loop — fixed heater command</text>
+            <path d="M 90 160 L 90 78 Q 210 36 330 78 L 330 160 Z" class="dg-fill-green dg-stroke-green" stroke-width="2" opacity="0.65"/>
+            <line x1="80" y1="160" x2="340" y2="160" class="dg-stroke" stroke-width="2.5"/>
+            <rect x="130" y="130" width="46" height="24" rx="4" class="dg-fill-gold dg-stroke" stroke-width="1.5"/>
+            <text class="dg-text-sm" x="153" y="124" text-anchor="middle" data-lang-th>ฮีตเตอร์</text>
+            <text class="dg-text-sm" x="153" y="124" text-anchor="middle" data-lang-en>heater</text>
+            <rect x="286" y="76" width="14" height="78" rx="7" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+            <rect id="o1-bar" x="288.5" y="130" width="9" height="24" class="dg-fill-gold"/>
+            <g id="o1-win" transform="translate(0,0)">
+              <rect x="236" y="66" width="70" height="9" rx="3" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+            </g>
+
+            <!-- closed-loop house -->
+            <text class="dg-text-b" x="650" y="24" text-anchor="middle" data-lang-th>ระบบปิด — วัดแล้วแก้ไขตลอดเวลา</text>
+            <text class="dg-text-b" x="650" y="24" text-anchor="middle" data-lang-en>Closed-loop — measures and corrects</text>
+            <path d="M 530 160 L 530 78 Q 650 36 770 78 L 770 160 Z" class="dg-fill-green dg-stroke-green" stroke-width="2" opacity="0.65"/>
+            <line x1="520" y1="160" x2="780" y2="160" class="dg-stroke" stroke-width="2.5"/>
+            <rect id="c1-heater" x="570" y="130" width="46" height="24" rx="4" class="dg-fill-gold dg-stroke" stroke-width="1.5"/>
+            <text class="dg-text-sm" x="593" y="124" text-anchor="middle" data-lang-th>ฮีตเตอร์</text>
+            <text class="dg-text-sm" x="593" y="124" text-anchor="middle" data-lang-en>heater</text>
+            <rect x="726" y="76" width="14" height="78" rx="7" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+            <rect id="c1-bar" x="728.5" y="130" width="9" height="24" class="dg-fill-gold"/>
+            <circle cx="660" cy="96" r="9" class="dg-fill-sky dg-stroke" stroke-width="1.5"/>
+            <text class="dg-text-sm" x="660" y="118" text-anchor="middle" data-lang-th>เซนเซอร์</text>
+            <text class="dg-text-sm" x="660" y="118" text-anchor="middle" data-lang-en>sensor</text>
+            <path d="M 660 105 L 660 140 L 620 140" class="dg-stroke-green" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+            <g id="c1-win" transform="translate(0,0)">
+              <rect x="676" y="66" width="70" height="9" rx="3" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+            </g>
+
+            <!-- shared disturbance icon -->
+            <g id="d1-cloud" opacity="0">
+              <ellipse cx="430" cy="52" rx="44" ry="20" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+              <ellipse cx="406" cy="46" rx="24" ry="16" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+              <line x1="412" y1="74" x2="404" y2="96" class="dg-stroke" stroke-width="2" stroke-linecap="round"/>
+              <line x1="432" y1="74" x2="424" y2="96" class="dg-stroke" stroke-width="2" stroke-linecap="round"/>
+              <line x1="452" y1="74" x2="444" y2="96" class="dg-stroke" stroke-width="2" stroke-linecap="round"/>
+            </g>
+            <circle id="d1-sun" cx="430" cy="52" r="20" class="dg-fill-gold dg-stroke-gold" stroke-width="1.5"/>
+            <text class="dg-text-sm" x="430" y="128" text-anchor="middle" data-lang-th>สภาพอากาศเดียวกัน</text>
+            <text class="dg-text-sm" x="430" y="128" text-anchor="middle" data-lang-en>same weather</text>
+          </svg>
+        </div>
+
+        <canvas class="anim__scope" id="oc-scope" aria-label="Temperature traces for the open-loop and closed-loop greenhouses"></canvas>
+        <div class="anim__legend">
+          <span style="color:var(--sky-500)"><i></i><span data-lang-th>อุณหภูมิระบบเปิด</span><span data-lang-en>open-loop temperature</span></span>
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>อุณหภูมิระบบปิด</span><span data-lang-en>closed-loop temperature</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>ค่าที่ต้องการ \( r \)</span><span data-lang-en>setpoint \( r \)</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="dist" aria-pressed="false"><i class="fa-solid fa-cloud-showers-heavy"></i><span data-lang-th>ใส่สิ่งรบกวน</span><span data-lang-en>Apply disturbance</span></button>
+          <label class="anim__param">
+            <span data-lang-th>อัตราขยาย</span><span data-lang-en>Gain</span> \( K_p \)
+            <input type="range" data-anim-param="kp" min="0.5" max="8" step="0.5" value="3">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>เป้าหมาย</span><span data-lang-en>Setpoint</span> \( r \)
+            <input type="range" data-anim-param="sp" data-unit="°C" min="26" max="34" step="0.5" value="30">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 2.2</span><span data-lang-en>Animation 2.2</span></b>
+          <span data-lang-th> กดปุ่ม “ใส่สิ่งรบกวน” เพื่อจำลองเมฆบังแดดและลมเย็นพัดเข้าโรงเรือน ระบบเปิดจะไหลลงไปเรื่อย ๆ เพราะฮีตเตอร์ยังจ่ายกำลังเท่าเดิม ส่วนระบบปิดจะเร่งฮีตเตอร์ขึ้นเองจนดึงอุณหภูมิกลับมาใกล้เป้าหมาย ลองเพิ่ม \( K_p \) แล้วดูว่าความคลาดเคลื่อนสถานะคงตัวลดลงตาม \( 1/(1+K_p) \) จริงหรือไม่</span>
+          <span data-lang-en> Press “Apply disturbance” to simulate a cloud plus cold draught. The open loop simply sags, because its heater command never changes; the closed loop pushes the heater harder and recovers most of the loss. Raise \( K_p \) and check for yourself that the steady-state error really does shrink like \( 1/(1+K_p) \).</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 2.5 --------- -->
+    <section id="math">
+      <h2><span data-lang-th>2.5 สมการของวงรอบปิด</span><span data-lang-en>2.5 The closed-loop equations</span></h2>
+
+      <p>
+        <span data-lang-th>คำอธิบายด้วยคำพูดว่า “ระบบปิดทนต่อสิ่งรบกวนได้ดีกว่า” จะมีน้ำหนักก็ต่อเมื่อเราพิสูจน์ได้ด้วยสมการ ต่อไปนี้เป็นการวิเคราะห์อย่างง่ายที่ใช้ได้ทันทีกับระบบในแอนิเมชัน 2.2</span>
+        <span data-lang-en>Saying “closed loops reject disturbances better” only carries weight once we can show it. Here is the short analysis, and it applies directly to the system in Animation 2.2.</span>
+      </p>
+
+      <h3><span data-lang-th>2.5.1 ระบบเปิด</span><span data-lang-en>2.5.1 The open loop</span></h3>
+      <p>
+        <span data-lang-th>ให้กระบวนการมีอัตราขยายสถานะคงตัว \( K \) และให้สิ่งรบกวนบวกเข้าที่ผลลัพธ์โดยตรง ระบบเปิดสั่งค่าคงที่ \( u = u_0 \) ที่คำนวณไว้ตอนสอบเทียบ ดังนั้น</span>
+        <span data-lang-en>Let the process have steady-state gain \( K \) and let the disturbance add directly at the output. An open loop issues a fixed command \( u = u_0 \) computed during calibration, so</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ y_{\text{ol}} \;=\; K u_0 + d, \qquad e_{\text{ol}} \;=\; r - y_{\text{ol}} \;=\; -\,d $$</div>
+        <div class="eq__num">(2.1)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ผลคือ <strong>ความคลาดเคลื่อนเท่ากับขนาดของสิ่งรบกวนทั้งก้อน</strong> ไม่มีอะไรมาช่วยลดทอน และไม่ขึ้นกับว่าเราออกแบบตัวควบคุมดีแค่ไหน</span>
+        <span data-lang-en>The error is therefore <strong>the full size of the disturbance</strong>. Nothing attenuates it, and no amount of clever controller design helps.</span>
+      </p>
+
+      <h3><span data-lang-th>2.5.2 ระบบปิดที่ใช้ตัวควบคุมสัดส่วน</span><span data-lang-en>2.5.2 The closed loop with proportional control</span></h3>
+      <p>
+        <span data-lang-th>คราวนี้ให้ตัวควบคุมคำนวณคำสั่งจากความคลาดเคลื่อน \( u = K_p e \) แทนค่าลงในสมการของกระบวนการ</span>
+        <span data-lang-en>Now let the controller compute its command from the error, \( u = K_p e \), and substitute into the process equation:</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ y \;=\; K K_p (r - y) + d $$</div>
+        <div class="eq__num">(2.2)</div>
+      </div>
+
+      <p><span data-lang-th>จัดรูปโดยรวมพจน์ของ \( y \) ไว้ด้านเดียวกัน</span><span data-lang-en>Collecting the \( y \) terms on one side,</span></p>
+
+      <div class="eq">
+        <div class="eq__body">$$ y \,(1 + K K_p) \;=\; K K_p\, r + d
+          \qquad\Longrightarrow\qquad
+          y \;=\; \underbrace{\frac{K K_p}{1 + K K_p}}_{\text{ตาม } r \,/\, \text{tracking}} r
+                 \;+\; \underbrace{\frac{1}{1 + K K_p}}_{\text{ผลของ } d \,/\, \text{sensitivity}} d $$</div>
+        <div class="eq__num">(2.3)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>และความคลาดเคลื่อนสถานะคงตัวคือ</span>
+        <span data-lang-en>and the steady-state error is</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ e_{\text{ss}} \;=\; r - y \;=\; \frac{r - d}{1 + K K_p} $$</div>
+        <div class="eq__num">(2.4)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( K \) — <span data-lang-th>อัตราขยายสถานะคงตัวของกระบวนการ (เช่น °C ต่อหนึ่งหน่วยกำลังฮีตเตอร์)</span><span data-lang-en>steady-state process gain, e.g. °C per unit of heater command</span></li>
+          <li>\( K_p \) — <span data-lang-th>อัตราขยายของตัวควบคุมสัดส่วน</span><span data-lang-en>proportional controller gain</span></li>
+          <li>\( K K_p \) — <span data-lang-th><strong>อัตราขยายวงรอบ (loop gain)</strong> ปริมาณที่สำคัญที่สุดในสมการนี้</span><span data-lang-en>the <strong>loop gain</strong> — the single most important quantity here</span></li>
+          <li>\( \dfrac{1}{1+KK_p} \) — <span data-lang-th>ฟังก์ชันความไว (sensitivity) บอกว่าสิ่งรบกวนเหลือรอดมาถึงผลลัพธ์กี่ส่วน</span><span data-lang-en>the sensitivity function: the fraction of the disturbance that survives to the output</span></li>
+        </ul>
+      </div>
+
+      <div class="callout">
+        <div class="callout__title"><i class="fa-solid fa-key"></i> <span data-lang-th>ข้อสรุปสำคัญของบทนี้</span><span data-lang-en>The key result of this chapter</span></div>
+        <p>
+          <span data-lang-th>การป้อนกลับลดผลของสิ่งรบกวนลง <strong>\( 1 + K K_p \) เท่า</strong> ถ้าอัตราขยายวงรอบเท่ากับ 9 สิ่งรบกวนจะเหลือผลเพียง 10% ของเดิม นี่คือเหตุผลทางคณิตศาสตร์ที่ทำให้เราลงทุนติดตั้งเซนเซอร์</span>
+          <span data-lang-en>Feedback divides the effect of a disturbance by <strong>\( 1 + K K_p \)</strong>. With a loop gain of 9, only 10% of the disturbance survives. That is the mathematical reason we pay for sensors.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ — โรงเรือนในแอนิเมชัน 2.2</span><span data-lang-en>Worked example — the greenhouse in Animation 2.2</span></div>
+        <p>
+          <span data-lang-th>ให้ \( K = 1 \) °C ต่อหนึ่งหน่วยคำสั่ง, ต้องการ \( r = 30 \) °C เหนืออุณหภูมิฐาน และเกิดสิ่งรบกวน \( d = -6 \) °C เมื่อเมฆบังแดด</span>
+          <span data-lang-en>Take \( K = 1 \) °C per command unit, a setpoint \( r = 30 \) °C above the base temperature, and a disturbance \( d = -6 \) °C when a cloud passes.</span>
+        </p>
+        <ul>
+          <li><span data-lang-th>ระบบเปิด: \( e_{\text{ol}} = -d = 6 \) °C — อุณหภูมิตกไป 6 องศาเต็ม</span><span data-lang-en>Open loop: \( e_{\text{ol}} = -d = 6 \) °C — the full six-degree sag.</span></li>
+          <li><span data-lang-th>ระบบปิด \( K_p = 3 \): ผลของสิ่งรบกวนเหลือ \( 6/(1+3) = 1.5 \) °C</span><span data-lang-en>Closed loop with \( K_p = 3 \): the disturbance leaves only \( 6/(1+3) = 1.5 \) °C.</span></li>
+          <li><span data-lang-th>ระบบปิด \( K_p = 8 \): เหลือ \( 6/9 \approx 0.67 \) °C</span><span data-lang-en>Closed loop with \( K_p = 8 \): only \( 6/9 \approx 0.67 \) °C remains.</span></li>
+        </ul>
+        <p>
+          <span data-lang-th>สังเกตว่าเพิ่ม \( K_p \) แล้วดีขึ้นเสมอในสมการนี้ แต่ในระบบจริงที่มีความหน่วงเวลา การเพิ่มอัตราขยายมากเกินไปจะทำให้ระบบแกว่งและไม่เสถียร ซึ่งเป็นเรื่องที่เราจะพิสูจน์กันในบทที่ 6 และ 7</span>
+          <span data-lang-en>In this algebra more gain is always better. In a real plant with time lags, too much gain makes the loop oscillate and eventually go unstable — the subject of Chapters 6 and 7.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 2.6 --------- -->
+    <section id="feedforward">
+      <h2><span data-lang-th>2.6 การควบคุมแบบป้อนไปข้างหน้าและแบบผสม</span><span data-lang-en>2.6 Feedforward and combined control</span></h2>
+
+      <p>
+        <span data-lang-th>ระบบป้อนกลับมีจุดอ่อนหนึ่งข้อ: มันจะแก้ไขก็ต่อเมื่อ <em>เกิดความเสียหายขึ้นแล้ว</em> เพราะต้องมี \( e \ne 0 \) ก่อนจึงจะมีคำสั่ง หากเราวัดสิ่งรบกวนได้โดยตรง เราสามารถชดเชยล่วงหน้าได้</span>
+        <span data-lang-en>Feedback has one structural weakness: it only acts <em>after</em> the damage has begun, because it needs \( e \ne 0 \) to produce a command. If the disturbance itself can be measured, we can compensate in advance.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ u \;=\; \underbrace{K_p\,e}_{\text{ป้อนกลับ / feedback}} \;+\; \underbrace{K_{ff}\,d_{\text{measured}}}_{\text{ป้อนไปข้างหน้า / feedforward}} $$</div>
+        <div class="eq__num">(2.5)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ตัวอย่างในโรงเรือน: ติดตั้งเซนเซอร์วัดความเข้มแสงอาทิตย์ไว้นอกอาคาร เมื่อแดดแรงขึ้น ระบบเปิดช่องระบายอากาศทันทีโดยไม่ต้องรอให้อุณหภูมิภายในสูงขึ้นก่อน ส่วนป้อนกลับยังคงทำหน้าที่เก็บกวาดความคลาดเคลื่อนที่เหลือ</span>
+        <span data-lang-en>A greenhouse example: an outdoor pyranometer measures solar radiation, so the vents open the moment the sun strengthens, without waiting for the inside temperature to climb. The feedback term still mops up whatever error remains.</span>
+      </p>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-scale-unbalanced"></i> <span data-lang-th>ข้อแลกเปลี่ยน</span><span data-lang-en>The trade-off</span></div>
+        <p>
+          <span data-lang-th>การป้อนไปข้างหน้าตอบสนองเร็วแต่ <strong>ต้องอาศัยแบบจำลองที่แม่นยำ</strong> ถ้าแบบจำลองผิด การชดเชยก็ผิดและไม่มีอะไรมาบอกให้รู้ ขณะที่การป้อนกลับช้ากว่าแต่ <strong>ตรวจจับความผิดพลาดของตัวเองได้</strong> ระบบที่ดีในทางปฏิบัติจึงมักใช้ทั้งสองอย่างร่วมกันตามสมการ (2.5)</span>
+          <span data-lang-en>Feedforward is fast but <strong>depends on an accurate model</strong>: if the model is wrong, the compensation is wrong and nothing tells you so. Feedback is slower but <strong>detects its own mistakes</strong>. Good practical systems therefore use both, exactly as in equation (2.5).</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 2.7 --------- -->
+    <section id="examples">
+      <h2><span data-lang-th>2.7 ตัวอย่างระบบควบคุมในงานเกษตร</span><span data-lang-en>2.7 Control systems in agriculture</span></h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ระบบ</span><span data-lang-en>System</span></th>
+              <th>SP (\( r \))</th>
+              <th>PV (\( y \))</th>
+              <th>MV (\( u \))</th>
+              <th><span data-lang-th>สิ่งรบกวนหลัก (\( d \))</span><span data-lang-en>Main disturbance (\( d \))</span></th>
+              <th><span data-lang-th>ชนิด</span><span data-lang-en>Type</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>ให้น้ำตามความชื้นดิน</span><span data-lang-en>Moisture-based irrigation</span></td>
+              <td>60 %VWC</td>
+              <td><span data-lang-th>ความชื้นดิน</span><span data-lang-en>soil moisture</span></td>
+              <td><span data-lang-th>เวลาเปิดวาล์ว</span><span data-lang-en>valve open time</span></td>
+              <td><span data-lang-th>ฝน การระเหย</span><span data-lang-en>rain, evapotranspiration</span></td>
+              <td><span data-lang-th>ปิด + กระบวนการ</span><span data-lang-en>closed, process</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>อุณหภูมิโรงเรือน</span><span data-lang-en>Greenhouse temperature</span></td>
+              <td>28 °C</td>
+              <td><span data-lang-th>อุณหภูมิอากาศ</span><span data-lang-en>air temperature</span></td>
+              <td><span data-lang-th>ช่องระบาย พัดลม ฮีตเตอร์</span><span data-lang-en>vent, fan, heater</span></td>
+              <td><span data-lang-th>แสงอาทิตย์ ลม</span><span data-lang-en>solar radiation, wind</span></td>
+              <td><span data-lang-th>ปิด + กระบวนการ</span><span data-lang-en>closed, process</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ผสมปุ๋ยไฮโดรโปนิกส์</span><span data-lang-en>Hydroponic nutrient dosing</span></td>
+              <td>1.8 mS/cm</td>
+              <td>EC</td>
+              <td><span data-lang-th>ปั๊มจ่ายสารเข้มข้น</span><span data-lang-en>dosing pump</span></td>
+              <td><span data-lang-th>การดูดใช้ของพืช การเติมน้ำ</span><span data-lang-en>plant uptake, make-up water</span></td>
+              <td><span data-lang-th>ปิด + กระบวนการ</span><span data-lang-en>closed, process</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>เครื่องบรรจุเมล็ดพันธุ์</span><span data-lang-en>Seed bagging machine</span></td>
+              <td><span data-lang-th>ลำดับ S1→S4</span><span data-lang-en>sequence S1→S4</span></td>
+              <td><span data-lang-th>สถานะเซนเซอร์</span><span data-lang-en>sensor states</span></td>
+              <td><span data-lang-th>วาล์ว มอเตอร์สายพาน</span><span data-lang-en>valve, conveyor motor</span></td>
+              <td><span data-lang-th>ถุงติดขัด เมล็ดค้าง</span><span data-lang-en>jammed bag, bridging seed</span></td>
+              <td><span data-lang-th>ปิด + ลำดับ</span><span data-lang-en>closed, sequence</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ตั้งเวลารดน้ำรายวัน</span><span data-lang-en>Daily irrigation timer</span></td>
+              <td>20 <span data-lang-th>นาที</span><span data-lang-en>min</span></td>
+              <td>—</td>
+              <td><span data-lang-th>สวิตช์ปั๊ม</span><span data-lang-en>pump switch</span></td>
+              <td><span data-lang-th>ฝน ความแรงลม</span><span data-lang-en>rain, wind</span></td>
+              <td><span data-lang-th>เปิด + ลำดับ</span><span data-lang-en>open, sequence</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>โดรนพ่นสารอัตราคงที่</span><span data-lang-en>Fixed-rate spraying drone</span></td>
+              <td>1.5 L/<span data-lang-th>ไร่</span><span data-lang-en>rai</span></td>
+              <td>—</td>
+              <td><span data-lang-th>รอบปั๊มพ่น</span><span data-lang-en>spray pump duty</span></td>
+              <td><span data-lang-th>ลม ความเร็วบินจริง</span><span data-lang-en>wind, true airspeed</span></td>
+              <td><span data-lang-th>เปิด + กระบวนการ</span><span data-lang-en>open, process</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===================== Animation 2.3 ===================== -->
+      <figure class="anim" data-anim="ch02-flow">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 2.3 — เดินตามสัญญาณรอบวงรอบควบคุม</span>
+          <span data-lang-en>Animation 2.3 — Following the signal around the loop</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 210" role="img" aria-label="A signal travelling around a closed control loop">
+            <defs>
+              <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" class="dg-arrow"/>
+              </marker>
+            </defs>
+
+            <line x1="26" y1="74" x2="66" y2="74" class="dg-stroke" stroke-width="2" marker-end="url(#ar3)"/>
+            <circle id="f1-sum" cx="86" cy="74" r="17" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+            <text class="dg-text" x="86" y="79" text-anchor="middle">Σ</text>
+            <line x1="103" y1="74" x2="140" y2="74" class="dg-stroke" stroke-width="2" marker-end="url(#ar3)"/>
+
+            <rect id="f1-ctl" x="142" y="48" width="140" height="52" rx="9" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text" x="212" y="79" text-anchor="middle" data-lang-th>ตัวควบคุม</text>
+            <text class="dg-text" x="212" y="79" text-anchor="middle" data-lang-en>Controller</text>
+            <line x1="282" y1="74" x2="322" y2="74" class="dg-stroke" stroke-width="2" marker-end="url(#ar3)"/>
+
+            <rect id="f1-act" x="324" y="48" width="140" height="52" rx="9" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text" x="394" y="79" text-anchor="middle" data-lang-th>แอคชูเอเตอร์</text>
+            <text class="dg-text" x="394" y="79" text-anchor="middle" data-lang-en>Actuator</text>
+            <line x1="464" y1="74" x2="504" y2="74" class="dg-stroke" stroke-width="2" marker-end="url(#ar3)"/>
+
+            <rect id="f1-pla" x="506" y="48" width="150" height="52" rx="9" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text" x="581" y="79" text-anchor="middle" data-lang-th>กระบวนการ</text>
+            <text class="dg-text" x="581" y="79" text-anchor="middle" data-lang-en>Process</text>
+            <line x1="656" y1="74" x2="800" y2="74" class="dg-stroke" stroke-width="2" marker-end="url(#ar3)"/>
+            <line x1="581" y1="16" x2="581" y2="44" class="dg-stroke" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ar3)"/>
+
+            <rect id="f1-sen" x="324" y="146" width="180" height="46" rx="9" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text" x="414" y="174" text-anchor="middle" data-lang-th>เซนเซอร์</text>
+            <text class="dg-text" x="414" y="174" text-anchor="middle" data-lang-en>Sensor</text>
+
+            <path d="M 760 74 L 760 169 L 508 169" class="dg-stroke" stroke-width="2" fill="none" marker-end="url(#ar3)"/>
+            <path d="M 324 169 L 86 169 L 86 93" class="dg-stroke" stroke-width="2" fill="none" marker-end="url(#ar3)"/>
+
+            <!-- invisible guide the marker rides along -->
+            <path id="f1-route" d="M 26 74 L 86 74 L 212 74 L 394 74 L 581 74 L 760 74 L 760 169 L 414 169 L 86 169 L 86 74"
+                  fill="none" stroke="none"/>
+            <circle id="f1-dot" cx="26" cy="74" r="8" class="dg-fill-gold dg-stroke-gold" stroke-width="2"/>
+          </svg>
+
+          <span class="fig-label" id="f1-lr" style="left:2.2%;top:26%">\( r \)</span>
+          <span class="fig-label" id="f1-le" style="left:13.5%;top:26%">\( e \)</span>
+          <span class="fig-label" id="f1-lu" style="left:35.0%;top:26%">\( u \)</span>
+          <span class="fig-label" id="f1-ld" style="left:67.5%;top:10%">\( d \)</span>
+          <span class="fig-label" id="f1-ly" style="left:85.5%;top:26%">\( y \)</span>
+          <span class="fig-label" id="f1-lm" style="left:30.0%;top:93%">\( y_m \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ความเร็ว</span><span data-lang-en>Speed</span>
+            <input type="range" data-anim-param="speed" data-unit="×" min="0.3" max="2" step="0.1" value="0.8">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 2.3</span><span data-lang-en>Animation 2.3</span></b>
+          <span data-lang-th> สัญญาณเปลี่ยนชื่อทุกครั้งที่ผ่านบล็อก: จาก \( r \) เป็น \( e \) ที่จุดเปรียบเทียบ เป็น \( u \) หลังตัวควบคุม เป็น \( y \) ที่ผลลัพธ์ และกลับมาเป็น \( y_m \) หลังผ่านเซนเซอร์ การเรียกชื่อให้ถูกคือครึ่งหนึ่งของการอ่านแผนภาพบล็อกได้</span>
+          <span data-lang-en> The signal is renamed every time it passes a block: \( r \) becomes \( e \) at the comparator, \( u \) after the controller, \( y \) at the output, and returns as \( y_m \) after the sensor. Getting these names right is half of being able to read a block diagram.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 2.8 --------- -->
+    <section id="choose">
+      <h2><span data-lang-th>2.8 จะเลือกระบบเปิดหรือระบบปิด</span><span data-lang-en>2.8 Choosing between open and closed loop</span></h2>
+
+      <p>
+        <span data-lang-th>ระบบปิดไม่ได้ดีกว่าเสมอไป ระบบเปิดยังมีที่ยืนเมื่อเงื่อนไขเอื้ออำนวย ใช้เกณฑ์ต่อไปนี้ตัดสิน</span>
+        <span data-lang-en>Closed loop is not automatically better. Open loop still earns its place when the conditions allow. Use these criteria.</span>
+      </p>
+
+      <div class="compare">
+        <div class="compare__col compare__col--a">
+          <h4><i class="fa-solid fa-circle-check" style="color:var(--green-500)"></i> <span data-lang-th>ระบบเปิดก็เพียงพอ เมื่อ…</span><span data-lang-en>Open loop is enough when…</span></h4>
+          <ul>
+            <li><span data-lang-th>สิ่งรบกวนเล็กมากหรือคาดเดาได้แน่นอน</span><span data-lang-en>disturbances are tiny or entirely predictable;</span></li>
+            <li><span data-lang-th>ความสัมพันธ์ระหว่างคำสั่งกับผลลัพธ์นิ่งและทราบดี</span><span data-lang-en>the command-to-output relationship is stable and well known;</span></li>
+            <li><span data-lang-th>ความคลาดเคลื่อนที่ยอมรับได้กว้าง</span><span data-lang-en>the tolerance on the result is wide;</span></li>
+            <li><span data-lang-th>ไม่มีเซนเซอร์ที่วัดผลลัพธ์ได้จริงในราคาที่คุ้ม เช่น “คุณภาพรสชาติ”</span><span data-lang-en>no affordable sensor can measure the true output — “flavour quality”, for instance.</span></li>
+          </ul>
+        </div>
+        <div class="compare__col compare__col--b">
+          <h4><i class="fa-solid fa-rotate" style="color:var(--sky-500)"></i> <span data-lang-th>ต้องใช้ระบบปิด เมื่อ…</span><span data-lang-en>You need closed loop when…</span></h4>
+          <ul>
+            <li><span data-lang-th>สิ่งรบกวนมีขนาดใหญ่และเปลี่ยนตลอด เช่น สภาพอากาศ</span><span data-lang-en>disturbances are large and ever-changing, such as weather;</span></li>
+            <li><span data-lang-th>ตัวระบบเองเปลี่ยนไปตามเวลา เช่น หัวพ่นอุดตัน พืชโตขึ้น</span><span data-lang-en>the plant itself drifts — nozzles clog, the crop grows;</span></li>
+            <li><span data-lang-th>ต้องการความแม่นยำสูงหรือเกี่ยวข้องกับความปลอดภัย</span><span data-lang-en>high accuracy is required, or safety is involved;</span></li>
+            <li><span data-lang-th>ต้นทุนของความผิดพลาดสูงกว่าต้นทุนเซนเซอร์มาก</span><span data-lang-en>the cost of being wrong greatly exceeds the cost of a sensor.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-thumbtack"></i> <span data-lang-th>กฎง่าย ๆ สำหรับงานเกษตร</span><span data-lang-en>A rule of thumb for agriculture</span></div>
+        <p>
+          <span data-lang-th>สิ่งใดที่ <em>ธรรมชาติเป็นผู้กำหนด</em> (อากาศ ดิน การเจริญเติบโต) ให้ใช้ระบบปิดเสมอ ส่วนสิ่งที่ <em>เราออกแบบเองได้ทั้งหมด</em> (ลำดับการทำงานของเครื่องจักรในโรงคัดบรรจุ) ระบบเปิดแบบมีเงื่อนไขตรวจสอบก็มักเพียงพอ</span>
+          <span data-lang-en>Whatever <em>nature</em> decides — weather, soil, growth — control it closed-loop. Whatever <em>you</em> fully design — the step order of a packhouse machine — is usually fine open-loop with interlock checks.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 2.9 --------- -->
+    <section id="activity">
+      <h2><span data-lang-th>2.9 กิจกรรมในชั้นเรียน</span><span data-lang-en>2.9 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 2.1 — จัดหมวดหมู่ระบบควบคุมในฟาร์ม</span><span data-lang-en>Activity 2.1 — Sorting farm control systems</span></h3>
+            <p><span data-lang-th>กลุ่มละ 2 คน &middot; 25 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Pairs &middot; 25 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>จุดประสงค์</span><span data-lang-en>Purpose</span></h4>
+          <p>
+            <span data-lang-th>ฝึกใช้เกณฑ์สองแกนพร้อมกัน คือ ลำดับ/กระบวนการ และ เปิด/ปิด กับระบบจริงที่พบในฟาร์มไทย</span>
+            <span data-lang-en>Practise applying two axes at once — sequence/process and open/closed — to systems found on real Thai farms.</span>
+          </p>
+
+          <h4><span data-lang-th>ขั้นตอน</span><span data-lang-en>Steps</span></h4>
+          <ol>
+            <li>
+              <span data-lang-th>วาดตารางสองแกนขนาด 2×2 โดยแกนนอนคือ ลำดับ/กระบวนการ และแกนตั้งคือ เปิด/ปิด</span>
+              <span data-lang-en>Draw a 2×2 grid: sequence/process on one axis, open/closed on the other.</span>
+            </li>
+            <li>
+              <span data-lang-th>วางระบบทั้งแปดต่อไปนี้ลงในช่องที่เหมาะสม: (ก) เครื่องฟักไข่ที่รักษาอุณหภูมิ 37.8 °C, (ข) สายพานคัดขนาดมะม่วงด้วยน้ำหนัก, (ค) ปั๊มน้ำที่ตั้งเวลาเปิด 06:00 น. ทุกวัน, (ง) พัดลมโรงเรือนไก่ที่เร่งรอบตามอุณหภูมิ, (จ) เครื่องหยอดเมล็ดที่หยอดทุกระยะ 25 ซม. จากเซนเซอร์วัดรอบล้อ, (ฉ) โดรนพ่นสารอัตราคงที่, (ช) ระบบผสมปุ๋ยที่คุม EC ที่ 1.8 mS/cm, (ซ) ประตูโรงเรือนที่เปิดค้างไว้ 30 วินาทีแล้วปิดเอง</span>
+              <span data-lang-en>Place all eight of these in the right cell: (a) an incubator holding 37.8 °C; (b) a mango grading conveyor that sorts by weight; (c) a pump on a 06:00 daily timer; (d) a poultry-house fan whose speed rises with temperature; (e) a seeder dropping every 25 cm from a wheel encoder; (f) a fixed-rate spraying drone; (g) a nutrient mixer holding EC at 1.8 mS/cm; (h) a greenhouse door held open 30 s then closed.</span>
+            </li>
+            <li>
+              <span data-lang-th>สำหรับแต่ละระบบ ระบุ \( r \), \( y \), \( u \) และ \( d \) ให้ครบทั้งสี่ตัว ถ้าตัวใดไม่มี ให้เขียนว่า “ไม่มี” พร้อมอธิบายว่าเหตุใดจึงไม่มี</span>
+              <span data-lang-en>For each, name \( r \), \( y \), \( u \) and \( d \). If one does not exist, write “none” and explain why it does not.</span>
+            </li>
+            <li>
+              <span data-lang-th>เลือกระบบเปิดหนึ่งระบบจากรายการ แล้วออกแบบว่าจะเปลี่ยนให้เป็นระบบปิดได้อย่างไร ต้องเพิ่มเซนเซอร์อะไร และจะได้ประโยชน์เชิงตัวเลขเท่าใดตามสมการ (2.4)</span>
+              <span data-lang-en>Pick one open-loop system and design its conversion to closed loop: which sensor would you add, and what numerical benefit does equation (2.4) predict?</span>
+            </li>
+            <li><span data-lang-th>แลกกระดาษกับกลุ่มข้างเคียงเพื่อตรวจทานกันเอง แล้วอภิปรายข้อที่เห็นไม่ตรงกัน</span><span data-lang-en>Swap sheets with a neighbouring pair, cross-check, and discuss any disagreement.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ตาราง 2×2 ที่วางระบบครบทั้งแปดระบบ</span><span data-lang-en>The completed 2×2 grid with all eight systems placed.</span></li>
+            <li><span data-lang-th>ตารางตัวแปร \( r, y, u, d \) ของทั้งแปดระบบ</span><span data-lang-en>A table of \( r, y, u, d \) for all eight systems.</span></li>
+            <li><span data-lang-th>ข้อเสนอการแปลงระบบเปิดเป็นระบบปิดหนึ่งระบบ พร้อมตัวเลขประกอบ</span><span data-lang-en>One open-to-closed conversion proposal, with numbers.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- 2.10 --------- -->
+    <section id="lab">
+      <h2><span data-lang-th>2.10 ปฏิบัติการที่ 2</span><span data-lang-en>2.10 Laboratory 2</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <h3><span data-lang-th>ปฏิบัติการที่ 2 — วัดผลของการป้อนกลับด้วยชุดควบคุมอุณหภูมิ</span><span data-lang-en>Laboratory 2 — Measuring what feedback actually buys you</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 2 ชั่วโมง &middot; ห้องปฏิบัติการระบบอัตโนมัติ</span><span data-lang-en>Groups of 3–4 &middot; 2 hours &middot; Automation laboratory</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ข้อ 4–6</span><span data-lang-en>Maps to objectives 4–6</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 5% ของคะแนนรวม</span><span data-lang-en>5% of the course total</span></span>
+          </div>
+
+          <h4><span data-lang-th>วัตถุประสงค์ของปฏิบัติการ</span><span data-lang-en>Laboratory objectives</span></h4>
+          <ol>
+            <li><span data-lang-th>สร้างระบบควบคุมอุณหภูมิแบบเปิดและแบบปิดบนฮาร์ดแวร์ชุดเดียวกัน</span><span data-lang-en>Build both an open-loop and a closed-loop temperature controller on the same hardware.</span></li>
+            <li><span data-lang-th>วัดการตอบสนองของทั้งสองระบบต่อสิ่งรบกวนที่ควบคุมขนาดได้</span><span data-lang-en>Measure how each responds to a disturbance of known size.</span></li>
+            <li><span data-lang-th>เปรียบเทียบความคลาดเคลื่อนที่วัดได้กับค่าที่ทำนายจากสมการ (2.4)</span><span data-lang-en>Compare the measured error against the prediction of equation (2.4).</span></li>
+          </ol>
+
+          <h4><span data-lang-th>อุปกรณ์</span><span data-lang-en>Equipment</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>กล่องทดลองอุณหภูมิ พร้อมหลอดไส้ 12 V เป็นฮีตเตอร์ และพัดลม 12 V เป็นตัวสร้างสิ่งรบกวน</span><span data-lang-en>A small thermal chamber with a 12 V lamp as heater and a 12 V fan as the disturbance source</span></li>
+            <li><span data-lang-th>เซนเซอร์อุณหภูมิ (LM35, DS18B20 หรือเทอร์โมคัปเปิลชนิด K พร้อมโมดูลอ่านค่า)</span><span data-lang-en>A temperature sensor (LM35, DS18B20 or a type-K thermocouple with its module)</span></li>
+            <li><span data-lang-th>ไมโครคอนโทรลเลอร์หรือ PLC ที่มีเอาต์พุต PWM/อนาล็อก</span><span data-lang-en>A microcontroller or PLC with a PWM or analogue output</span></li>
+            <li><span data-lang-th>แหล่งจ่ายไฟ 12 VDC, มัลติมิเตอร์, นาฬิกาจับเวลา</span><span data-lang-en>A 12 VDC supply, a multimeter and a stopwatch</span></li>
+            <li><span data-lang-th>คอมพิวเตอร์สำหรับบันทึกข้อมูลลงไฟล์ CSV</span><span data-lang-en>A computer to log readings to a CSV file</span></li>
+          </ul>
+
+          <h4><span data-lang-th>ขั้นตอนการทดลอง</span><span data-lang-en>Procedure</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>หาค่าอัตราขยายของกระบวนการ \( K \)</span><span data-lang-en>Find the process gain \( K \)</span></b><br>
+              <span data-lang-th>สั่งฮีตเตอร์ที่ 50% แล้วปล่อยจนอุณหภูมิเข้าสู่สถานะคงตัว บันทึกอุณหภูมิที่เพิ่มขึ้นจากค่าเริ่มต้น คำนวณ \( K = \Delta y / \Delta u \)</span>
+              <span data-lang-en>Drive the heater at 50% until the temperature settles, record the rise above ambient, and compute \( K = \Delta y / \Delta u \).</span></li>
+            <li><b><span data-lang-th>ทดลองระบบเปิด</span><span data-lang-en>Open-loop run</span></b><br>
+              <span data-lang-th>คำนวณคำสั่งคงที่ \( u_0 = r / K \) สำหรับเป้าหมาย \( r \) ที่กำหนด สั่งค่านี้ค้างไว้ บันทึกอุณหภูมิทุก 5 วินาที เป็นเวลา 5 นาที</span>
+              <span data-lang-en>Compute the fixed command \( u_0 = r / K \) for the assigned setpoint, hold it, and log the temperature every 5 s for five minutes.</span></li>
+            <li><b><span data-lang-th>ใส่สิ่งรบกวน</span><span data-lang-en>Apply the disturbance</span></b><br>
+              <span data-lang-th>ที่นาทีที่ 3 เปิดพัดลมค้างไว้ บันทึกต่อจนครบ 5 นาที บันทึกอุณหภูมิสุดท้ายเป็น \( y_{\text{ol}} \)</span>
+              <span data-lang-en>At minute three, switch the fan on and leave it on. Continue logging to five minutes and record the final temperature as \( y_{\text{ol}} \).</span></li>
+            <li><b><span data-lang-th>เขียนโปรแกรมควบคุมสัดส่วน</span><span data-lang-en>Program proportional control</span></b><br>
+              <span data-lang-th>เปลี่ยนโปรแกรมให้คำนวณ \( u = K_p (r - y) \) โดยจำกัดค่าไว้ในช่วง 0–100% เริ่มด้วย \( K_p = 2 \)</span>
+              <span data-lang-en>Change the program to compute \( u = K_p (r - y) \), clamped to 0–100%, starting with \( K_p = 2 \).</span></li>
+            <li><b><span data-lang-th>ทดลองระบบปิดซ้ำเงื่อนไขเดิม</span><span data-lang-en>Repeat closed-loop under identical conditions</span></b><br>
+              <span data-lang-th>ทำซ้ำขั้นตอนที่ 2–3 ทุกประการ บันทึกอุณหภูมิสุดท้ายเป็น \( y_{\text{cl}} \)</span>
+              <span data-lang-en>Repeat steps 2–3 exactly, and record the final temperature as \( y_{\text{cl}} \).</span></li>
+            <li><b><span data-lang-th>ทำซ้ำที่อัตราขยายอื่น</span><span data-lang-en>Sweep the gain</span></b><br>
+              <span data-lang-th>ทำซ้ำขั้นตอนที่ 5 ด้วย \( K_p = 4 \) และ \( K_p = 8 \) สังเกตทั้งความคลาดเคลื่อนและอาการแกว่ง</span>
+              <span data-lang-en>Repeat step 5 with \( K_p = 4 \) and \( K_p = 8 \), watching both the error and any oscillation.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 2.1</span><span data-lang-en>Data sheet 2.1</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>การทดลอง</span><span data-lang-en>Run</span></th>
+                  <th>\( K_p \)</th>
+                  <th><span data-lang-th>อุณหภูมิก่อนใส่สิ่งรบกวน (°C)</span><span data-lang-en>Temp. before disturbance (°C)</span></th>
+                  <th><span data-lang-th>อุณหภูมิหลังใส่สิ่งรบกวน (°C)</span><span data-lang-en>Temp. after disturbance (°C)</span></th>
+                  <th>\( |e_{\text{ss}}| \) <span data-lang-th>วัดได้</span><span data-lang-en>measured</span></th>
+                  <th>\( |e_{\text{ss}}| \) <span data-lang-th>ทำนาย</span><span data-lang-en>predicted</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>ระบบเปิด</span><span data-lang-en>Open loop</span></td><td>—</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ระบบปิด</span><span data-lang-en>Closed loop</span></td><td>2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ระบบปิด</span><span data-lang-en>Closed loop</span></td><td>4</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ระบบปิด</span><span data-lang-en>Closed loop</span></td><td>8</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>การวิเคราะห์ผล</span><span data-lang-en>Analysis</span></h4>
+          <ol>
+            <li><span data-lang-th>พล็อตกราฟอุณหภูมิเทียบเวลาของทั้งสี่การทดลองลงในแกนเดียวกัน พร้อมเส้นประแสดงค่า \( r \)</span><span data-lang-en>Plot all four temperature traces on one set of axes, with \( r \) as a dashed line.</span></li>
+            <li><span data-lang-th>คำนวณค่าทำนายจากสมการ (2.4) แล้วเทียบกับค่าที่วัดได้ อธิบายสาเหตุของความแตกต่างอย่างน้อย 2 ข้อ</span><span data-lang-en>Compute the prediction from equation (2.4), compare with measurement, and give at least two reasons for any gap.</span></li>
+            <li><span data-lang-th>อัตราส่วน \( |e_{\text{ol}}| / |e_{\text{cl}}| \) ที่วัดได้ เข้าใกล้ \( 1 + K K_p \) หรือไม่</span><span data-lang-en>Does the measured ratio \( |e_{\text{ol}}| / |e_{\text{cl}}| \) approach \( 1 + K K_p \)?</span></li>
+            <li><span data-lang-th>ที่ \( K_p = 8 \) พบอาการแกว่งหรือไม่ ถ้าพบ ให้ประมาณคาบการแกว่งและอธิบายว่าเหตุใดสมการ (2.4) จึงทำนายเรื่องนี้ไม่ได้</span><span data-lang-en>Did oscillation appear at \( K_p = 8 \)? If so, estimate its period and explain why equation (2.4) cannot predict it.</span></li>
+            <li><span data-lang-th>หากต้องนำระบบนี้ไปใช้กับโรงเรือนจริงที่มีปริมาตรอากาศมากกว่า 1,000 เท่า ควรปรับอะไรบ้าง</span><span data-lang-en>If this scheme were scaled to a real greenhouse with a thousand times the air volume, what would have to change?</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>Deliverables</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานปฏิบัติการไม่เกิน 5 หน้า ส่งภายใน 1 สัปดาห์</span><span data-lang-en>A report of at most five pages, due within one week.</span></li>
+            <li><span data-lang-th>ไฟล์ CSV ของข้อมูลที่บันทึกทั้งสี่การทดลอง</span><span data-lang-en>The CSV log files from all four runs.</span></li>
+            <li><span data-lang-th>กราฟเปรียบเทียบพร้อมคำอธิบายแกนและหน่วยครบถ้วน</span><span data-lang-en>The comparison plot with fully labelled axes and units.</span></li>
+            <li><span data-lang-th>ตารางเปรียบเทียบค่าวัดกับค่าทำนายจากสมการ (2.4)</span><span data-lang-en>The measured-versus-predicted table based on equation (2.4).</span></li>
+            <li><span data-lang-th>โค้ดโปรแกรมควบคุมที่ใช้จริง พร้อมคำอธิบายบรรทัดสำคัญ</span><span data-lang-en>The control code actually used, with the key lines commented.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>สร้างและทดสอบระบบทั้งสองแบบได้สำเร็จ</span><span data-lang-en>Both schemes built and tested successfully</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>คุณภาพข้อมูลและกราฟ (หน่วย แกน ความสม่ำเสมอของการวัด)</span><span data-lang-en>Data and plot quality: units, axes, sampling consistency</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การเปรียบเทียบกับสมการ (2.4) และการอธิบายความคลาดเคลื่อน</span><span data-lang-en>Comparison with equation (2.4) and explanation of the gap</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>การอภิปรายเรื่องอัตราขยายกับการแกว่ง</span><span data-lang-en>Discussion of gain versus oscillation</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ความปลอดภัยและความเป็นระเบียบในการปฏิบัติงาน</span><span data-lang-en>Safe and orderly laboratory practice</span></td><td>10</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--danger" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></div>
+            <p>
+              <span data-lang-th>หลอดไส้ที่ใช้เป็นฮีตเตอร์ร้อนพอที่จะทำให้ผิวหนังพองได้ ห้ามสัมผัสขณะจ่ายไฟและรออย่างน้อย 2 นาทีหลังตัดไฟก่อนแตะต้อง ตรวจสอบว่ากล่องทดลองระบายความร้อนได้และไม่มีวัสดุติดไฟอยู่ใกล้ ตัดไฟทุกครั้งก่อนแก้ไขวงจรตามหลัก lockout–tagout</span>
+              <span data-lang-en>The lamp used as a heater gets hot enough to blister skin. Never touch it while powered, and wait at least two minutes after switching off. Check that the chamber can vent its heat and that nothing flammable is nearby. Always kill power before rewiring, following lockout–tagout.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>เราควบคุมเพื่อรักษาค่าเป้าหมาย ต้านสิ่งรบกวน ทำซ้ำได้ และเพื่อความปลอดภัย</span><span data-lang-en>We control in order to hold a target, reject disturbances, repeat a result and stay safe.</span></li>
+        <li><span data-lang-th>การควบคุมลำดับจัดการกับ “ขั้นตอนและเงื่อนไข” ส่วนการควบคุมกระบวนการจัดการกับ “ปริมาณที่ต่อเนื่อง”</span><span data-lang-en>Sequence control handles steps and conditions; process control handles continuous quantities.</span></li>
+        <li><span data-lang-th>ระบบเปิดไม่มีเส้นป้อนกลับ จึงไม่รู้ผลลัพธ์จริงและไม่สามารถต้านสิ่งรบกวนได้เลย</span><span data-lang-en>An open loop has no return path, never learns the true output, and cannot reject disturbances at all.</span></li>
+        <li><span data-lang-th>การป้อนกลับลดผลของสิ่งรบกวนลง \( 1 + K K_p \) เท่า ตามสมการ (2.4)</span><span data-lang-en>Feedback divides the disturbance effect by \( 1 + K K_p \), as equation (2.4) shows.</span></li>
+        <li><span data-lang-th>อัตราขยายที่สูงขึ้นให้ความแม่นยำมากขึ้น แต่แลกมาด้วยความเสี่ยงที่ระบบจะแกว่ง</span><span data-lang-en>More gain buys accuracy but risks oscillation.</span></li>
+        <li><span data-lang-th>การป้อนไปข้างหน้าเร็วกว่าแต่ต้องพึ่งแบบจำลอง ระบบที่ดีมักใช้ร่วมกับการป้อนกลับ</span><span data-lang-en>Feedforward is faster but model-dependent; good systems combine it with feedback.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term">Setpoint / Process variable</div>
+          <div class="deflist__def"><span data-lang-th>ค่าที่ต้องการ \( r \) และค่าที่วัดได้จริง \( y \)</span><span data-lang-en>The target \( r \) and the measured value \( y \)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Manipulated variable</div>
+          <div class="deflist__def"><span data-lang-th>ตัวแปรที่คอนโทรลเลอร์ปรับได้ \( u \)</span><span data-lang-en>The quantity the controller can move, \( u \)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Loop gain</div>
+          <div class="deflist__def"><span data-lang-th>อัตราขยายวงรอบ \( K K_p \) ตัวกำหนดว่าระบบจะต้านสิ่งรบกวนได้ดีเพียงใด</span><span data-lang-en>\( K K_p \), which sets how well the loop rejects disturbances</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Sensitivity</div>
+          <div class="deflist__def"><span data-lang-th>\( 1/(1+K K_p) \) สัดส่วนของสิ่งรบกวนที่ยังเหลือมาถึงผลลัพธ์</span><span data-lang-en>\( 1/(1+K K_p) \), the fraction of the disturbance that reaches the output</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Steady-state error</div>
+          <div class="deflist__def"><span data-lang-th>ความคลาดเคลื่อนที่ยังคงเหลืออยู่เมื่อระบบนิ่งแล้ว</span><span data-lang-en>The error that remains once everything has settled</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Feedforward</div>
+          <div class="deflist__def"><span data-lang-th>การชดเชยสิ่งรบกวนล่วงหน้าจากการวัดสิ่งรบกวนโดยตรง</span><span data-lang-en>Compensating a disturbance in advance by measuring it directly</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>ทำหลังอ่านเนื้อหาครบแล้ว ระบบจะเปรียบเทียบกับคะแนนก่อนเรียนให้อัตโนมัติ เกณฑ์ผ่านคือ 70%</span>
+        <span data-lang-en>Take this after reading the chapter; your score is compared with the pre-test automatically. Pass mark 70%.</span>
+      </p>
+      <div data-quiz="ch02-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>Ogata, K. (2010). <em>Modern Control Engineering</em> (5th ed.). Prentice Hall. <span data-lang-th>— บทที่ 1–2 นิยามระบบเปิด ระบบปิด และแผนภาพบล็อก</span><span data-lang-en>— Chapters 1–2, open/closed-loop definitions and block diagrams.</span></li>
+        <li>Nise, N. S. (2019). <em>Control Systems Engineering</em> (8th ed.). Wiley.</li>
+        <li>Dorf, R. C., &amp; Bishop, R. H. (2017). <em>Modern Control Systems</em> (13th ed.). Pearson.</li>
+        <li>Åström, K. J., &amp; Murray, R. M. (2021). <em>Feedback Systems: An Introduction for Scientists and Engineers</em> (2nd ed.). Princeton University Press. <span data-lang-th>— อธิบายฟังก์ชันความไวและประโยชน์ของการป้อนกลับได้ชัดเจนที่สุด</span><span data-lang-en>— the clearest treatment of sensitivity and what feedback buys.</span></li>
+        <li>Seborg, D. E., Edgar, T. F., Mellichamp, D. A., &amp; Doyle, F. J. (2016). <em>Process Dynamics and Control</em> (4th ed.). Wiley. <span data-lang-th>— การควบคุมกระบวนการและการป้อนไปข้างหน้า</span><span data-lang-en>— process control and feedforward.</span></li>
+        <li>Bolton, W. (2019). <em>Mechatronics: Electronic Control Systems in Mechanical and Electrical Engineering</em> (7th ed.). Pearson Education.</li>
+        <li>Åström, K. J., &amp; Hägglund, T. (2006). <em>Advanced PID Control</em>. ISA — The Instrumentation, Systems and Automation Society.</li>
+        <li>van Straten, G., van Willigenburg, G., van Henten, E., &amp; van Ooteghem, R. (2010). <em>Optimal Control of Greenhouse Cultivation</em>. CRC Press.</li>
+        <li>Shamshiri, R. R., Kalantari, F., Ting, K. C., Thorp, K. R., Hameed, I. A., Weltzien, C., Ahmad, D., &amp; Shad, Z. M. (2018). Advances in greenhouse automation and controlled environment agriculture: A transition to plant factories and urban agriculture. <em>International Journal of Agricultural and Biological Engineering, 11</em>(1), 1–22.</li>
+        <li>International Electrotechnical Commission. (2013). <em>IEC 61131-3:2013 Programmable controllers — Part 3: Programming languages</em>. IEC. <span data-lang-th>— มาตรฐานที่นิยาม SFC ซึ่งใช้กับการควบคุมลำดับในบทที่ 4</span><span data-lang-en>— defines SFC, used for sequence control in Chapter 4.</span></li>
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press.</li>
+        <li>King, M. (2016). <em>Process Control: A Practical Approach</em> (2nd ed.). Wiley.</li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="ch01.html">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>บทก่อนหน้า</span><span data-lang-en>Previous chapter</span></small>
+        <b><span data-lang-th>บทที่ 1 · บทนำสู่เมคคาทรอนิกส์เกษตร</span><span data-lang-en>Chapter 1 · Introduction to Agricultural Mechatronics</span></b>
+      </a>
+      <a class="is-next" href="ch03.html">
+        <small><span data-lang-th>บทถัดไป</span><span data-lang-en>Next chapter</span> <i class="fa-solid fa-arrow-right"></i></small>
+        <b><span data-lang-th>บทที่ 3 · แอคชูเอเตอร์ เซนเซอร์ และคอนโทรลเลอร์</span><span data-lang-en>Chapter 3 · Actuators, Sensors and Controllers</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#open-closed"><span data-lang-th>ระบบเปิด vs ระบบปิด</span><span data-lang-en>Open vs closed loop</span></a></li>
+          <li><a href="#lab"><span data-lang-th>ปฏิบัติการที่ 2</span><span data-lang-en>Laboratory 2</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script src="../js/ch02-quiz.js"></script>
+<script src="../js/ch02-anim.js"></script>
+</body>
+</html>

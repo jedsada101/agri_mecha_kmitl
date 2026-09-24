@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 1 · บทนำสู่เมคคาทรอนิกส์เกษตร" data-title-en="Chapter 1 · Introduction to Agricultural Mechatronics">Chapter 1 · Introduction to Agricultural Mechatronics</title>
+<meta name="description" content="Chapter 1: Introduction to agricultural mechatronics and robotics — definitions, the five building blocks, fixed vs mobile robots, and levels of autonomy.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a>
+      <a href="ch01.html" class="is-active"><span data-lang-th>บทที่ 1</span><span data-lang-en>Chapter 1</span></a>
+      <a href="ch02.html"><span data-lang-th>บทที่ 2</span><span data-lang-en>Chapter 2</span></a>
+      <a href="ch03.html"><span data-lang-th>บทที่ 3</span><span data-lang-en>Chapter 3</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 1</span><span data-lang-en>Chapter 1</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 1</span><span data-lang-en>Week 1</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 2 ชม. + ปฏิบัติ 2 ชม.</span><span data-lang-en>2 h lecture + 2 h laboratory</span></span>
+      <span class="badge badge--steel"><i class="fa-solid fa-layer-group"></i> <span data-lang-th>ระดับพื้นฐาน</span><span data-lang-en>Foundation level</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 1 · บทนำสู่เมคคาทรอนิกส์เกษตร</span>
+      <span data-lang-en>Chapter 1 · Introduction to Agricultural Mechatronics</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>ก่อนจะออกแบบระบบอัตโนมัติสำหรับฟาร์มได้ เราต้องเข้าใจก่อนว่า “เมคคาทรอนิกส์” คืออะไร ประกอบด้วยอะไรบ้าง และหุ่นยนต์ในงานเกษตรแบ่งออกเป็นแบบติดตั้งอยู่กับที่ (fixed) กับแบบเคลื่อนที่ (mobile) อย่างไร บทนี้วางกรอบความคิดทั้งหมดที่จะใช้ตลอด 16 สัปดาห์</span>
+      <span data-lang-en>Before you can design an automated farm system, you need a clear picture of what mechatronics is, what it is made of, and how agricultural robots divide into fixed and mobile machines. This chapter sets the frame used for the whole 16 weeks.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#what"><span data-lang-th>1.1 เมคคาทรอนิกส์คืออะไร</span><span data-lang-en>1.1 What is mechatronics?</span></a></li>
+      <li><a href="#elements"><span data-lang-th>1.2 องค์ประกอบ 5 ส่วน</span><span data-lang-en>1.2 The five building blocks</span></a></li>
+      <li><a href="#evolution"><span data-lang-th>1.3 จากเครื่องจักรกลสู่เกษตรอัจฉริยะ</span><span data-lang-en>1.3 From machinery to smart farming</span></a></li>
+      <li><a href="#robotics"><span data-lang-th>1.4 หุ่นยนต์คืออะไร</span><span data-lang-en>1.4 What is a robot?</span></a></li>
+      <li><a href="#fixed-mobile"><span data-lang-th>1.5 หุ่นยนต์ติดตั้งกับที่ vs เคลื่อนที่</span><span data-lang-en>1.5 Fixed vs mobile robots</span></a></li>
+      <li><a href="#applications"><span data-lang-th>1.6 การประยุกต์ในงานเกษตร</span><span data-lang-en>1.6 Agricultural applications</span></a></li>
+      <li><a href="#autonomy"><span data-lang-th>1.7 ระดับความเป็นอัตโนมัติ</span><span data-lang-en>1.7 Levels of autonomy</span></a></li>
+      <li><a href="#challenges"><span data-lang-th>1.8 ความท้าทายเฉพาะงานเกษตร</span><span data-lang-en>1.8 Agriculture-specific challenges</span></a></li>
+      <li><a href="#activity"><span data-lang-th>1.9 กิจกรรมในชั้นเรียน</span><span data-lang-en>1.9 In-class activity</span></a></li>
+      <li><a href="#lab"><span data-lang-th>1.10 ปฏิบัติการที่ 1</span><span data-lang-en>1.10 Laboratory 1</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>อธิบายนิยามของเมคคาทรอนิกส์ และระบุศาสตร์ที่มาบรรจบกันได้</span><span data-lang-en>Define mechatronics and identify the disciplines that converge in it.</span></li>
+        <li><span data-lang-th>ระบุองค์ประกอบทั้ง 5 ส่วนของระบบเมคคาทรอนิกส์ในเครื่องจักรกลเกษตรที่กำหนดให้</span><span data-lang-en>Identify the five building blocks of a mechatronic system in a given agricultural machine.</span></li>
+        <li><span data-lang-th>เขียนแผนภาพบล็อกของระบบเกษตรอัตโนมัติอย่างง่าย พร้อมระบุเส้นทางสัญญาณป้อนกลับ</span><span data-lang-en>Draw a block diagram of a simple automated agricultural system and mark the feedback path.</span></li>
+        <li><span data-lang-th>จำแนกหุ่นยนต์เกษตรออกเป็นแบบติดตั้งอยู่กับที่และแบบเคลื่อนที่ พร้อมให้เหตุผลประกอบ</span><span data-lang-en>Classify agricultural robots as fixed or mobile and justify the classification.</span></li>
+        <li><span data-lang-th>เปรียบเทียบข้อดี–ข้อจำกัดของทั้งสองแบบ และเลือกใช้ให้เหมาะกับโจทย์งานเกษตร</span><span data-lang-en>Compare the strengths and limits of both and select the appropriate one for an agricultural task.</span></li>
+        <li><span data-lang-th>อธิบายความท้าทายเฉพาะของการนำหุ่นยนต์ไปใช้ในสภาพแวดล้อมเกษตรจริง</span><span data-lang-en>Explain the challenges specific to deploying robots in real agricultural environments.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ลองตอบคำถามต่อไปนี้ก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิมของคุณ ระบบจะเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer these before reading, to surface what you already know. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch01-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 1.1 --------- -->
+    <section id="what">
+      <h2><span data-lang-th>1.1 เมคคาทรอนิกส์คืออะไร</span><span data-lang-en>1.1 What is mechatronics?</span></h2>
+
+      <p>
+        <span data-lang-th>คำว่า <strong>Mechatronics</strong> เกิดขึ้นในปี ค.ศ. 1969 โดยวิศวกรของบริษัท Yaskawa Electric ประเทศญี่ปุ่น เป็นการรวมคำว่า <em>Mecha</em>nics กับ Elec<em>tronics</em> เข้าด้วยกัน ปัจจุบันนิยามที่ใช้กันอย่างกว้างขวางคือ</span>
+        <span data-lang-en>The word <strong>mechatronics</strong> was coined in 1969 by an engineer at Yaskawa Electric in Japan, fusing <em>mecha</em>nics with elec<em>tronics</em>. The definition in wide use today is:</span>
+      </p>
+
+      <div class="callout">
+        <div class="callout__title"><i class="fa-solid fa-quote-left"></i> <span data-lang-th>นิยาม</span><span data-lang-en>Definition</span></div>
+        <p>
+          <span data-lang-th><strong>เมคคาทรอนิกส์</strong> คือการบูรณาการอย่างเป็นระบบ (synergistic integration) ระหว่างวิศวกรรมเครื่องกล อิเล็กทรอนิกส์ ระบบควบคุม และเทคโนโลยีคอมพิวเตอร์ ตั้งแต่ขั้นตอนการออกแบบ เพื่อสร้างผลิตภัณฑ์และกระบวนการที่ทำงานได้ดีกว่าผลรวมของแต่ละส่วน</span>
+          <span data-lang-en><strong>Mechatronics</strong> is the synergistic integration of mechanical engineering, electronics, control systems and computer technology — from the design stage onward — to create products and processes that perform better than the sum of their parts.</span>
+        </p>
+      </div>
+
+      <p>
+        <span data-lang-th>คำสำคัญคือ <strong>“ตั้งแต่ขั้นตอนการออกแบบ”</strong> การนำมอเตอร์ไปติดเพิ่มบนเครื่องจักรกลที่ออกแบบเสร็จแล้วไม่ถือเป็นเมคคาทรอนิกส์ แต่การออกแบบโครงสร้างกลไก ระบบขับเคลื่อน เซนเซอร์ และอัลกอริทึมควบคุมไปพร้อมกัน โดยยอมแลกข้อจำกัดของด้านหนึ่งด้วยความสามารถของอีกด้านหนึ่ง จึงเรียกว่าเมคคาทรอนิกส์</span>
+        <span data-lang-en>The critical phrase is <strong>“from the design stage”</strong>. Bolting a motor onto an already-finished machine is not mechatronics. Designing the structure, drive, sensing and control algorithm together — trading a limitation in one domain against a capability in another — is.</span>
+      </p>
+
+      <figure class="figure">
+        <svg viewBox="0 0 660 400" role="img" aria-labelledby="fig1-title">
+          <title id="fig1-title">Mechatronics as the intersection of mechanical, electronic and computing disciplines</title>
+          <circle cx="255" cy="160" r="122" class="dg-fill-green dg-stroke-green" stroke-width="2" opacity="0.75"/>
+          <circle cx="405" cy="160" r="122" class="dg-fill-sky dg-stroke" stroke-width="2" opacity="0.75"/>
+          <circle cx="330" cy="272" r="122" class="dg-fill-gold dg-stroke-gold" stroke-width="2" opacity="0.75"/>
+
+          <text class="dg-text-b" x="180" y="80" text-anchor="middle" data-lang-th>วิศวกรรมเครื่องกล</text>
+          <text class="dg-text-b" x="180" y="80" text-anchor="middle" data-lang-en>Mechanical</text>
+          <text class="dg-text-sm" x="180" y="98" text-anchor="middle" data-lang-th>โครงสร้าง กลไก ส่งกำลัง</text>
+          <text class="dg-text-sm" x="180" y="98" text-anchor="middle" data-lang-en>structures, linkages, drives</text>
+
+          <text class="dg-text-b" x="482" y="80" text-anchor="middle" data-lang-th>อิเล็กทรอนิกส์</text>
+          <text class="dg-text-b" x="482" y="80" text-anchor="middle" data-lang-en>Electronics</text>
+          <text class="dg-text-sm" x="482" y="98" text-anchor="middle" data-lang-th>เซนเซอร์ วงจร กำลังไฟฟ้า</text>
+          <text class="dg-text-sm" x="482" y="98" text-anchor="middle" data-lang-en>sensors, circuits, power</text>
+
+          <text class="dg-text-b" x="330" y="378" text-anchor="middle" data-lang-th>คอมพิวเตอร์และระบบควบคุม</text>
+          <text class="dg-text-b" x="330" y="378" text-anchor="middle" data-lang-en>Computing &amp; control</text>
+          <text class="dg-text-sm" x="330" y="360" text-anchor="middle" data-lang-th>อัลกอริทึม ซอฟต์แวร์ การสื่อสาร</text>
+          <text class="dg-text-sm" x="330" y="360" text-anchor="middle" data-lang-en>algorithms, software, networks</text>
+
+          <text class="dg-text-b" x="330" y="190" text-anchor="middle" data-lang-th>เมคคาทรอนิกส์</text>
+          <text class="dg-text-b" x="330" y="190" text-anchor="middle" data-lang-en>MECHATRONICS</text>
+          <text class="dg-text-sm" x="330" y="210" text-anchor="middle" data-lang-th>ระบบที่คิดและทำงานเป็นหนึ่งเดียว</text>
+          <text class="dg-text-sm" x="330" y="210" text-anchor="middle" data-lang-en>one integrated system</text>
+
+          <text class="dg-text-sm" x="330" y="128" text-anchor="middle">CAD / CAE</text>
+          <text class="dg-text-sm" x="240" y="252" text-anchor="middle">Actuation</text>
+          <text class="dg-text-sm" x="422" y="252" text-anchor="middle">Data &amp; AI</text>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 1.1</span><span data-lang-en>Figure 1.1</span></b>
+          <span data-lang-th> เมคคาทรอนิกส์เกิดขึ้นตรงบริเวณที่ศาสตร์ทั้งสามซ้อนทับกัน ในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ เราเพิ่ม “ศาสตร์ด้านพืชและดิน” เข้าไปอีกหนึ่งมิติ</span>
+          <span data-lang-en> Mechatronics lives where the three disciplines overlap. In Agri-Intelligence Engineering we add a fourth dimension: crop and soil science.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-lightbulb"></i> <span data-lang-th>ทำไมวิศวกรเกษตรต้องเรียนเรื่องนี้</span><span data-lang-en>Why an agricultural engineer needs this</span></div>
+        <p>
+          <span data-lang-th>สิ่งมีชีวิตไม่รอเรา ผลผลิตสุกไม่พร้อมกัน ดินเปียกไม่เท่ากัน แรงงานเกษตรลดลงทุกปี ระบบที่ “ปรับตัวตามสิ่งที่วัดได้” จึงจำเป็น ไม่ใช่ทางเลือก — และนั่นคือหัวใจของเมคคาทรอนิกส์</span>
+          <span data-lang-en>Living systems do not wait. Fruit ripens unevenly, soil wets unevenly, and the agricultural workforce shrinks every year. A machine that <em>adapts to what it measures</em> is therefore a necessity, not a luxury — and that is exactly what mechatronics delivers.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 1.2 --------- -->
+    <section id="elements">
+      <h2><span data-lang-th>1.2 องค์ประกอบ 5 ส่วนของระบบเมคคาทรอนิกส์</span><span data-lang-en>1.2 The five building blocks of a mechatronic system</span></h2>
+
+      <p>
+        <span data-lang-th>ไม่ว่าจะเป็นโรงเรือนอัจฉริยะ เครื่องคัดแยกทุเรียน หรือรถแทรกเตอร์ไร้คนขับ ทุกระบบสามารถแยกออกเป็นองค์ประกอบเดียวกัน 5 ส่วน การฝึกมองระบบให้ออกเป็น 5 ส่วนนี้คือทักษะพื้นฐานที่สุดของวิชานี้</span>
+        <span data-lang-en>Whether it is a smart greenhouse, a durian grading line or a driverless tractor, every system decomposes into the same five parts. Learning to see any machine as these five parts is the most fundamental skill in this course.</span>
+      </p>
+
+      <figure class="figure">
+        <div class="fig-stage">
+        <svg viewBox="0 0 860 300" role="img" aria-labelledby="fig2-title">
+          <title id="fig2-title">Block diagram of a generic mechatronic system with feedback</title>
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" class="dg-arrow"/>
+            </marker>
+          </defs>
+
+          <!-- setpoint -->
+          <text class="dg-text-sm" x="18" y="98" data-lang-th>ค่าที่ต้องการ</text>
+          <text class="dg-text-sm" x="18" y="98" data-lang-en>Setpoint</text>
+          <line x1="88" y1="105" x2="128" y2="105" class="dg-stroke" stroke-width="2" marker-end="url(#ar)"/>
+
+          <!-- summing junction -->
+          <circle cx="146" cy="105" r="18" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+          <text class="dg-text" x="146" y="110" text-anchor="middle">Σ</text>
+          <text class="dg-text-sm" x="128" y="88">+</text>
+          <text class="dg-text-sm" x="140" y="142">−</text>
+          <line x1="164" y1="105" x2="204" y2="105" class="dg-stroke" stroke-width="2" marker-end="url(#ar)"/>
+
+          <!-- controller -->
+          <rect x="206" y="72" width="140" height="66" rx="10" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+          <text class="dg-text-b" x="276" y="100" text-anchor="middle" data-lang-th>คอนโทรลเลอร์</text>
+          <text class="dg-text-b" x="276" y="100" text-anchor="middle" data-lang-en>Controller</text>
+          <text class="dg-text-sm" x="276" y="120" text-anchor="middle">PLC / MCU / PC</text>
+          <line x1="346" y1="105" x2="392" y2="105" class="dg-stroke" stroke-width="2" marker-end="url(#ar)"/>
+
+          <!-- actuator -->
+          <rect x="394" y="72" width="140" height="66" rx="10" class="dg-fill-gold dg-stroke-gold" stroke-width="2"/>
+          <text class="dg-text-b" x="464" y="100" text-anchor="middle" data-lang-th>แอคชูเอเตอร์</text>
+          <text class="dg-text-b" x="464" y="100" text-anchor="middle" data-lang-en>Actuator</text>
+          <text class="dg-text-sm" x="464" y="120" text-anchor="middle" data-lang-th>มอเตอร์ วาล์ว ปั๊ม</text>
+          <text class="dg-text-sm" x="464" y="120" text-anchor="middle" data-lang-en>motor, valve, pump</text>
+          <line x1="534" y1="105" x2="580" y2="105" class="dg-stroke" stroke-width="2" marker-end="url(#ar)"/>
+
+          <!-- plant -->
+          <rect x="582" y="72" width="160" height="66" rx="10" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="662" y="100" text-anchor="middle" data-lang-th>ระบบทางกล / กระบวนการ</text>
+          <text class="dg-text-b" x="662" y="100" text-anchor="middle" data-lang-en>Mechanism / process</text>
+          <text class="dg-text-sm" x="662" y="120" text-anchor="middle" data-lang-th>โรงเรือน แปลง เครื่องจักร</text>
+          <text class="dg-text-sm" x="662" y="120" text-anchor="middle" data-lang-en>greenhouse, field, machine</text>
+          <line x1="742" y1="105" x2="812" y2="105" class="dg-stroke" stroke-width="2" marker-end="url(#ar)"/>
+          <text class="dg-text-sm" x="752" y="132" data-lang-th>ผลลัพธ์</text>
+          <text class="dg-text-sm" x="752" y="132" data-lang-en>Output</text>
+
+          <!-- disturbance -->
+          <line x1="662" y1="20" x2="662" y2="68" class="dg-stroke" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+          <text class="dg-text-sm" x="672" y="30" data-lang-th>สิ่งรบกวน: แดด ลม ฝน ภาระโหลด</text>
+          <text class="dg-text-sm" x="672" y="30" data-lang-en>Disturbance: sun, wind, rain, load</text>
+
+          <!-- sensor feedback -->
+          <rect x="394" y="196" width="180" height="62" rx="10" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="484" y="222" text-anchor="middle" data-lang-th>เซนเซอร์ + การปรับสัญญาณ</text>
+          <text class="dg-text-b" x="484" y="222" text-anchor="middle" data-lang-en>Sensor + conditioning</text>
+          <text class="dg-text-sm" x="484" y="242" text-anchor="middle" data-lang-th>วัดสิ่งที่เกิดขึ้นจริง</text>
+          <text class="dg-text-sm" x="484" y="242" text-anchor="middle" data-lang-en>measures what really happens</text>
+
+          <path d="M 782 105 L 782 227 L 578 227" class="dg-stroke" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+          <path d="M 394 227 L 146 227 L 146 125" class="dg-stroke" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+          <text class="dg-text-sm" x="214" y="246" data-lang-th>สัญญาณป้อนกลับ</text>
+          <text class="dg-text-sm" x="214" y="246" data-lang-en>feedback signal</text>
+
+          <!-- power supply -->
+          <rect x="206" y="196" width="140" height="62" rx="10" class="dg-fill-steel dg-stroke" stroke-width="2" stroke-dasharray="6 4"/>
+          <text class="dg-text-b" x="276" y="222" text-anchor="middle" data-lang-th>แหล่งจ่ายพลังงาน</text>
+          <text class="dg-text-b" x="276" y="222" text-anchor="middle" data-lang-en>Power supply</text>
+          <text class="dg-text-sm" x="276" y="242" text-anchor="middle">24 VDC / 220 VAC</text>
+        </svg>
+        <span class="fig-label fig-label--bare" style="left:4.5%;top:38.5%">\( r(t) \)</span>
+        <span class="fig-label fig-label--bare" style="left:21.2%;top:31.5%">\( e(t) \)</span>
+        <span class="fig-label fig-label--bare" style="left:43.0%;top:31.5%">\( u(t) \)</span>
+        <span class="fig-label fig-label--bare" style="left:90.2%;top:31.5%">\( y(t) \)</span>
+        <span class="fig-label fig-label--bare" style="left:74.5%;top:15.0%">\( d(t) \)</span>
+        <span class="fig-label fig-label--bare" style="left:56.0%;top:76.5%">\( y_m(t) \)</span>
+      </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 1.2</span><span data-lang-en>Figure 1.2</span></b>
+          <span data-lang-th> แผนภาพบล็อกของระบบเมคคาทรอนิกส์ทั่วไป ทุกเครื่องจักรเกษตรอัตโนมัติในวิชานี้จะถูกวาดด้วยโครงสร้างเดียวกันนี้เสมอ</span>
+          <span data-lang-en> Block diagram of a generic mechatronic system. Every automated agricultural machine in this course will be drawn with this same skeleton.</span>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>1.2.1 สัญญาณในวงรอบป้อนกลับ</span><span data-lang-en>1.2.1 Signals around the feedback loop</span></h3>
+
+      <p>
+        <span data-lang-th>จากรูปที่ 1.2 เราตั้งชื่อสัญญาณทุกเส้นได้อย่างเป็นระบบ สัญญาณที่สำคัญที่สุดคือ <strong>ความคลาดเคลื่อน</strong> (error) ซึ่งเป็นผลต่างระหว่างสิ่งที่เราต้องการกับสิ่งที่เกิดขึ้นจริง</span>
+        <span data-lang-en>Every line in Figure 1.2 has a name. The most important one is the <strong>error</strong>: the difference between what we asked for and what actually happened.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ e(t) \;=\; r(t) - y(t) $$</div>
+        <div class="eq__num">(1.1)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>คอนโทรลเลอร์ทำหน้าที่แปลงความคลาดเคลื่อนให้เป็นคำสั่ง ส่วนกระบวนการทางกายภาพตอบสนองต่อคำสั่งนั้นพร้อมกับถูกสิ่งรบกวนกระทำไปด้วย</span>
+        <span data-lang-en>The controller maps that error into a command, and the physical process responds to the command while disturbances act on it at the same time.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ u(t) \;=\; \mathcal{C}\big\{\, e(t) \,\big\}, \qquad
+                                 y(t) \;=\; \mathcal{P}\big\{\, u(t),\, d(t) \,\big\} $$</div>
+        <div class="eq__num">(1.2)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( r(t) \) — <span data-lang-th>ค่าที่ต้องการ (setpoint) เช่น ความชื้นดิน 60 %VWC</span><span data-lang-en>the setpoint, e.g. a soil moisture of 60 %VWC</span></li>
+          <li>\( y(t) \) — <span data-lang-th>ค่าที่วัดได้จริงจากเซนเซอร์</span><span data-lang-en>the measured output from the sensor</span></li>
+          <li>\( e(t) \) — <span data-lang-th>ความคลาดเคลื่อน ณ เวลา \( t \)</span><span data-lang-en>the error at time \( t \)</span></li>
+          <li>\( u(t) \) — <span data-lang-th>สัญญาณควบคุมที่ส่งไปยังแอคชูเอเตอร์</span><span data-lang-en>the control signal sent to the actuator</span></li>
+          <li>\( d(t) \) — <span data-lang-th>สิ่งรบกวน เช่น แดด ลม ฝน หรือภาระโหลดที่เปลี่ยนไป</span><span data-lang-en>disturbances such as sun, wind, rain or changing load</span></li>
+          <li>\( \mathcal{C},\ \mathcal{P} \) — <span data-lang-th>ตัวดำเนินการของคอนโทรลเลอร์และของกระบวนการตามลำดับ</span><span data-lang-en>the controller and process operators respectively</span></li>
+        </ul>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-forward"></i> <span data-lang-th>จะเจาะลึกในบทไหน</span><span data-lang-en>Where this is developed</span></div>
+        <p>
+          <span data-lang-th>ในบทที่ 6 เราจะเขียน \( \mathcal{P} \) ให้อยู่ในรูปฟังก์ชันถ่ายโอน \( G(s) \) และในบทที่ 7 จะแทน \( \mathcal{C} \) ด้วยตัวควบคุม PID ตอนนี้ขอเพียงให้จำโครงสร้างของสมการ (1.1) และ (1.2) ให้ได้ก่อน</span>
+          <span data-lang-en>Chapter 6 writes \( \mathcal{P} \) as a transfer function \( G(s) \); Chapter 7 replaces \( \mathcal{C} \) with a PID controller. For now, simply remember the shape of equations (1.1) and (1.2).</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>1.2.2 องค์ประกอบทั้งห้าโดยละเอียด</span><span data-lang-en>1.2.2 The five blocks in detail</span></h3>
+
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term">1. <span data-lang-th>ระบบทางกล</span><span data-lang-en>Mechanical system</span></div>
+          <div class="deflist__def">
+            <span data-lang-th>โครงสร้าง ข้อต่อ ชุดส่งกำลัง มือจับ และตัวถัง — ส่วนที่ “ออกแรงกับโลกจริง” เช่น โครงหุ่นยนต์เก็บผลไม้ หรือสายพานลำเลียงเมล็ดพันธุ์</span>
+            <span data-lang-en>Structure, joints, transmission, grippers and chassis — the part that exerts force on the real world, such as a harvesting arm or a seed conveyor.</span>
+          </div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">2. <span data-lang-th>เซนเซอร์</span><span data-lang-en>Sensors</span></div>
+          <div class="deflist__def">
+            <span data-lang-th>แปลงปริมาณทางกายภาพ (อุณหภูมิ ความชื้นดิน ตำแหน่ง แรง ภาพ) ให้เป็นสัญญาณไฟฟ้าที่คอนโทรลเลอร์อ่านได้ — ระบบจะฉลาดได้ไม่เกินสิ่งที่มันวัดได้</span>
+            <span data-lang-en>Convert physical quantities (temperature, soil moisture, position, force, images) into electrical signals the controller can read. A system can never be smarter than what it measures.</span>
+          </div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">3. <span data-lang-th>คอนโทรลเลอร์</span><span data-lang-en>Controller</span></div>
+          <div class="deflist__def">
+            <span data-lang-th>“สมอง” ที่ตัดสินใจจากค่าที่วัดได้เทียบกับค่าที่ต้องการ อาจเป็น PLC ไมโครคอนโทรลเลอร์ หรือคอมพิวเตอร์อุตสาหกรรม (บทที่ 4–7)</span>
+            <span data-lang-en>The “brain” that decides by comparing measurement with setpoint — a PLC, a microcontroller or an industrial PC (Chapters 4–7).</span>
+          </div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">4. <span data-lang-th>แอคชูเอเตอร์</span><span data-lang-en>Actuators</span></div>
+          <div class="deflist__def">
+            <span data-lang-th>แปลงพลังงานไฟฟ้า/ลม/น้ำมัน ให้เป็นการเคลื่อนที่หรือแรง เช่น มอเตอร์ เซอร์โว กระบอกลม โซลินอยด์วาล์ว ปั๊มน้ำ</span>
+            <span data-lang-en>Convert electrical, pneumatic or hydraulic energy into motion or force: motors, servos, air cylinders, solenoid valves, pumps.</span>
+          </div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">5. <span data-lang-th>แหล่งพลังงานและการสื่อสาร</span><span data-lang-en>Power &amp; communication</span></div>
+          <div class="deflist__def">
+            <span data-lang-th>แหล่งจ่ายไฟ แบตเตอรี่ เครือข่ายสื่อสาร (Modbus, CAN, ISOBUS, LoRa) และส่วนติดต่อผู้ใช้ — ในแปลงจริงนี่มักเป็นข้อจำกัดที่หนักที่สุด</span>
+            <span data-lang-en>Power supplies, batteries, networks (Modbus, CAN, ISOBUS, LoRa) and the user interface. In the field this is very often the hardest constraint.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-diagram-project"></i> <span data-lang-th>ตัวอย่างการมองระบบให้ออกเป็น 5 ส่วน: ระบบให้น้ำอัตโนมัติ</span><span data-lang-en>Worked example: decomposing an automatic irrigation system</span></div>
+        <div class="table-wrap" style="margin:.8rem 0 0">
+          <table>
+            <thead>
+              <tr>
+                <th><span data-lang-th>องค์ประกอบ</span><span data-lang-en>Block</span></th>
+                <th><span data-lang-th>อุปกรณ์จริง</span><span data-lang-en>Actual device</span></th>
+                <th><span data-lang-th>สัญญาณ</span><span data-lang-en>Signal</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span data-lang-th>เซนเซอร์</span><span data-lang-en>Sensor</span></td><td><span data-lang-th>เซนเซอร์ความชื้นดินแบบ capacitive</span><span data-lang-en>Capacitive soil-moisture probe</span></td><td>0–3.3 V <span data-lang-th>อนาล็อก</span><span data-lang-en>analogue</span></td></tr>
+              <tr><td><span data-lang-th>คอนโทรลเลอร์</span><span data-lang-en>Controller</span></td><td><span data-lang-th>PLC ขนาดเล็ก หรือ ESP32</span><span data-lang-en>Compact PLC or ESP32</span></td><td><span data-lang-th>เปรียบเทียบกับค่า 60 %VWC</span><span data-lang-en>compares against 60 %VWC</span></td></tr>
+              <tr><td><span data-lang-th>แอคชูเอเตอร์</span><span data-lang-en>Actuator</span></td><td><span data-lang-th>โซลินอยด์วาล์ว 24 VDC</span><span data-lang-en>24 VDC solenoid valve</span></td><td><span data-lang-th>ดิจิทัล ON/OFF</span><span data-lang-en>digital ON/OFF</span></td></tr>
+              <tr><td><span data-lang-th>ระบบทางกล</span><span data-lang-en>Mechanical</span></td><td><span data-lang-th>ท่อเมน หัวน้ำหยด แปลงปลูก</span><span data-lang-en>Mains pipe, drip emitters, bed</span></td><td>—</td></tr>
+              <tr><td><span data-lang-th>พลังงาน/สื่อสาร</span><span data-lang-en>Power/comms</span></td><td><span data-lang-th>แผงโซลาร์ + แบตเตอรี่ + LoRa</span><span data-lang-en>Solar panel + battery + LoRa</span></td><td>24 VDC, 923 MHz</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 1.3 --------- -->
+    <section id="evolution">
+      <h2><span data-lang-th>1.3 จากเครื่องจักรกลเกษตรสู่เกษตรอัจฉริยะ</span><span data-lang-en>1.3 From farm machinery to smart farming</span></h2>
+
+      <p>
+        <span data-lang-th>เทคโนโลยีเกษตรพัฒนามาเป็นลำดับขั้น แต่ละขั้นไม่ได้ทิ้งขั้นก่อนหน้า แต่เพิ่ม “ชั้นของข้อมูลและการตัดสินใจ” เข้าไป</span>
+        <span data-lang-en>Agricultural technology has advanced in stages. Each stage does not discard the previous one; it adds a further layer of information and decision-making.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ยุค</span><span data-lang-en>Era</span></th>
+              <th><span data-lang-th>เทคโนโลยีหลัก</span><span data-lang-en>Core technology</span></th>
+              <th><span data-lang-th>ใครเป็นผู้ตัดสินใจ</span><span data-lang-en>Who decides</span></th>
+              <th><span data-lang-th>ตัวอย่าง</span><span data-lang-en>Example</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>เกษตร 1.0</span><span data-lang-en>Agriculture 1.0</span></td>
+              <td><span data-lang-th>แรงงานคนและสัตว์</span><span data-lang-en>Human and animal power</span></td>
+              <td><span data-lang-th>เกษตรกร</span><span data-lang-en>Farmer</span></td>
+              <td><span data-lang-th>ไถด้วยควาย เกี่ยวด้วยเคียว</span><span data-lang-en>Buffalo plough, hand sickle</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>เกษตร 2.0</span><span data-lang-en>Agriculture 2.0</span></td>
+              <td><span data-lang-th>เครื่องจักรกล (mechanization)</span><span data-lang-en>Mechanization</span></td>
+              <td><span data-lang-th>เกษตรกร (เครื่องเพิ่มกำลัง)</span><span data-lang-en>Farmer (machine amplifies power)</span></td>
+              <td><span data-lang-th>รถไถเดินตาม รถเกี่ยวนวด</span><span data-lang-en>Two-wheel tractor, combine harvester</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>เกษตร 3.0</span><span data-lang-en>Agriculture 3.0</span></td>
+              <td><span data-lang-th>เกษตรแม่นยำ GNSS + แผนที่</span><span data-lang-en>Precision agriculture, GNSS + maps</span></td>
+              <td><span data-lang-th>เกษตรกรร่วมกับระบบแนะนำ</span><span data-lang-en>Farmer assisted by advisory systems</span></td>
+              <td><span data-lang-th>ระบบนำทางอัตโนมัติ การใส่ปุ๋ยตามอัตราแปรผัน</span><span data-lang-en>Auto-guidance, variable-rate fertilizing</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>เกษตร 4.0</span><span data-lang-en>Agriculture 4.0</span></td>
+              <td><span data-lang-th>IoT หุ่นยนต์ ปัญญาประดิษฐ์</span><span data-lang-en>IoT, robotics, artificial intelligence</span></td>
+              <td><span data-lang-th>ระบบตัดสินใจเอง เกษตรกรกำกับดูแล</span><span data-lang-en>System decides, farmer supervises</span></td>
+              <td><span data-lang-th>หุ่นยนต์กำจัดวัชพืช โรงเรือนควบคุมสภาพแวดล้อมเต็มรูปแบบ</span><span data-lang-en>Weeding robots, fully climate-controlled greenhouses</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <span data-lang-th>วิชานี้อยู่ตรงรอยต่อระหว่างเกษตร 3.0 กับ 4.0 พอดี เราจะเรียนเครื่องมือที่ทำให้เครื่องจักร “รู้สถานะของตัวเองและสิ่งแวดล้อม แล้วตัดสินใจได้เอง”</span>
+        <span data-lang-en>This course sits exactly at the boundary between Agriculture 3.0 and 4.0. You will learn the tools that let a machine sense its own state and its environment, and then decide for itself.</span>
+      </p>
+    </section>
+
+    <!-- ---------------------------------------------------- 1.4 --------- -->
+    <section id="robotics">
+      <h2><span data-lang-th>1.4 หุ่นยนต์คืออะไร</span><span data-lang-en>1.4 What exactly is a robot?</span></h2>
+
+      <p>
+        <span data-lang-th>มาตรฐาน <strong>ISO 8373</strong> (Robotics — Vocabulary) ให้นิยามหุ่นยนต์ว่าเป็น</span>
+        <span data-lang-en>The standard <strong>ISO 8373</strong> (Robotics — Vocabulary) defines a robot as</span>
+      </p>
+
+      <div class="callout">
+        <div class="callout__title"><i class="fa-solid fa-scale-balanced"></i> ISO 8373</div>
+        <p>
+          <span data-lang-th>“กลไกที่โปรแกรมได้ในแกนการเคลื่อนที่ตั้งแต่สองแกนขึ้นไป มีระดับความเป็นอิสระในการทำงาน (autonomy) สามารถเคลื่อนที่ภายในสภาพแวดล้อมเพื่อทำงานตามที่กำหนด”</span>
+          <span data-lang-en>“A programmed actuated mechanism with a degree of autonomy, moving within its environment, to perform intended tasks.”</span>
+        </p>
+      </div>
+
+      <p>
+        <span data-lang-th>จุดที่ทำให้หุ่นยนต์ต่างจากเครื่องจักรอัตโนมัติทั่วไปคือคำว่า <strong>โปรแกรมใหม่ได้ (reprogrammable)</strong> และ <strong>ทำงานได้หลากหลาย (multi-functional)</strong> สายพานลำเลียงที่วิ่งด้วยความเร็วคงที่ไม่ใช่หุ่นยนต์ แต่แขนกลที่เปลี่ยนจากงานหยิบมะเขือเทศไปเป็นงานวางถาดกล้าได้ด้วยการเปลี่ยนโปรแกรม คือหุ่นยนต์</span>
+        <span data-lang-en>What separates a robot from ordinary automation is that it is <strong>reprogrammable</strong> and <strong>multi-functional</strong>. A conveyor running at a fixed speed is not a robot; an arm that switches from picking tomatoes to placing seedling trays by changing its program is.</span>
+      </p>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>ข้อควรระวังเชิงนิยาม</span><span data-lang-en>A definitional caution</span></div>
+        <p>
+          <span data-lang-th>“อัตโนมัติ (automatic)” ไม่เท่ากับ “อัตโนมัติแบบมีอิสระ (autonomous)” เครื่องจักรอัตโนมัติทำตามลำดับที่กำหนดไว้ล่วงหน้าเสมอ ส่วนระบบที่มี autonomy จะเลือกการกระทำเองจากข้อมูลที่รับเข้ามา ณ ขณะนั้น รถเกี่ยวนวดที่วิ่งตามแนว GNSS เป็น automatic ส่วนหุ่นยนต์ที่ตัดสินใจเองว่าจะหลบต้นไม้ล้มอย่างไรเป็น autonomous</span>
+          <span data-lang-en>“Automatic” is not “autonomous”. An automatic machine always follows a predefined sequence; an autonomous one chooses its action from data available at that moment. A combine following a GNSS line is automatic; a robot deciding for itself how to skirt a fallen tree is autonomous.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 1.5 --------- -->
+    <section id="fixed-mobile">
+      <h2><span data-lang-th>1.5 หุ่นยนต์แบบติดตั้งอยู่กับที่ และแบบเคลื่อนที่</span><span data-lang-en>1.5 Fixed robots and mobile robots</span></h2>
+
+      <p>
+        <span data-lang-th>การจำแนกที่สำคัญที่สุดในวิชานี้คือการถามว่า <em>“ฐานของหุ่นยนต์เคลื่อนที่หรือไม่”</em> คำตอบนี้กำหนดทุกอย่างที่ตามมา ทั้งวิธีคิดพิกัด วิธีควบคุม และปัญหาที่ต้องแก้</span>
+        <span data-lang-en>The most consequential classification in this course is a single question: <em>does the base move?</em> The answer determines everything that follows — how you set up coordinates, how you control the machine, and which problems you must solve.</span>
+      </p>
+
+      <figure class="figure">
+        <svg viewBox="0 0 860 330" role="img" aria-labelledby="fig3-title">
+          <title id="fig3-title">Fixed robot with a bounded workspace versus a mobile robot covering a field</title>
+
+          <!-- ============ left: fixed ============ -->
+          <rect x="14" y="14" width="400" height="302" rx="14" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="214" y="44" text-anchor="middle" data-lang-th>หุ่นยนต์ติดตั้งอยู่กับที่ (Fixed / Stationary)</text>
+          <text class="dg-text-b" x="214" y="44" text-anchor="middle" data-lang-en>Fixed (stationary) robot</text>
+
+          <!-- workspace envelope -->
+          <path d="M 214 250 m -140 0 a 140 140 0 0 1 280 0 z" class="dg-fill-green" opacity="0.55"/>
+          <path d="M 214 250 m -140 0 a 140 140 0 0 1 280 0" class="dg-stroke-green" stroke-width="2" stroke-dasharray="7 5"/>
+          <text class="dg-text-sm" x="214" y="140" text-anchor="middle" data-lang-th>ปริมาตรทำงาน (workspace) จำกัดและรู้ล่วงหน้า</text>
+          <text class="dg-text-sm" x="214" y="140" text-anchor="middle" data-lang-en>bounded, known workspace</text>
+
+          <!-- floor -->
+          <line x1="54" y1="250" x2="374" y2="250" class="dg-stroke" stroke-width="2.5"/>
+          <!-- robot arm -->
+          <rect x="196" y="228" width="36" height="22" rx="4" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+          <line x1="214" y1="228" x2="214" y2="176" class="dg-stroke-green" stroke-width="7" stroke-linecap="round"/>
+          <line x1="214" y1="176" x2="272" y2="150" class="dg-stroke-green" stroke-width="6" stroke-linecap="round"/>
+          <line x1="272" y1="150" x2="300" y2="182" class="dg-stroke-green" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="214" cy="176" r="6" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+          <circle cx="272" cy="150" r="5" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+          <circle cx="300" cy="186" r="7" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+          <!-- conveyor + fruit -->
+          <rect x="104" y="212" width="80" height="12" rx="6" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+          <circle cx="124" cy="204" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.5"/>
+          <circle cx="152" cy="204" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.5"/>
+          <text class="dg-text-sm" x="144" y="240" text-anchor="middle" data-lang-th>ชิ้นงานถูกลำเลียงมาหาหุ่นยนต์</text>
+          <text class="dg-text-sm" x="144" y="240" text-anchor="middle" data-lang-en>work comes to the robot</text>
+          <text class="dg-text-sm" x="214" y="278" text-anchor="middle" data-lang-th>ฐานยึดแน่น → ระบบพิกัดฐานคงที่</text>
+          <text class="dg-text-sm" x="214" y="278" text-anchor="middle" data-lang-en>base bolted down → fixed base frame</text>
+          <text class="dg-text-sm" x="214" y="298" text-anchor="middle" data-lang-th>ตัวอย่าง: เครื่องคัดแยกผล แขนกลปลูกกล้า</text>
+          <text class="dg-text-sm" x="214" y="298" text-anchor="middle" data-lang-en>e.g. grading line, transplanting arm</text>
+
+          <!-- ============ right: mobile ============ -->
+          <rect x="446" y="14" width="400" height="302" rx="14" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="646" y="44" text-anchor="middle" data-lang-th>หุ่นยนต์เคลื่อนที่ (Mobile)</text>
+          <text class="dg-text-b" x="646" y="44" text-anchor="middle" data-lang-en>Mobile robot</text>
+
+          <!-- field rows -->
+          <rect x="486" y="96" width="320" height="150" rx="8" class="dg-fill-green" opacity="0.45"/>
+          <g class="dg-stroke-green" stroke-width="2" opacity="0.75">
+            <line x1="506" y1="112" x2="786" y2="112"/>
+            <line x1="506" y1="148" x2="786" y2="148"/>
+            <line x1="506" y1="184" x2="786" y2="184"/>
+            <line x1="506" y1="220" x2="786" y2="220"/>
+          </g>
+          <!-- path -->
+          <path d="M 512 112 L 780 112 L 780 148 L 512 148 L 512 184 L 780 184" class="dg-stroke-gold" stroke-width="3" stroke-dasharray="8 5" fill="none"/>
+          <!-- robot body -->
+          <rect x="548" y="172" width="46" height="26" rx="6" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+          <circle cx="558" cy="200" r="7" class="dg-stroke" stroke-width="2" fill="none"/>
+          <circle cx="584" cy="200" r="7" class="dg-stroke" stroke-width="2" fill="none"/>
+          <line x1="571" y1="172" x2="571" y2="158" class="dg-stroke" stroke-width="2"/>
+          <circle cx="571" cy="154" r="5" class="dg-fill-gold dg-stroke" stroke-width="1.5"/>
+          <text class="dg-text-sm" x="646" y="268" text-anchor="middle" data-lang-th>ฐานเคลื่อนที่ → ต้องรู้ตำแหน่งตัวเองตลอดเวลา</text>
+          <text class="dg-text-sm" x="646" y="268" text-anchor="middle" data-lang-en>moving base → must localise itself continuously</text>
+          <text class="dg-text-sm" x="646" y="288" text-anchor="middle" data-lang-th>ตัวอย่าง: หุ่นยนต์กำจัดวัชพืช รถแทรกเตอร์ไร้คนขับ</text>
+          <text class="dg-text-sm" x="646" y="288" text-anchor="middle" data-lang-en>e.g. weeding robot, driverless tractor</text>
+          <text class="dg-text-sm" x="646" y="76" text-anchor="middle" data-lang-th>หุ่นยนต์เดินทางไปหางาน</text>
+          <text class="dg-text-sm" x="646" y="76" text-anchor="middle" data-lang-en>the robot travels to the work</text>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 1.3</span><span data-lang-en>Figure 1.3</span></b>
+          <span data-lang-th> ความต่างพื้นฐาน: หุ่นยนต์ติดตั้งกับที่รอให้งานเข้ามาในปริมาตรทำงาน ส่วนหุ่นยนต์เคลื่อนที่ต้องเดินทางไปหางานเอง</span>
+          <span data-lang-en> The fundamental difference: a fixed robot waits for work to enter its workspace; a mobile robot must travel to the work.</span>
+        </figcaption>
+      </figure>
+
+      <figure class="anim" data-anim="ch01-compare">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 1.1 — สองวิธีในการเข้าถึงงาน</span>
+          <span data-lang-en>Animation 1.1 — Two ways of reaching the work</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 270" role="img" aria-label="Animated comparison of a fixed delta robot and a mobile field robot">
+            <!-- ============================ left: fixed delta robot ======= -->
+            <rect x="8" y="8" width="404" height="254" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="210" y="32" text-anchor="middle" data-lang-th>หุ่นยนต์ติดตั้งอยู่กับที่</text>
+            <text class="dg-text-b" x="210" y="32" text-anchor="middle" data-lang-en>Fixed robot</text>
+
+            <!-- gantry plate + delta struts -->
+            <rect x="130" y="52" width="150" height="12" rx="5" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+            <line id="a1-armA" x1="150" y1="64" x2="205" y2="130" class="dg-stroke-green" stroke-width="5" stroke-linecap="round"/>
+            <line id="a1-armB" x1="260" y1="64" x2="205" y2="130" class="dg-stroke-green" stroke-width="5" stroke-linecap="round"/>
+            <circle id="a1-eff" cx="205" cy="130" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <circle id="a1-held" cx="205" cy="144" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.5" opacity="0"/>
+
+            <!-- reachable envelope -->
+            <path d="M 205 74 m -110 0 a 110 110 0 0 0 220 0" class="dg-stroke-green" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.65"/>
+
+            <!-- conveyor + crate -->
+            <rect x="30" y="196" width="290" height="12" rx="6" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+            <g id="a1-fruits"></g>
+            <rect x="330" y="176" width="66" height="34" rx="6" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+            <text class="dg-text-sm" x="363" y="226" text-anchor="middle" data-lang-th>ลังบรรจุ</text>
+            <text class="dg-text-sm" x="363" y="226" text-anchor="middle" data-lang-en>crate</text>
+            <text class="dg-text-sm" x="100" y="240" text-anchor="middle" data-lang-th>งานวิ่งเข้าหาหุ่นยนต์</text>
+            <text class="dg-text-sm" x="100" y="240" text-anchor="middle" data-lang-en>work comes to the robot</text>
+
+            <!-- ============================ right: mobile robot =========== -->
+            <rect x="448" y="8" width="404" height="254" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="650" y="32" text-anchor="middle" data-lang-th>หุ่นยนต์เคลื่อนที่</text>
+            <text class="dg-text-b" x="650" y="32" text-anchor="middle" data-lang-en>Mobile robot</text>
+
+            <rect x="482" y="52" width="336" height="150" rx="8" class="dg-fill-green" opacity="0.4"/>
+            <path id="a1-path" d="M 502 72 L 798 72 L 798 112 L 502 112 L 502 152 L 798 152 L 798 190 L 502 190"
+                  class="dg-stroke" stroke-width="2.5" stroke-dasharray="7 5" opacity="0.6" fill="none"/>
+            <path id="a1-done" d="M 502 72 L 798 72 L 798 112 L 502 112 L 502 152 L 798 152 L 798 190 L 502 190"
+                  class="dg-stroke-gold" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <g id="a1-bot">
+              <rect x="-15" y="-11" width="30" height="22" rx="5" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+              <circle cx="-9" cy="13" r="5" class="dg-stroke" stroke-width="2" fill="none"/>
+              <circle cx="9" cy="13" r="5" class="dg-stroke" stroke-width="2" fill="none"/>
+              <circle cx="0" cy="-16" r="4" class="dg-fill-gold dg-stroke" stroke-width="1.5"/>
+            </g>
+            <text class="dg-text-sm" x="650" y="228" text-anchor="middle" data-lang-th>หุ่นยนต์เดินทางไปหางาน</text>
+            <text class="dg-text-sm" x="650" y="228" text-anchor="middle" data-lang-en>the robot travels to the work</text>
+
+            <!-- coverage bar -->
+            <rect x="502" y="240" width="296" height="10" rx="5" class="dg-fill-soft dg-stroke" stroke-width="1"/>
+            <rect id="a1-cov" x="502" y="240" width="0" height="10" rx="5" class="dg-fill-green"/>
+          </svg>
+
+          <span class="fig-label fig-label--muted" style="left:24.4%;top:88%">\( n_{\text{pick}} \)</span>
+          <span class="fig-label fig-label--muted" style="left:75.5%;top:97%">\( A_{\text{covered}}/A \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ความเร็ว</span><span data-lang-en>Speed</span>
+            <input type="range" data-anim-param="speed" data-unit="×" min="0.4" max="2.4" step="0.2" value="1">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 1.1</span><span data-lang-en>Animation 1.1</span></b>
+          <span data-lang-th> หุ่นยนต์ติดตั้งอยู่กับที่เพิ่มผลิตภาพด้วยจำนวนครั้งการหยิบต่อนาที \( n_{\text{pick}} \) ส่วนหุ่นยนต์เคลื่อนที่วัดผลิตภาพด้วยสัดส่วนพื้นที่ที่ครอบคลุมได้ \( A_{\text{covered}}/A \) ลองปรับความเร็วแล้วสังเกตว่าตัวเลขทั้งสองฝั่งเปลี่ยนไปคนละแบบ</span>
+          <span data-lang-en> A fixed robot raises output through picks per minute, \( n_{\text{pick}} \); a mobile robot through the fraction of the field it has covered, \( A_{\text{covered}}/A \). Change the speed and watch the two measures respond in quite different ways.</span>
+        </figcaption>
+      </figure>
+
+      <div class="compare">
+        <div class="compare__col compare__col--a">
+          <h4><i class="fa-solid fa-robot" style="color:var(--green-500)"></i> <span data-lang-th>หุ่นยนต์ติดตั้งอยู่กับที่</span><span data-lang-en>Fixed robot</span></h4>
+          <ul>
+            <li><span data-lang-th><strong>ฐานยึดแน่น</strong> กับพื้นหรือโครงสร้าง ตำแหน่งฐานเป็นจุดอ้างอิงคงที่</span><span data-lang-en><strong>Base is bolted</strong> to floor or frame; the base is a permanent reference point.</span></li>
+            <li><span data-lang-th>ปริมาตรทำงานจำกัดและคำนวณล่วงหน้าได้แม่นยำ</span><span data-lang-en>Workspace is bounded and can be computed exactly in advance.</span></li>
+            <li><span data-lang-th>ความแม่นยำสูงมาก (ระดับ 0.02–0.1 มม.) เพราะโครงสร้างแข็งแรงและไม่มีการสะสมความคลาดเคลื่อนจากการเคลื่อนที่</span><span data-lang-en>Very high accuracy (0.02–0.1 mm) thanks to a rigid structure and no accumulated travel error.</span></li>
+            <li><span data-lang-th>สภาพแวดล้อมถูกจัดเตรียมให้ (structured environment) แสงคงที่ ชิ้นงานมาในตำแหน่งที่คาดเดาได้</span><span data-lang-en>Operates in a structured environment: stable lighting, parts arrive predictably.</span></li>
+            <li><span data-lang-th>ปัญหาหลักคือ <em>จลนศาสตร์และการวางแผนเส้นทางในปริมาตรทำงาน</em> (บทที่ 8–9)</span><span data-lang-en>Core problem is <em>kinematics and path planning inside the workspace</em> (Chapters 8–9).</span></li>
+          </ul>
+        </div>
+        <div class="compare__col compare__col--b">
+          <h4><i class="fa-solid fa-tractor" style="color:var(--sky-500)"></i> <span data-lang-th>หุ่นยนต์เคลื่อนที่</span><span data-lang-en>Mobile robot</span></h4>
+          <ul>
+            <li><span data-lang-th><strong>ฐานเคลื่อนที่ได้</strong> ด้วยล้อ สายพาน ขา หรือใบพัด</span><span data-lang-en><strong>The base moves</strong> on wheels, tracks, legs or rotors.</span></li>
+            <li><span data-lang-th>พื้นที่ทำงานกว้างแทบไม่จำกัด แต่ต้องรู้ตำแหน่งตัวเอง (localization) ตลอดเวลา</span><span data-lang-en>Working area is effectively unbounded, but the robot must continuously localise itself.</span></li>
+            <li><span data-lang-th>ความแม่นยำต่ำกว่า (ระดับเซนติเมตร) เพราะล้อลื่นไถล พื้นไม่เรียบ และความคลาดเคลื่อนสะสม</span><span data-lang-en>Lower accuracy (centimetre level) due to wheel slip, uneven ground and accumulated odometry error.</span></li>
+            <li><span data-lang-th>สภาพแวดล้อมไม่ถูกจัดเตรียม (unstructured) แสง ฝุ่น ฝน และสิ่งกีดขวางเปลี่ยนตลอด</span><span data-lang-en>Environment is unstructured: light, dust, rain and obstacles change constantly.</span></li>
+            <li><span data-lang-th>ปัญหาหลักคือ <em>การนำทาง การหลบสิ่งกีดขวาง และการวางแผนครอบคลุมพื้นที่</em> (บทที่ 10)</span><span data-lang-en>Core problems are <em>navigation, obstacle avoidance and coverage planning</em> (Chapter 10).</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ประเด็นเปรียบเทียบ</span><span data-lang-en>Aspect</span></th>
+              <th><span data-lang-th>แบบติดตั้งอยู่กับที่</span><span data-lang-en>Fixed</span></th>
+              <th><span data-lang-th>แบบเคลื่อนที่</span><span data-lang-en>Mobile</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span data-lang-th>ระบบพิกัดอ้างอิง</span><span data-lang-en>Reference frame</span></td><td><span data-lang-th>คงที่ที่ฐานหุ่นยนต์</span><span data-lang-en>Fixed at the robot base</span></td><td><span data-lang-th>เคลื่อนที่ตามตัวหุ่นยนต์ ต้องอ้างอิงกับแผนที่/GNSS</span><span data-lang-en>Moves with the robot; referenced to a map or GNSS</span></td></tr>
+            <tr><td><span data-lang-th>แหล่งพลังงาน</span><span data-lang-en>Power source</span></td><td><span data-lang-th>ไฟจากระบบสายส่ง ไม่จำกัดเวลา</span><span data-lang-en>Mains power, unlimited run time</span></td><td><span data-lang-th>แบตเตอรี่หรือเครื่องยนต์ จำกัดเวลาปฏิบัติงาน</span><span data-lang-en>Battery or engine; limited endurance</span></td></tr>
+            <tr><td><span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></td><td><span data-lang-th>ล้อมรั้ว/ม่านแสง กันคนเข้าเขตทำงาน</span><span data-lang-en>Fencing or light curtains keep people out</span></td><td><span data-lang-th>ทำงานร่วมกับคนและสัตว์ในพื้นที่เปิด ต้องมีระบบตรวจจับรอบคัน</span><span data-lang-en>Shares open space with people and animals; needs all-round detection</span></td></tr>
+            <tr><td><span data-lang-th>งานเกษตรที่เหมาะ</span><span data-lang-en>Typical agricultural task</span></td><td><span data-lang-th>คัดแยก บรรจุ เพาะกล้า ตัดแต่งในโรงเรือน</span><span data-lang-en>Grading, packing, seedling handling, in-greenhouse trimming</span></td><td><span data-lang-th>หว่าน พ่นสาร กำจัดวัชพืช เก็บเกี่ยวในแปลง สำรวจ</span><span data-lang-en>Seeding, spraying, weeding, in-field harvesting, scouting</span></td></tr>
+            <tr><td><span data-lang-th>ต้นทุนเริ่มต้น</span><span data-lang-en>Capital cost</span></td><td><span data-lang-th>สูงที่โครงสร้างและการติดตั้งสายการผลิต</span><span data-lang-en>High in structure and line installation</span></td><td><span data-lang-th>สูงที่ระบบรับรู้และการนำทาง</span><span data-lang-en>High in perception and navigation systems</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-lightbulb"></i> <span data-lang-th>กรณีผสม (Hybrid)</span><span data-lang-en>Hybrid cases</span></div>
+        <p>
+          <span data-lang-th>หุ่นยนต์เก็บเกี่ยวสตรอว์เบอร์รีจำนวนมากเป็นแบบผสม คือมีแขนกล (fixed manipulator) ติดตั้งอยู่บนฐานเคลื่อนที่ (mobile platform) เรียกว่า <strong>mobile manipulator</strong> การวิเคราะห์ระบบเช่นนี้ต้องใช้ความรู้ทั้งบทที่ 9 และบทที่ 10 ร่วมกัน</span>
+          <span data-lang-en>Many strawberry-harvesting robots are hybrids: a manipulator arm mounted on a mobile platform — a <strong>mobile manipulator</strong>. Analysing one requires Chapter 9 and Chapter 10 together.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 1.6 --------- -->
+    <section id="applications">
+      <h2><span data-lang-th>1.6 การประยุกต์ในงานเกษตร</span><span data-lang-en>1.6 Applications in agriculture</span></h2>
+
+      <h3><span data-lang-th>1.6.1 งานที่เหมาะกับหุ่นยนต์ติดตั้งอยู่กับที่</span><span data-lang-en>1.6.1 Tasks suited to fixed robots</span></h3>
+      <div class="grid grid--3">
+        <div class="card">
+          <div class="card__icon"><i class="fa-solid fa-layer-group"></i></div>
+          <h3><span data-lang-th>คัดแยกและบรรจุผลผลิต</span><span data-lang-en>Grading &amp; packing</span></h3>
+          <p><span data-lang-th>หุ่นยนต์เดลต้าความเร็วสูงหยิบผลไม้จากสายพานตามการจำแนกด้วยกล้อง ทำได้ถึง 100–150 ครั้ง/นาที</span><span data-lang-en>High-speed delta robots pick fruit off a conveyor from camera classification, at 100–150 picks per minute.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--sky"><i class="fa-solid fa-seedling"></i></div>
+          <h3><span data-lang-th>เพาะกล้าและย้ายกล้า</span><span data-lang-en>Seedling transplanting</span></h3>
+          <p><span data-lang-th>แขนกลย้ายกล้าจากถาดเพาะไปยังถาดปลูก คัดกล้าอ่อนแอออกจากการวัดพื้นที่ใบด้วยภาพ</span><span data-lang-en>Arms move plugs from nursery to growing trays, culling weak seedlings from image-based leaf-area measurement.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--gold"><i class="fa-solid fa-cow"></i></div>
+          <h3><span data-lang-th>หุ่นยนต์รีดนม</span><span data-lang-en>Milking robots</span></h3>
+          <p><span data-lang-th>แขนกลใต้ตัวโคค้นหาหัวนมด้วยเซนเซอร์ 3 มิติ วัวเดินเข้ามาหาเครื่องเอง — ฐานอยู่กับที่ แต่ “ชิ้นงาน” เคลื่อนที่ได้</span><span data-lang-en>An arm under the cow finds the teats with a 3-D sensor; the cow walks to the machine — a fixed base with a “workpiece” that moves.</span></p>
+        </div>
+      </div>
+
+      <h3><span data-lang-th>1.6.2 งานที่เหมาะกับหุ่นยนต์เคลื่อนที่</span><span data-lang-en>1.6.2 Tasks suited to mobile robots</span></h3>
+      <div class="grid grid--3">
+        <div class="card">
+          <div class="card__icon card__icon--steel"><i class="fa-solid fa-tractor"></i></div>
+          <h3><span data-lang-th>รถแทรกเตอร์ไร้คนขับ</span><span data-lang-en>Driverless tractors</span></h3>
+          <p><span data-lang-th>นำทางด้วย RTK-GNSS ความแม่นยำ ±2 ซม. ทำงานไถ หว่าน และพ่นตามแผนเส้นทางที่วางไว้ล่วงหน้า</span><span data-lang-en>RTK-GNSS guidance at ±2 cm executes tillage, seeding and spraying along a pre-planned coverage path.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon"><i class="fa-solid fa-bugs"></i></div>
+          <h3><span data-lang-th>หุ่นยนต์กำจัดวัชพืช</span><span data-lang-en>Weeding robots</span></h3>
+          <p><span data-lang-th>จำแนกพืชปลูกกับวัชพืชด้วยกล้องและโมเดลเรียนรู้เชิงลึก แล้วกำจัดเฉพาะจุดด้วยใบมีด เลเซอร์ หรือหัวพ่นแม่นยำ</span><span data-lang-en>Vision plus deep learning separates crop from weed, then removes only the weed with a blade, laser or precision nozzle.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--sky"><i class="fa-solid fa-helicopter"></i></div>
+          <h3><span data-lang-th>อากาศยานไร้คนขับ</span><span data-lang-en>Agricultural UAVs</span></h3>
+          <p><span data-lang-th>พ่นสารและถ่ายภาพหลายช่วงคลื่นเพื่อทำแผนที่ดัชนีพืชพรรณ (NDVI) สำหรับการใส่ปุ๋ยตามอัตราแปรผัน</span><span data-lang-en>Spraying and multispectral mapping (NDVI) that feeds variable-rate fertilizer prescriptions.</span></p>
+        </div>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-flag"></i> <span data-lang-th>บริบทประเทศไทย</span><span data-lang-en>The Thai context</span></div>
+        <p>
+          <span data-lang-th>แปลงเกษตรไทยส่วนใหญ่มีขนาดเล็กและรูปร่างไม่สม่ำเสมอ พืชเศรษฐกิจหลักอย่างข้าว อ้อย ยางพารา ทุเรียน และมันสำปะหลัง มีลักษณะการเก็บเกี่ยวต่างกันมาก ทำให้การนำหุ่นยนต์ขนาดใหญ่แบบยุโรปมาใช้โดยตรงมักไม่คุ้มทุน แนวทางที่เหมาะกว่าคือ <strong>หุ่นยนต์ขนาดเล็กหลายตัว (swarm of small robots)</strong> หรือ <strong>ระบบติดตั้งกับที่ในโรงคัดบรรจุ</strong> ซึ่งได้ผลตอบแทนเร็วกว่า</span>
+          <span data-lang-en>Thai farms are typically small and irregularly shaped, and the major crops — rice, sugarcane, rubber, durian and cassava — are harvested in very different ways. Importing large European-style robots directly is often uneconomic. A better fit is usually a <strong>swarm of small robots</strong>, or <strong>fixed systems inside the packhouse</strong>, which pay back faster.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 1.7 --------- -->
+    <section id="autonomy">
+      <h2><span data-lang-th>1.7 ระดับความเป็นอัตโนมัติ</span><span data-lang-en>1.7 Levels of autonomy</span></h2>
+
+      <p>
+        <span data-lang-th>“หุ่นยนต์” ไม่ใช่สถานะสองค่าแบบมี/ไม่มี แต่เป็นสเปกตรัม ตารางต่อไปนี้ดัดแปลงจากแนวทางที่ใช้ในเครื่องจักรกลเกษตรอัตโนมัติ (สอดคล้องกับกรอบของ ISO 18497)</span>
+        <span data-lang-en>“Robot” is not a binary property but a spectrum. The table below is adapted from the levels used for highly automated agricultural machines (consistent with the ISO 18497 framework).</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ระดับ</span><span data-lang-en>Level</span></th>
+              <th><span data-lang-th>ชื่อเรียก</span><span data-lang-en>Name</span></th>
+              <th><span data-lang-th>เครื่องทำอะไรได้เอง</span><span data-lang-en>What the machine does</span></th>
+              <th><span data-lang-th>บทบาทของคน</span><span data-lang-en>Human role</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td><span data-lang-th>ควบคุมด้วยคน</span><span data-lang-en>Manual</span></td><td><span data-lang-th>ไม่มี</span><span data-lang-en>Nothing</span></td><td><span data-lang-th>บังคับทุกอย่าง</span><span data-lang-en>Operates everything</span></td></tr>
+            <tr><td>1</td><td><span data-lang-th>ช่วยบังคับ</span><span data-lang-en>Assisted</span></td><td><span data-lang-th>ช่วยรักษาแนว เช่น พวงมาลัยอัตโนมัติ</span><span data-lang-en>Keeps a line, e.g. auto-steer</span></td><td><span data-lang-th>อยู่บนเครื่องตลอดเวลา</span><span data-lang-en>On board at all times</span></td></tr>
+            <tr><td>2</td><td><span data-lang-th>อัตโนมัติบางส่วน</span><span data-lang-en>Partial automation</span></td><td><span data-lang-th>ควบคุมทั้งการขับและอุปกรณ์ต่อพ่วงในงานเดียว</span><span data-lang-en>Controls both driving and implement for one task</span></td><td><span data-lang-th>เฝ้าระวังและพร้อมเข้าแทรก</span><span data-lang-en>Monitors, ready to intervene</span></td></tr>
+            <tr><td>3</td><td><span data-lang-th>อัตโนมัติมีเงื่อนไข</span><span data-lang-en>Conditional automation</span></td><td><span data-lang-th>ทำงานเองได้ในสภาพที่กำหนด และร้องขอคนเมื่อเจอสถานการณ์นอกขอบเขต</span><span data-lang-en>Runs alone within defined conditions; requests help outside them</span></td><td><span data-lang-th>ตอบสนองเมื่อถูกเรียก</span><span data-lang-en>Responds when called</span></td></tr>
+            <tr><td>4</td><td><span data-lang-th>อัตโนมัติระดับสูง</span><span data-lang-en>High automation</span></td><td><span data-lang-th>ทำงานจบทั้งแปลงเองรวมถึงการกลับหัวแปลงและจัดการเหตุขัดข้อง</span><span data-lang-en>Completes the whole field, including headland turns and fault handling</span></td><td><span data-lang-th>กำกับดูแลจากระยะไกล</span><span data-lang-en>Supervises remotely</span></td></tr>
+            <tr><td>5</td><td><span data-lang-th>อัตโนมัติเต็มรูปแบบ</span><span data-lang-en>Full automation</span></td><td><span data-lang-th>วางแผนฤดูกาลและปฏิบัติเองทั้งหมด</span><span data-lang-en>Plans the season and executes it unaided</span></td><td><span data-lang-th>กำหนดเป้าหมายเชิงนโยบายเท่านั้น</span><span data-lang-en>Sets goals only</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <span data-lang-th>เครื่องจักรเกษตรเชิงพาณิชย์ส่วนใหญ่ในปัจจุบันอยู่ที่ระดับ 2–3 ส่วนงานวิจัยกำลังผลักดันไปสู่ระดับ 4 ข้อจำกัดที่แท้จริงมักไม่ใช่เรื่องการควบคุม แต่เป็นเรื่อง <strong>การรับรู้ (perception)</strong> และ <strong>ความปลอดภัยเมื่อทำงานร่วมกับคน</strong></span>
+        <span data-lang-en>Most commercial agricultural machines sit at level 2–3 today, with research pushing toward level 4. The real bottleneck is rarely control; it is <strong>perception</strong> and <strong>safety around people</strong>.</span>
+      </p>
+    </section>
+
+    <!-- ---------------------------------------------------- 1.8 --------- -->
+    <section id="challenges">
+      <h2><span data-lang-th>1.8 ความท้าทายเฉพาะของงานเกษตร</span><span data-lang-en>1.8 Challenges specific to agriculture</span></h2>
+
+      <p>
+        <span data-lang-th>หุ่นยนต์ในโรงงานทำงานในโลกที่มนุษย์จัดระเบียบไว้ให้แล้ว ส่วนหุ่นยนต์เกษตรต้องทำงานในโลกที่ธรรมชาติเป็นผู้กำหนด ความแตกต่างนี้สร้างโจทย์ 6 ข้อที่จะกลับมาปรากฏซ้ำตลอดทั้งวิชา</span>
+        <span data-lang-en>Factory robots work in a world humans have organised. Agricultural robots work in a world nature organises. That difference creates six problems which will recur throughout the course.</span>
+      </p>
+
+      <ol class="steps">
+        <li><b><span data-lang-th>ความแปรผันทางชีวภาพ</span><span data-lang-en>Biological variability</span></b><br>
+          <span data-lang-th>ไม่มีมะม่วงสองผลที่เหมือนกัน ขนาด สี ตำแหน่งขั้ว และความสุกต่างกันหมด อัลกอริทึมจึงต้องทนต่อความแปรผัน ไม่ใช่สมมติว่าชิ้นงานเหมือนกันทุกชิ้น</span>
+          <span data-lang-en>No two mangoes are alike in size, colour, stem position or ripeness. Algorithms must tolerate variation rather than assume identical parts.</span></li>
+        <li><b><span data-lang-th>สภาพแวดล้อมไม่ถูกจัดระเบียบ</span><span data-lang-en>Unstructured environment</span></b><br>
+          <span data-lang-th>แสงแดดเปลี่ยนความเข้มนับร้อยเท่าในหนึ่งวัน ใบไม้บังผล ดินเป็นหลุมบ่อ — เซนเซอร์ที่ทำงานดีในห้องแล็บอาจล้มเหลวกลางแปลง</span>
+          <span data-lang-en>Sunlight varies by two orders of magnitude in a day, leaves occlude fruit, soil is rutted. A sensor that works in the lab may fail in the field.</span></li>
+        <li><b><span data-lang-th>ความบอบบางของผลผลิต</span><span data-lang-en>Delicate produce</span></b><br>
+          <span data-lang-th>แรงจับที่มากเกินไปทำให้เกิดรอยช้ำที่เห็นชัดในอีกสามวัน จึงต้องควบคุมแรง (force control) ไม่ใช่ควบคุมแค่ตำแหน่ง</span>
+          <span data-lang-en>Excess grip force produces bruising that appears three days later, so force control matters, not just position control.</span></li>
+        <li><b><span data-lang-th>ฤดูกาลและอัตราการใช้งาน</span><span data-lang-en>Seasonality and utilisation</span></b><br>
+          <span data-lang-th>เครื่องเก็บเกี่ยวอาจถูกใช้เพียง 3 สัปดาห์ต่อปี การคืนทุนจึงยากกว่าหุ่นยนต์โรงงานที่เดินเครื่อง 300 วัน/ปี</span>
+          <span data-lang-en>A harvester may run three weeks a year, so payback is far harder than for a factory robot running 300 days a year.</span></li>
+        <li><b><span data-lang-th>สภาพการใช้งานที่รุนแรง</span><span data-lang-en>Harsh operating conditions</span></b><br>
+          <span data-lang-th>ฝุ่น โคลน น้ำฉีดล้าง แอมโมเนียในโรงเรือนสัตว์ และการสั่นสะเทือน ต้องเลือกอุปกรณ์ตามระดับการป้องกัน IP อย่างจริงจัง (เช่น IP65 ขึ้นไป)</span>
+          <span data-lang-en>Dust, mud, wash-down water, ammonia in livestock housing and vibration force serious attention to IP ratings (IP65 and above).</span></li>
+        <li><b><span data-lang-th>ความปลอดภัยในพื้นที่เปิด</span><span data-lang-en>Safety in open areas</span></b><br>
+          <span data-lang-th>ไม่สามารถล้อมรั้วทั้งแปลงได้ เครื่องจักรจึงต้องตรวจจับคน สัตว์ และสิ่งกีดขวางได้เอง และมีระบบหยุดฉุกเฉินที่เชื่อถือได้</span>
+          <span data-lang-en>You cannot fence an entire field, so the machine itself must detect people, animals and obstacles, and carry a dependable emergency stop.</span></li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------------- 1.9 --------- -->
+    <section id="activity">
+      <h2><span data-lang-th>1.9 กิจกรรมในชั้นเรียน</span><span data-lang-en>1.9 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 1.1 — ถอดรหัสเครื่องจักรเกษตร</span><span data-lang-en>Activity 1.1 — Reverse-engineer a farm machine</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 30 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Groups of 3–4 &middot; 30 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>จุดประสงค์</span><span data-lang-en>Purpose</span></h4>
+          <p>
+            <span data-lang-th>ฝึกมองเครื่องจักรเกษตรที่คุ้นเคยให้ออกเป็นองค์ประกอบ 5 ส่วนตามรูปที่ 1.2 ซึ่งเป็นทักษะที่จะใช้ซ้ำในทุกบทที่เหลือ</span>
+            <span data-lang-en>Practise seeing a familiar farm machine as the five blocks of Figure 1.2 — a skill reused in every remaining chapter.</span>
+          </p>
+
+          <h4><span data-lang-th>ขั้นตอน</span><span data-lang-en>Steps</span></h4>
+          <ol>
+            <li><span data-lang-th>เลือกเครื่องจักรเกษตรอัตโนมัติมา 1 เครื่อง (เช่น โรงเรือนเมล่อนควบคุมอัตโนมัติ เครื่องคัดขนาดทุเรียน หรือโดรนพ่นสาร)</span><span data-lang-en>Pick one automated agricultural machine (an automated melon greenhouse, a durian size-grader, a spraying drone).</span></li>
+            <li><span data-lang-th>เขียนแผนภาพบล็อกตามรูปที่ 1.2 ระบุให้ครบทั้ง 5 องค์ประกอบ พร้อมชื่ออุปกรณ์จริงและชนิดสัญญาณ</span><span data-lang-en>Draw the block diagram of Figure 1.2, naming all five blocks with real devices and signal types.</span></li>
+            <li><span data-lang-th>ระบุบนแผนภาพว่าอะไรคือ \( r(t) \), \( y(t) \) และ \( d(t) \) ของเครื่องนี้</span><span data-lang-en>Mark on the diagram what \( r(t) \), \( y(t) \) and \( d(t) \) are for this machine.</span></li>
+            <li><span data-lang-th>ระบุว่าเป็นหุ่นยนต์แบบติดตั้งกับที่ เคลื่อนที่ หรือแบบผสม พร้อมเหตุผล</span><span data-lang-en>State whether it is fixed, mobile or hybrid, with a reason.</span></li>
+            <li><span data-lang-th>ระบุความท้าทายจากหัวข้อ 1.8 ที่กระทบเครื่องนี้มากที่สุด 2 ข้อ และเสนอแนวทางลดผลกระทบ</span><span data-lang-en>Identify the two challenges from §1.8 that hit it hardest, and propose a mitigation for each.</span></li>
+            <li><span data-lang-th>นำเสนอ 3 นาทีต่อกลุ่ม</span><span data-lang-en>Present for three minutes per group.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>แผนภาพบล็อก 1 หน้า (เขียนมือได้) ถ่ายภาพส่งท้ายคาบ</span><span data-lang-en>One page of block diagram, hand-drawn is fine, photographed and submitted at the end of the hour.</span></li>
+            <li><span data-lang-th>รายชื่อสมาชิกกลุ่มและบทบาทของแต่ละคน</span><span data-lang-en>A group member list with each person's role.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- 1.10 --------- -->
+    <section id="lab">
+      <h2><span data-lang-th>1.10 ปฏิบัติการที่ 1</span><span data-lang-en>1.10 Laboratory 1</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <h3><span data-lang-th>ปฏิบัติการที่ 1 — สำรวจระบบเมคคาทรอนิกส์และวัดสัญญาณเบื้องต้น</span><span data-lang-en>Laboratory 1 — Surveying a mechatronic system and measuring its signals</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 2 ชั่วโมง &middot; ห้องปฏิบัติการระบบอัตโนมัติ</span><span data-lang-en>Groups of 3–4 &middot; 2 hours &middot; Automation laboratory</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ข้อ 2–4</span><span data-lang-en>Maps to objectives 2–4</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 5% ของคะแนนรวม</span><span data-lang-en>5% of the course total</span></span>
+          </div>
+
+          <h4><span data-lang-th>วัตถุประสงค์ของปฏิบัติการ</span><span data-lang-en>Laboratory objectives</span></h4>
+          <ol>
+            <li><span data-lang-th>ระบุองค์ประกอบทั้ง 5 ส่วนบนอุปกรณ์จริงในห้องปฏิบัติการได้</span><span data-lang-en>Identify all five blocks on real hardware in the laboratory.</span></li>
+            <li><span data-lang-th>วัดและจำแนกชนิดสัญญาณ (ดิจิทัล/อนาล็อก) ด้วยมัลติมิเตอร์ได้อย่างปลอดภัย</span><span data-lang-en>Safely measure and classify signals, digital or analogue, with a multimeter.</span></li>
+            <li><span data-lang-th>คำนวณความสามารถในการทำงานของเครื่องจักร และเปรียบเทียบทางเลือกแบบติดตั้งกับที่และแบบเคลื่อนที่</span><span data-lang-en>Compute machine work capacity and compare a fixed against a mobile solution.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>อุปกรณ์</span><span data-lang-en>Equipment</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ชุดฝึก PLC พร้อมเซนเซอร์พร็อกซิมิตีและโซลินอยด์วาล์ว (1 ชุด/กลุ่ม)</span><span data-lang-en>PLC trainer with a proximity sensor and a solenoid valve, one per group</span></li>
+            <li><span data-lang-th>เซนเซอร์ความชื้นดินแบบ capacitive และแหล่งจ่ายไฟ 24 VDC</span><span data-lang-en>Capacitive soil-moisture probe and a 24 VDC supply</span></li>
+            <li><span data-lang-th>ดิจิทัลมัลติมิเตอร์ และสายวัดแบบปากคีบ</span><span data-lang-en>Digital multimeter with clip leads</span></li>
+            <li><span data-lang-th>หุ่นยนต์เดลต้าสาธิต และแพลตฟอร์มหุ่นยนต์เคลื่อนที่ขนาดเล็ก (สาธิตรวมทั้งชั้น)</span><span data-lang-en>Demonstration delta robot and a small mobile-robot platform, shown to the whole class</span></li>
+            <li><span data-lang-th>ตลับเมตร และนาฬิกาจับเวลา</span><span data-lang-en>Tape measure and stopwatch</span></li>
+          </ul>
+
+          <h4><span data-lang-th>ขั้นตอนการทดลอง</span><span data-lang-en>Procedure</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>ตรวจความปลอดภัยก่อนเริ่ม</span><span data-lang-en>Safety check</span></b><br>
+              <span data-lang-th>ระบุตำแหน่งปุ่มหยุดฉุกเฉินของชุดฝึก ตรวจสภาพสายไฟ และยืนยันว่าแหล่งจ่ายไฟปิดอยู่ก่อนต่อวงจรทุกครั้ง</span>
+              <span data-lang-en>Locate the E-stop on your trainer, inspect the leads, and confirm the supply is off before making any connection.</span></li>
+            <li><b><span data-lang-th>สำรวจและถอดองค์ประกอบ</span><span data-lang-en>Survey and decompose</span></b><br>
+              <span data-lang-th>สำรวจชุดฝึกที่ได้รับ ระบุว่าอุปกรณ์ใดทำหน้าที่เป็นเซนเซอร์ คอนโทรลเลอร์ แอคชูเอเตอร์ ระบบทางกล และแหล่งพลังงาน บันทึกลงตารางที่ 1.1</span>
+              <span data-lang-en>Walk through your trainer and record which device plays the role of sensor, controller, actuator, mechanism and power source in Table 1.1.</span></li>
+            <li><b><span data-lang-th>วัดสัญญาณ</span><span data-lang-en>Measure the signals</span></b><br>
+              <span data-lang-th>ใช้มัลติมิเตอร์วัดแรงดันที่ขาสัญญาณของเซนเซอร์พร็อกซิมิตีในสภาวะมีวัตถุและไม่มีวัตถุ จากนั้นวัดแรงดันของเซนเซอร์ความชื้นดินเมื่อจุ่มในดินแห้งและดินเปียก บันทึกผลลงตาราง</span>
+              <span data-lang-en>Measure the proximity sensor's signal voltage with and without a target, then the moisture probe's voltage in dry and in wet soil. Record both.</span></li>
+            <li><b><span data-lang-th>จำแนกชนิดสัญญาณ</span><span data-lang-en>Classify each signal</span></b><br>
+              <span data-lang-th>ระบุว่าสัญญาณที่วัดได้แต่ละตัวเป็นดิจิทัลหรืออนาล็อก พร้อมเหตุผลจากค่าที่วัดได้จริง</span>
+              <span data-lang-en>State whether each measured signal is digital or analogue, justified by the readings themselves.</span></li>
+            <li><b><span data-lang-th>สังเกตการสาธิตหุ่นยนต์</span><span data-lang-en>Observe the robot demonstrations</span></b><br>
+              <span data-lang-th>วัดขอบเขตปริมาตรทำงานโดยประมาณของหุ่นยนต์เดลต้า และจับเวลาการเคลื่อนที่ของหุ่นยนต์เคลื่อนที่ในระยะ 5 เมตร ทำซ้ำ 3 ครั้ง</span>
+              <span data-lang-en>Estimate the delta robot's workspace envelope, and time the mobile platform over 5 m, repeated three times.</span></li>
+            <li><b><span data-lang-th>เขียนแผนภาพบล็อก</span><span data-lang-en>Draw the block diagram</span></b><br>
+              <span data-lang-th>เขียนแผนภาพบล็อกของชุดฝึกที่ได้รับ พร้อมระบุ \( r(t) \), \( e(t) \), \( u(t) \), \( y(t) \) และ \( d(t) \) ให้ครบ</span>
+              <span data-lang-en>Draw your trainer's block diagram, labelling \( r(t) \), \( e(t) \), \( u(t) \), \( y(t) \) and \( d(t) \).</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 1.1</span><span data-lang-en>Data sheet 1.1</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>อุปกรณ์</span><span data-lang-en>Device</span></th>
+                  <th><span data-lang-th>ทำหน้าที่เป็นบล็อกใด</span><span data-lang-en>Which block</span></th>
+                  <th><span data-lang-th>ชนิดสัญญาณ</span><span data-lang-en>Signal type</span></th>
+                  <th><span data-lang-th>ค่าที่วัดได้ (สภาวะ 1 / สภาวะ 2)</span><span data-lang-en>Reading (state 1 / state 2)</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>เซนเซอร์พร็อกซิมิตี</span><span data-lang-en>Proximity sensor</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>เซนเซอร์ความชื้นดิน</span><span data-lang-en>Soil-moisture probe</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>โซลินอยด์วาล์ว</span><span data-lang-en>Solenoid valve</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ชุดควบคุม</span><span data-lang-en>Control unit</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>แหล่งจ่ายไฟ</span><span data-lang-en>Power supply</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>การวิเคราะห์ผล</span><span data-lang-en>Analysis</span></h4>
+          <p>
+            <span data-lang-th>ความสามารถในการทำงานเชิงพื้นที่ของเครื่องจักรเกษตร (effective field capacity) คำนวณได้จาก</span>
+            <span data-lang-en>The effective field capacity of an agricultural machine is</span>
+          </p>
+
+          <div class="eq">
+            <div class="eq__body">$$ C_e \;=\; \frac{w \, v \, \eta_f}{10} $$</div>
+            <div class="eq__num">(1.3)</div>
+          </div>
+
+          <div class="where">
+            <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+            <ul>
+              <li>\( C_e \) — <span data-lang-th>ความสามารถในการทำงาน (ha/h)</span><span data-lang-en>effective field capacity (ha/h)</span></li>
+              <li>\( w \) — <span data-lang-th>ความกว้างการทำงานจริง (m)</span><span data-lang-en>effective working width (m)</span></li>
+              <li>\( v \) — <span data-lang-th>ความเร็วเดินหน้า (km/h)</span><span data-lang-en>forward speed (km/h)</span></li>
+              <li>\( \eta_f \) — <span data-lang-th>ประสิทธิภาพการทำงานในแปลง (0–1) ซึ่งรวมเวลาที่เสียไปกับการกลับหัวแปลงและการเติมวัสดุ</span><span data-lang-en>field efficiency (0–1), absorbing turning and refilling time</span></li>
+              <li><span data-lang-th>เลข 10 คือค่าคงที่แปลงหน่วยจาก m&middot;km/h ให้เป็น ha/h</span><span data-lang-en>the constant 10 converts m&middot;km/h into ha/h</span></li>
+            </ul>
+          </div>
+
+          <p><span data-lang-th>ตอบคำถามต่อไปนี้ในรายงาน</span><span data-lang-en>Answer the following in your report:</span></p>
+          <ol>
+            <li><span data-lang-th>จากความเร็วที่จับเวลาได้ สมมติให้หุ่นยนต์เคลื่อนที่มีความกว้างการทำงาน \( w = 1.2 \) m และ \( \eta_f = 0.70 \) จงคำนวณ \( C_e \) และเวลาที่ใช้ครอบคลุมแปลงขนาด 1.6 ha จากความสัมพันธ์ \( t = A / C_e \)</span><span data-lang-en>From your timed speed, assume the mobile platform has \( w = 1.2 \) m and \( \eta_f = 0.70 \). Compute \( C_e \), then the time needed to cover a 1.6 ha field using \( t = A / C_e \).</span></li>
+            <li><span data-lang-th>หากต้องเพิ่มผลิตภาพเป็นสองเท่า ระหว่างการเพิ่ม \( v \) เป็นสองเท่า กับการเพิ่ม \( w \) เป็นสองเท่า ทางเลือกใดทำได้จริงกว่าในแปลงเกษตรไทย เพราะเหตุใด</span><span data-lang-en>To double productivity, is doubling \( v \) or doubling \( w \) more realistic on a Thai farm, and why?</span></li>
+            <li><span data-lang-th>สัญญาณใดในตารางที่ 1.1 เป็นอนาล็อก และเหตุใดจึงต้องผ่านวงจรแปลงสัญญาณก่อนเข้าคอนโทรลเลอร์</span><span data-lang-en>Which signals in Table 1.1 are analogue, and why must they pass through a conversion stage before reaching the controller?</span></li>
+            <li><span data-lang-th>สำหรับงานคัดแยกผลผลิตหลังการเก็บเกี่ยว ควรเลือกหุ่นยนต์แบบติดตั้งกับที่หรือแบบเคลื่อนที่ ให้เหตุผลอย่างน้อย 3 ข้อโดยอ้างอิงตารางเปรียบเทียบในหัวข้อ 1.5</span><span data-lang-en>For post-harvest grading, would you choose a fixed or a mobile robot? Give at least three reasons drawn from the comparison table in §1.5.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>Deliverables</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานปฏิบัติการความยาวไม่เกิน 4 หน้า ส่งภายใน 1 สัปดาห์</span><span data-lang-en>A laboratory report of at most four pages, due within one week.</span></li>
+            <li><span data-lang-th>ตารางบันทึกผลที่ 1.1 ที่กรอกครบถ้วน</span><span data-lang-en>The completed data sheet 1.1.</span></li>
+            <li><span data-lang-th>แผนภาพบล็อกพร้อมป้ายกำกับสัญญาณครบทุกเส้น</span><span data-lang-en>The block diagram with every signal labelled.</span></li>
+            <li><span data-lang-th>การคำนวณตามสมการ (1.3) พร้อมแสดงหน่วยทุกขั้นตอน</span><span data-lang-en>The calculation from equation (1.3), showing units at every step.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>ระบุองค์ประกอบทั้ง 5 ส่วนได้ถูกต้องครบถ้วน</span><span data-lang-en>All five blocks identified correctly</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>การวัดและจำแนกชนิดสัญญาณถูกต้อง พร้อมหน่วย</span><span data-lang-en>Measurements and signal classification correct, with units</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>แผนภาพบล็อกและการกำกับสัญญาณ</span><span data-lang-en>Block diagram and signal labelling</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การคำนวณและการวิเคราะห์เชิงเหตุผล</span><span data-lang-en>Calculation and reasoned analysis</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ความปลอดภัยและความเป็นระเบียบในการปฏิบัติงาน</span><span data-lang-en>Safe and orderly laboratory practice</span></td><td>10</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--danger" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>ความปลอดภัยในห้องปฏิบัติการ</span><span data-lang-en>Laboratory safety</span></div>
+            <p>
+              <span data-lang-th>ตั้งแต่บทนี้เป็นต้นไป เราทำงานกับไฟฟ้า 24 VDC/220 VAC และเครื่องจักรที่เคลื่อนที่ได้ นักศึกษาต้องผ่านการอบรมความปลอดภัยก่อนเข้าห้องปฏิบัติการ ทราบตำแหน่งปุ่มหยุดฉุกเฉิน (E-stop) ทุกจุด และปฏิบัติตามหลัก <strong>lockout–tagout</strong> ทุกครั้งก่อนต่อหรือแก้ไขวงจร ห้ามเข้าเขตทำงานของหุ่นยนต์ขณะจ่ายไฟโดยเด็ดขาด</span>
+              <span data-lang-en>From this chapter onward we work with 24 VDC/220 VAC and machines that move. You must complete the safety briefing before entering the laboratory, know where every E-stop is, and apply <strong>lockout–tagout</strong> before wiring or modifying any circuit. Never enter a robot's working envelope while it is powered.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>เมคคาทรอนิกส์คือการบูรณาการเครื่องกล อิเล็กทรอนิกส์ และการควบคุมด้วยคอมพิวเตอร์ <strong>ตั้งแต่ขั้นออกแบบ</strong></span><span data-lang-en>Mechatronics integrates mechanics, electronics and computer control <strong>from the design stage</strong>.</span></li>
+        <li><span data-lang-th>ทุกระบบแยกได้เป็น 5 ส่วน: ระบบทางกล เซนเซอร์ คอนโทรลเลอร์ แอคชูเอเตอร์ และพลังงาน/การสื่อสาร</span><span data-lang-en>Every system decomposes into five blocks: mechanism, sensors, controller, actuators, power/communication.</span></li>
+        <li><span data-lang-th>หุ่นยนต์ต่างจากเครื่องจักรอัตโนมัติตรงที่โปรแกรมใหม่ได้และทำงานได้หลายอย่าง</span><span data-lang-en>A robot differs from ordinary automation by being reprogrammable and multi-functional.</span></li>
+        <li><span data-lang-th>หุ่นยนต์ติดตั้งกับที่ให้ความแม่นยำสูงในปริมาตรทำงานจำกัด ส่วนหุ่นยนต์เคลื่อนที่ให้ความครอบคลุมพื้นที่กว้างแลกกับความแม่นยำที่ลดลง</span><span data-lang-en>Fixed robots buy precision inside a bounded workspace; mobile robots buy coverage at the cost of precision.</span></li>
+        <li><span data-lang-th>ความท้าทายหลักของงานเกษตรคือความแปรผันทางชีวภาพและสภาพแวดล้อมที่ไม่ถูกจัดระเบียบ</span><span data-lang-en>Agriculture's defining challenges are biological variability and an unstructured environment.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term">Mechatronics</div>
+          <div class="deflist__def"><span data-lang-th>เมคคาทรอนิกส์ — การบูรณาการเครื่องกล–อิเล็กทรอนิกส์–ควบคุม</span><span data-lang-en>Synergistic integration of mechanics, electronics and control</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Actuator</div>
+          <div class="deflist__def"><span data-lang-th>แอคชูเอเตอร์ — อุปกรณ์แปลงพลังงานเป็นการเคลื่อนที่หรือแรง</span><span data-lang-en>Device converting energy into motion or force</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Workspace</div>
+          <div class="deflist__def"><span data-lang-th>ปริมาตรทำงาน — ขอบเขตทั้งหมดที่ปลายมือหุ่นยนต์เข้าถึงได้</span><span data-lang-en>The full volume the robot end-effector can reach</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Localization</div>
+          <div class="deflist__def"><span data-lang-th>การระบุตำแหน่งตัวเอง — การประมาณตำแหน่งและทิศทางของหุ่นยนต์เทียบกับแผนที่</span><span data-lang-en>Estimating the robot's pose relative to a map</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Structured / unstructured environment</div>
+          <div class="deflist__def"><span data-lang-th>สภาพแวดล้อมที่จัดเตรียมไว้ / ไม่ถูกจัดเตรียม</span><span data-lang-en>An environment arranged for the machine, versus one that is not</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Autonomy</div>
+          <div class="deflist__def"><span data-lang-th>ความเป็นอิสระในการตัดสินใจของระบบ มีหลายระดับตั้งแต่ 0 ถึง 5</span><span data-lang-en>The system's capacity to decide for itself, graded from level 0 to 5</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>ทำแบบทดสอบนี้หลังอ่านเนื้อหาครบแล้ว ระบบจะเปรียบเทียบคะแนนกับแบบทดสอบก่อนเรียนให้อัตโนมัติ เกณฑ์ผ่านคือ 70%</span>
+        <span data-lang-en>Take this after reading the chapter; your score is compared with the pre-test automatically. The pass mark is 70%.</span>
+      </p>
+      <div data-quiz="ch01-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>Bolton, W. (2019). <em>Mechatronics: Electronic Control Systems in Mechanical and Electrical Engineering</em> (7th ed.). Pearson Education. <span data-lang-th>— บทที่ 1 นิยามและองค์ประกอบของระบบเมคคาทรอนิกส์</span><span data-lang-en>— Chapter 1, definitions and building blocks.</span></li>
+        <li>Alciatore, D. G., &amp; Histand, M. B. (2012). <em>Introduction to Mechatronics and Measurement Systems</em> (4th ed.). McGraw-Hill.</li>
+        <li>Siciliano, B., Sciavicco, L., Villani, L., &amp; Oriolo, G. (2010). <em>Robotics: Modelling, Planning and Control</em>. Springer. <span data-lang-th>— นิยามหุ่นยนต์และการจำแนกประเภท</span><span data-lang-en>— robot definitions and classification.</span></li>
+        <li>International Organization for Standardization. (2021). <em>ISO 8373:2021 Robotics — Vocabulary</em>. ISO.</li>
+        <li>International Organization for Standardization. (2018). <em>ISO 18497:2018 Agricultural machinery and tractors — Safety of highly automated agricultural machines — Principles for design</em>. ISO.</li>
+        <li>Bechar, A., &amp; Vigneault, C. (2016). Agricultural robots for field operations: Concepts and components. <em>Biosystems Engineering, 149</em>, 94–111.</li>
+        <li>Bechar, A., &amp; Vigneault, C. (2017). Agricultural robots for field operations. Part 2: Operations and systems. <em>Biosystems Engineering, 153</em>, 110–128.</li>
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press.</li>
+        <li>Duckett, T., Pearson, S., Blackmore, S., &amp; Grieve, B. (2018). <em>Agricultural Robotics: The Future of Robotic Agriculture</em> (UK-RAS White Paper). UK-RAS Network.</li>
+        <li>Shamshiri, R. R., Weltzien, C., Hameed, I. A., Yule, I. J., Grift, T. E., Balasundram, S. K., Pitonakova, L., Ahmad, D., &amp; Chowdhary, G. (2018). Research and development in agricultural robotics: A perspective of digital farming. <em>International Journal of Agricultural and Biological Engineering, 11</em>(4), 1–14.</li>
+        <li>Oksanen, T., &amp; Visala, A. (2009). Coverage path planning algorithms for agricultural field machines. <em>Journal of Field Robotics, 26</em>(8), 651–668.</li>
+        <li>Food and Agriculture Organization of the United Nations. (2022). <em>The State of Food and Agriculture 2022: Leveraging Automation in Agriculture for Transforming Agrifood Systems</em>. FAO.</li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="../index.html#chapters">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>ย้อนกลับ</span><span data-lang-en>Back</span></small>
+        <b><span data-lang-th>สารบัญบทเรียน</span><span data-lang-en>All chapters</span></b>
+      </a>
+      <a class="is-next" href="ch02.html">
+        <small><span data-lang-th>บทถัดไป</span><span data-lang-en>Next chapter</span> <i class="fa-solid fa-arrow-right"></i></small>
+        <b><span data-lang-th>บทที่ 2 · แนวคิดระบบควบคุม</span><span data-lang-en>Chapter 2 · Control System Concepts</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#fixed-mobile"><span data-lang-th>Fixed vs Mobile</span><span data-lang-en>Fixed vs mobile</span></a></li>
+          <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script>
+/* -------------------------------------------------- Animation 1.1 */
+AMRAnim.create('ch01-compare', {
+  setup: function (c) {
+    c.armA = c.el('#a1-armA');
+    c.armB = c.el('#a1-armB');
+    c.eff  = c.el('#a1-eff');
+    c.held = c.el('#a1-held');
+    c.bot  = c.el('#a1-bot');
+    c.done = c.el('#a1-done');
+    c.cov  = c.el('#a1-cov');
+    c.path = c.el('#a1-path');
+    c.len  = c.path.getTotalLength();
+    c.done.style.strokeDasharray = c.len;
+
+    // Five pieces of produce spaced along the conveyor.
+    var g = c.el('#a1-fruits');
+    g.innerHTML = '';
+    c.fruits = [];
+    for (var i = 0; i < 5; i++) {
+      var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('r', '8');
+      dot.setAttribute('cy', '186');
+      dot.setAttribute('class', 'dg-fill-gold dg-stroke');
+      dot.setAttribute('stroke-width', '1.5');
+      g.appendChild(dot);
+      c.fruits.push({ el: dot, x: 30 - i * 78, alive: true });
+    }
+  },
+
+  reset: function (c) {
+    c.picks = 0;
+    c.prog = 0;
+    c.state = 'wait';
+    c.ts = 0;
+    c.target = null;
+    c.eff.pos = { x: 205, y: 130 };
+    c.fruits.forEach(function (f, i) { f.x = 30 - i * 78; f.alive = true; });
+  },
+
+  update: function (dt, c) {
+    var k = c.p.speed || 1;
+    var PICK_X = 205, HOME = { x: 205, y: 130 }, DROP = { x: 363, y: 168 };
+
+    /* ---------------- fixed robot: conveyor + delta pick-and-place ------- */
+    c.fruits.forEach(function (f) {
+      if (f.alive) { f.x += 46 * k * dt; }
+      if (f.x > 410) { f.x = -30; }
+      f.el.setAttribute('cx', f.x);
+      f.el.setAttribute('opacity', f.alive ? 1 : 0);
+    });
+
+    c.ts += dt * k;
+    var e = c.eff.pos;
+    function moveTo(tx, ty, secs) {
+      var a = Math.min(1, c.ts / secs);
+      e.x = e.x + (tx - e.x) * a;
+      e.y = e.y + (ty - e.y) * a;
+      return a >= 1;
+    }
+
+    if (c.state === 'wait') {
+      moveTo(HOME.x, HOME.y, 0.25);
+      var cand = null;
+      c.fruits.forEach(function (f) {
+        if (f.alive && f.x > PICK_X - 26 && f.x < PICK_X + 12) { cand = f; }
+      });
+      if (cand) { c.target = cand; c.state = 'grab'; c.ts = 0; }
+    } else if (c.state === 'grab') {
+      if (moveTo(c.target.x, 178, 0.45)) {
+        c.target.alive = false;
+        c.state = 'carry'; c.ts = 0;
+      }
+    } else if (c.state === 'carry') {
+      c.held.setAttribute('opacity', '1');
+      if (moveTo(DROP.x, DROP.y, 0.5)) {
+        c.picks++;
+        c.held.setAttribute('opacity', '0');
+        c.state = 'home'; c.ts = 0;
+      }
+    } else if (c.state === 'home') {
+      c.held.setAttribute('opacity', '0');
+      if (moveTo(HOME.x, HOME.y, 0.4)) { c.state = 'wait'; c.ts = 0; }
+    }
+
+    c.armA.setAttribute('x2', e.x); c.armA.setAttribute('y2', e.y);
+    c.armB.setAttribute('x2', e.x); c.armB.setAttribute('y2', e.y);
+    c.eff.setAttribute('cx', e.x);  c.eff.setAttribute('cy', e.y);
+    c.held.setAttribute('cx', e.x); c.held.setAttribute('cy', e.y + 14);
+
+    /* ---------------- mobile robot: coverage along a boustrophedon path -- */
+    c.prog = Math.min(1, c.prog + (26 * k * dt) / c.len);
+    var pt = c.path.getPointAtLength(c.prog * c.len);
+    var ahead = c.path.getPointAtLength(Math.min(c.len, c.prog * c.len + 4));
+    var ang = Math.atan2(ahead.y - pt.y, ahead.x - pt.x) * 180 / Math.PI;
+    c.bot.setAttribute('transform', 'translate(' + pt.x + ',' + pt.y + ') rotate(' + ang + ')');
+    c.done.style.strokeDashoffset = c.len * (1 - c.prog);
+    c.cov.setAttribute('width', 296 * c.prog);
+
+    /* ---------------- readouts ------------------------------------------ */
+    var mins = Math.max(c.t / 60, 1e-6);
+    c.say('picks', c.picks);
+    c.say('picks/min', c.fmt(c.picks / mins, 0));
+    c.say('coverage', c.fmt(c.prog * 100, 0) + '%');
+  }
+});
+
+/* ------------------------------------------------------------------ Pre-test */
+AMRQuiz.mount('ch01-pre', {
+  type: 'pre',
+  chapter: 'ch01',
+  title: { th: 'แบบทดสอบก่อนเรียน — บทที่ 1', en: 'Pre-test — Chapter 1' },
+  intro: {
+    th: 'สำรวจความรู้เดิมก่อนเริ่มบทเรียน ไม่มีผลต่อคะแนนเก็บ',
+    en: 'A diagnostic of prior knowledge. Not graded.'
+  },
+  questions: [
+    {
+      q: { th: 'คำว่า "Mechatronics" เกิดจากการรวมคำใดเข้าด้วยกัน', en: 'The word “mechatronics” is a fusion of which two words?' },
+      options: [
+        { th: 'Mechanics + Electronics', en: 'Mechanics + Electronics' },
+        { th: 'Machine + Automation', en: 'Machine + Automation' },
+        { th: 'Mechanism + Technology', en: 'Mechanism + Technology' },
+        { th: 'Motor + Electronics', en: 'Motor + Electronics' }
+      ],
+      answer: 0,
+      explain: {
+        th: 'บัญญัติขึ้นในปี ค.ศ. 1969 โดยวิศวกรของบริษัท Yaskawa Electric ประเทศญี่ปุ่น จาก Mecha-nics + Elec-tronics',
+        en: 'Coined in 1969 at Yaskawa Electric, Japan, from mecha-nics + elec-tronics.'
+      }
+    },
+    {
+      q: { th: 'อุปกรณ์ใดต่อไปนี้ทำหน้าที่เป็น "แอคชูเอเตอร์" ในระบบให้น้ำอัตโนมัติ', en: 'Which device acts as the actuator in an automatic irrigation system?' },
+      options: [
+        { th: 'เซนเซอร์ความชื้นดิน', en: 'Soil-moisture sensor' },
+        { th: 'โซลินอยด์วาล์วน้ำ', en: 'Solenoid water valve' },
+        { th: 'หน้าจอแสดงผล', en: 'Display screen' },
+        { th: 'แผงวงจร PLC', en: 'The PLC board' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'แอคชูเอเตอร์คือสิ่งที่แปลงพลังงานเป็นการกระทำทางกายภาพ วาล์วเปิด–ปิดการไหลของน้ำจึงเป็นแอคชูเอเตอร์',
+        en: 'An actuator converts energy into physical action; the valve that opens and closes the flow is the actuator.'
+      }
+    },
+    {
+      q: { th: 'ข้อใดคือความแตกต่างหลักระหว่างหุ่นยนต์แบบติดตั้งอยู่กับที่กับแบบเคลื่อนที่', en: 'What is the main difference between a fixed and a mobile robot?' },
+      options: [
+        { th: 'จำนวนข้อต่อ', en: 'The number of joints' },
+        { th: 'ฐานของหุ่นยนต์เคลื่อนที่ได้หรือไม่', en: 'Whether the base can move' },
+        { th: 'ราคาของหุ่นยนต์', en: 'The price' },
+        { th: 'ภาษาที่ใช้เขียนโปรแกรม', en: 'The programming language' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'ฐานที่เคลื่อนที่ได้ทำให้ต้องมีระบบระบุตำแหน่งตัวเองและการนำทาง ซึ่งหุ่นยนต์ฐานยึดแน่นไม่ต้องมี',
+        en: 'A moving base forces localization and navigation, which a bolted-down robot never needs.'
+      }
+    },
+    {
+      q: { th: 'ระบบ "ป้อนกลับ" (feedback) ในระบบควบคุมหมายถึงอะไร', en: 'What does “feedback” mean in a control system?' },
+      options: [
+        { th: 'การส่งค่าที่วัดได้กลับไปเปรียบเทียบกับค่าที่ต้องการ', en: 'Returning the measured value to be compared with the setpoint' },
+        { th: 'การรายงานผลให้ผู้ใช้ทราบทางหน้าจอ', en: 'Reporting results to the user on screen' },
+        { th: 'การสำรองข้อมูลการทำงาน', en: 'Backing up operating data' },
+        { th: 'การหยุดระบบเมื่อเกิดข้อผิดพลาด', en: 'Stopping the system on a fault' }
+      ],
+      answer: 0,
+      explain: {
+        th: 'ป้อนกลับคือการนำผลลัพธ์จริงที่วัดได้กลับมาหาค่าความคลาดเคลื่อน \\( e(t) = r(t) - y(t) \\) เพื่อให้คอนโทรลเลอร์แก้ไข',
+        en: 'Feedback returns the measured output so the error \\( e(t) = r(t) - y(t) \\) can drive the controller.'
+      }
+    },
+    {
+      q: { th: 'หุ่นยนต์เดลต้าที่หยิบผลไม้จากสายพานในโรงคัดบรรจุ จัดเป็นหุ่นยนต์ประเภทใด', en: 'A delta robot picking fruit from a packhouse conveyor is which type?' },
+      options: [
+        { th: 'หุ่นยนต์เคลื่อนที่', en: 'Mobile robot' },
+        { th: 'หุ่นยนต์ติดตั้งอยู่กับที่', en: 'Fixed robot' },
+        { th: 'อากาศยานไร้คนขับ', en: 'Unmanned aerial vehicle' },
+        { th: 'หุ่นยนต์ฮิวแมนนอยด์', en: 'Humanoid robot' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'ฐานของหุ่นยนต์เดลต้ายึดแน่นกับโครงเหนือสายพาน ชิ้นงานเป็นฝ่ายเคลื่อนที่เข้ามาหาหุ่นยนต์',
+        en: 'The delta base is bolted to a frame above the conveyor; it is the work that moves, not the robot.'
+      }
+    },
+    {
+      q: { th: 'ข้อใดเป็นความท้าทายที่ "เฉพาะ" กับหุ่นยนต์เกษตร มากกว่าหุ่นยนต์ในโรงงาน', en: 'Which challenge is far more specific to agricultural robots than factory robots?' },
+      options: [
+        { th: 'ต้องใช้ไฟฟ้าในการทำงาน', en: 'They need electrical power' },
+        { th: 'ความแปรผันของขนาดและตำแหน่งของผลผลิตแต่ละชิ้น', en: 'Wide variability in the size and position of each individual product' },
+        { th: 'ต้องมีการเขียนโปรแกรมควบคุม', en: 'They must be programmed' },
+        { th: 'ต้องมีมอเตอร์ขับเคลื่อน', en: 'They use motors' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'ในโรงงานชิ้นงานเหมือนกันทุกชิ้น แต่ผลผลิตทางการเกษตรแปรผันตามธรรมชาติ อัลกอริทึมจึงต้องทนต่อความแปรผัน',
+        en: 'Factory parts are identical; agricultural produce varies naturally, so algorithms must tolerate variation.'
+      }
+    },
+    {
+      q: { th: 'ในระบบเมคคาทรอนิกส์ "คอนโทรลเลอร์" ทำหน้าที่ใด', en: 'What is the role of the controller in a mechatronic system?' },
+      options: [
+        { th: 'วัดค่าตัวแปรทางกายภาพ', en: 'Measuring physical variables' },
+        { th: 'ตัดสินใจจากค่าที่วัดได้เทียบกับค่าที่ต้องการ แล้วสั่งการแอคชูเอเตอร์', en: 'Deciding from measurement versus setpoint, then commanding the actuator' },
+        { th: 'จ่ายพลังงานให้ทั้งระบบ', en: 'Supplying power to the whole system' },
+        { th: 'รับแรงและส่งกำลังทางกล', en: 'Carrying loads and transmitting mechanical power' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'คอนโทรลเลอร์เป็นสมองของระบบ เปรียบเทียบค่าที่วัดได้กับค่าที่ต้องการ แล้วคำนวณคำสั่งส่งไปยังแอคชูเอเตอร์',
+        en: 'The controller is the brain: it compares measurement with setpoint and computes the actuator command.'
+      }
+    },
+    {
+      q: { th: 'ข้อใดอธิบายความต่างระหว่าง "automatic" กับ "autonomous" ได้ถูกต้อง', en: 'Which statement correctly distinguishes “automatic” from “autonomous”?' },
+      options: [
+        { th: 'ทั้งสองคำมีความหมายเหมือนกันทุกประการ', en: 'They mean exactly the same thing' },
+        { th: 'automatic ทำตามลำดับที่กำหนดไว้ ส่วน autonomous เลือกการกระทำเองจากข้อมูลขณะนั้น', en: 'Automatic follows a predefined sequence; autonomous chooses its action from current data' },
+        { th: 'automatic ใช้ไฟฟ้า ส่วน autonomous ใช้แบตเตอรี่', en: 'Automatic runs on mains power, autonomous on batteries' },
+        { th: 'autonomous ต้องมีคนควบคุมตลอดเวลา', en: 'Autonomous requires a human operator at all times' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'เครื่องจักร automatic ทำซ้ำตามลำดับเดิมเสมอ ส่วนระบบ autonomous ประเมินสถานการณ์และเลือกการกระทำได้เอง',
+        en: 'An automatic machine always repeats the same sequence; an autonomous system evaluates the situation and picks its action.'
+      }
+    }
+  ]
+});
+
+/* ----------------------------------------------------------------- Post-test */
+AMRQuiz.mount('ch01-post', {
+  type: 'post',
+  chapter: 'ch01',
+  title: { th: 'แบบทดสอบหลังเรียน — บทที่ 1', en: 'Post-test — Chapter 1' },
+  intro: {
+    th: 'ทดสอบความเข้าใจหลังเรียน 10 ข้อ เกณฑ์ผ่าน 70%',
+    en: 'Ten items on the chapter content. Pass mark 70%.'
+  },
+  questions: [
+    {
+      q: { th: 'ข้อใดคือ "หัวใจ" ที่ทำให้ระบบหนึ่งถูกเรียกว่าเมคคาทรอนิกส์ ไม่ใช่เพียงเครื่องจักรที่ติดมอเตอร์', en: 'What makes a system genuinely mechatronic rather than just a machine with a motor bolted on?' },
+      options: [
+        { th: 'การใช้มอเตอร์ไฟฟ้าแทนเครื่องยนต์', en: 'Using an electric motor instead of an engine' },
+        { th: 'การบูรณาการเครื่องกล อิเล็กทรอนิกส์ และการควบคุมตั้งแต่ขั้นตอนการออกแบบ', en: 'Integrating mechanics, electronics and control from the design stage' },
+        { th: 'การมีหน้าจอสัมผัสให้ผู้ใช้ควบคุม', en: 'Providing a touchscreen for the operator' },
+        { th: 'การเชื่อมต่ออินเทอร์เน็ตได้', en: 'Being connected to the internet' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'การบูรณาการตั้งแต่ออกแบบทำให้สามารถแลกข้อจำกัดของศาสตร์หนึ่งด้วยความสามารถของอีกศาสตร์หนึ่งได้ เช่น ลดความแข็งแรงของโครงสร้างลงแล้วชดเชยด้วยอัลกอริทึมควบคุมการสั่น',
+        en: 'Design-stage integration lets you trade a limitation in one domain for a capability in another — for example, a lighter structure compensated by vibration-damping control.'
+      }
+    },
+    {
+      q: { th: 'องค์ประกอบใดที่ทำให้ระบบ "รู้" สถานะที่แท้จริงของกระบวนการ', en: 'Which block lets the system know the true state of the process?' },
+      options: [
+        { th: 'แอคชูเอเตอร์', en: 'Actuator' },
+        { th: 'เซนเซอร์', en: 'Sensor' },
+        { th: 'แหล่งจ่ายไฟ', en: 'Power supply' },
+        { th: 'โครงสร้างทางกล', en: 'Mechanical structure' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'ระบบจะฉลาดได้ไม่เกินสิ่งที่มันวัดได้ เซนเซอร์คือขอบเขตบนของความสามารถในการตัดสินใจของระบบ',
+        en: 'A system can be no smarter than what it measures; sensing sets the ceiling on decision quality.'
+      }
+    },
+    {
+      q: { th: 'ในแผนภาพบล็อกของระบบควบคุมแบบป้อนกลับ ค่า \\( e(t) \\) คำนวณจากอะไร', en: 'In a feedback block diagram, how is \\( e(t) \\) computed?' },
+      options: [
+        { th: '\\( e(t) = r(t) - y(t) \\)', en: '\\( e(t) = r(t) - y(t) \\)' },
+        { th: '\\( e(t) = r(t) + y(t) \\)', en: '\\( e(t) = r(t) + y(t) \\)' },
+        { th: '\\( e(t) = y(t) \\times r(t) \\)', en: '\\( e(t) = y(t) \\times r(t) \\)' },
+        { th: '\\( e(t) = y(t) \\div r(t) \\)', en: '\\( e(t) = y(t) \\div r(t) \\)' }
+      ],
+      answer: 0,
+      explain: {
+        th: 'ความคลาดเคลื่อนคือค่าที่ต้องการลบด้วยค่าที่วัดได้ จุด Σ ในรูปที่ 1.2 จึงมีเครื่องหมาย + และ − กำกับ',
+        en: 'Error is setpoint minus measurement, which is why the summing junction in Figure 1.2 is marked + and −.'
+      }
+    },
+    {
+      q: { th: 'หุ่นยนต์เก็บสตรอว์เบอร์รีที่มีแขนกลติดตั้งบนรถเคลื่อนที่ในโรงเรือน จัดเป็นอะไร', en: 'A strawberry robot with an arm mounted on a mobile platform inside a greenhouse is best described as' },
+      options: [
+        { th: 'หุ่นยนต์ติดตั้งอยู่กับที่เท่านั้น', en: 'A purely fixed robot' },
+        { th: 'หุ่นยนต์เคลื่อนที่เท่านั้น', en: 'A purely mobile robot' },
+        { th: 'Mobile manipulator (แบบผสม)', en: 'A mobile manipulator (hybrid)' },
+        { th: 'ไม่จัดเป็นหุ่นยนต์', en: 'Not a robot at all' }
+      ],
+      answer: 2,
+      explain: {
+        th: 'ต้องใช้ทั้งจลนศาสตร์ของแขนกล (บทที่ 9) และการนำทางของฐานเคลื่อนที่ (บทที่ 10) ร่วมกัน',
+        en: 'It needs arm kinematics (Chapter 9) and base navigation (Chapter 10) together.'
+      }
+    },
+    {
+      q: { th: 'เหตุใดหุ่นยนต์เคลื่อนที่จึงมีความแม่นยำตำแหน่งต่ำกว่าหุ่นยนต์ติดตั้งอยู่กับที่โดยทั่วไป', en: 'Why is a mobile robot generally less positionally accurate than a fixed robot?' },
+      options: [
+        { th: 'เพราะใช้มอเตอร์ที่คุณภาพต่ำกว่าเสมอ', en: 'Because it always uses lower-quality motors' },
+        { th: 'เพราะล้อลื่นไถล พื้นไม่เรียบ และความคลาดเคลื่อนสะสมจากการเคลื่อนที่', en: 'Because of wheel slip, uneven ground and accumulated odometry error' },
+        { th: 'เพราะโปรแกรมควบคุมซับซ้อนเกินไป', en: 'Because its program is too complex' },
+        { th: 'เพราะใช้แรงดันไฟฟ้าต่ำกว่า', en: 'Because it runs at a lower voltage' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'ฐานที่ยึดแน่นให้จุดอ้างอิงคงที่ ส่วนฐานเคลื่อนที่ต้องประมาณตำแหน่งตัวเองซึ่งมีความคลาดเคลื่อนสะสมตามระยะทาง',
+        en: 'A bolted base provides a permanent reference; a moving base must estimate its own pose, and that error accumulates with distance.'
+      }
+    },
+    {
+      q: { th: 'ระบบใดต่อไปนี้จัดอยู่ในระดับความเป็นอัตโนมัติที่สูงที่สุด', en: 'Which system sits at the highest level of autonomy?' },
+      options: [
+        { th: 'รถแทรกเตอร์ที่มีระบบช่วยรักษาแนวขับ โดยคนขับนั่งอยู่บนรถ', en: 'A tractor with auto-steer and a driver on board' },
+        { th: 'หุ่นยนต์ที่ทำงานจบทั้งแปลงเอง รวมถึงการกลับหัวแปลงและจัดการเหตุขัดข้อง โดยมีคนดูแลจากระยะไกล', en: 'A robot that completes a whole field including headland turns and fault handling, supervised remotely' },
+        { th: 'เครื่องสูบน้ำที่ตั้งเวลาเปิด–ปิดด้วยไทเมอร์', en: 'A pump switched by a mechanical timer' },
+        { th: 'สายพานลำเลียงที่วิ่งด้วยความเร็วคงที่', en: 'A conveyor running at constant speed' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'ตรงกับระดับ 4 (high automation) ส่วนตัวเลือกอื่นอยู่ที่ระดับ 0–1 เท่านั้น',
+        en: 'That matches level 4 (high automation); the other options are level 0–1.'
+      }
+    },
+    {
+      q: { th: 'เหตุใดการควบคุมแรง (force control) จึงสำคัญมากในหุ่นยนต์เก็บเกี่ยวผลไม้', en: 'Why does force control matter so much in a fruit-harvesting robot?' },
+      options: [
+        { th: 'เพื่อให้หุ่นยนต์เคลื่อนที่เร็วขึ้น', en: 'To make the robot move faster' },
+        { th: 'เพื่อป้องกันรอยช้ำที่ปรากฏหลังเก็บเกี่ยวหลายวัน', en: 'To prevent bruising that appears days after harvest' },
+        { th: 'เพื่อประหยัดพลังงานแบตเตอรี่', en: 'To save battery energy' },
+        { th: 'เพื่อลดจำนวนเซนเซอร์ที่ต้องใช้', en: 'To reduce the number of sensors needed' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'ผลผลิตบอบบาง การควบคุมเฉพาะตำแหน่งอาจทำให้แรงจับเกินขีดจำกัดจนเนื้อเยื่อเสียหายโดยไม่เห็นผลทันที',
+        en: 'Produce is delicate; position-only control can exceed the safe grip force and damage tissue with no immediate visible sign.'
+      }
+    },
+    {
+      q: { th: 'ข้อใดคือเหตุผลหลักที่ทำให้การคืนทุนของหุ่นยนต์เก็บเกี่ยวยากกว่าหุ่นยนต์ในโรงงาน', en: 'What is the main reason a harvesting robot is harder to justify economically than a factory robot?' },
+      options: [
+        { th: 'หุ่นยนต์เกษตรมีราคาแพงกว่าเสมอ', en: 'Agricultural robots always cost more' },
+        { th: 'อัตราการใช้งานต่ำเพราะใช้ได้เฉพาะช่วงฤดูเก็บเกี่ยวสั้น ๆ', en: 'Utilisation is low because the harvest window is only a few weeks' },
+        { th: 'ไม่มีเซนเซอร์ที่ใช้งานในแปลงได้', en: 'No sensors work in the field' },
+        { th: 'กฎหมายห้ามใช้หุ่นยนต์ในแปลงเกษตร', en: 'The law forbids robots in fields' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'หุ่นยนต์โรงงานเดินเครื่องราว 300 วันต่อปี ขณะที่เครื่องเก็บเกี่ยวอาจใช้เพียง 3 สัปดาห์ต่อปี',
+        en: 'A factory robot may run 300 days a year, while a harvester may run only three weeks.'
+      }
+    },
+    {
+      q: { th: 'ในระบบโรงเรือนอัจฉริยะ พัดลมระบายอากาศทำหน้าที่เป็นองค์ประกอบใด', en: 'In a smart greenhouse, the ventilation fan functions as which block?' },
+      options: [
+        { th: 'เซนเซอร์', en: 'Sensor' },
+        { th: 'คอนโทรลเลอร์', en: 'Controller' },
+        { th: 'แอคชูเอเตอร์', en: 'Actuator' },
+        { th: 'สัญญาณป้อนกลับ', en: 'Feedback signal' }
+      ],
+      answer: 2,
+      explain: {
+        th: 'พัดลมแปลงพลังงานไฟฟ้าเป็นการไหลของอากาศ ซึ่งเป็นการกระทำทางกายภาพต่อกระบวนการ จึงเป็นแอคชูเอเตอร์',
+        en: 'The fan converts electrical energy into airflow — a physical action on the process — so it is an actuator.'
+      }
+    },
+    {
+      q: { th: 'เหตุใดความปลอดภัยของหุ่นยนต์เกษตรจึงยากกว่าหุ่นยนต์อุตสาหกรรมในโรงงาน', en: 'Why is safety harder for agricultural robots than for industrial robots in a plant?' },
+      options: [
+        { th: 'เพราะหุ่นยนต์เกษตรเคลื่อนที่เร็วกว่ามาก', en: 'Because agricultural robots move much faster' },
+        { th: 'เพราะไม่สามารถล้อมรั้วพื้นที่ทำงานได้ ต้องให้เครื่องตรวจจับคนและสิ่งกีดขวางเอง', en: 'Because the working area cannot be fenced, so the machine itself must detect people and obstacles' },
+        { th: 'เพราะไม่มีมาตรฐานความปลอดภัยใด ๆ รองรับ', en: 'Because no safety standards exist for them' },
+        { th: 'เพราะหุ่นยนต์เกษตรใช้แรงดันไฟฟ้าสูงกว่าเสมอ', en: 'Because they always run at higher voltage' }
+      ],
+      answer: 1,
+      explain: {
+        th: 'ในโรงงานใช้รั้วและม่านแสงกันคนออกจากเขตทำงานได้ แต่ในแปลงเปิดต้องอาศัยการตรวจจับรอบคันและระบบหยุดฉุกเฉินที่เชื่อถือได้ ตามแนวทางของ ISO 18497',
+        en: 'A plant can fence the cell; an open field cannot, so the machine needs all-round detection and a dependable E-stop, per the ISO 18497 approach.'
+      }
+    }
+  ]
+});
+</script>
+</body>
+</html>

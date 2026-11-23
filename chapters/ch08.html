@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 8 · ระบบหุ่นยนต์อุตสาหกรรม" data-title-en="Chapter 8 · Industrial Robot Systems">Chapter 8 · Industrial Robot Systems</title>
+<meta name="description" content="Chapter 8: the anatomy of a robot cell, joints and degrees of freedom, robot configurations and workspace, performance specifications, coordinate frames and the TCP, end effectors, and collaborative-robot safety.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="ch05.html"><span data-lang-th>บทที่ 5</span><span data-lang-en>Ch 5</span></a>
+      <a href="ch06.html"><span data-lang-th>บทที่ 6</span><span data-lang-en>Ch 6</span></a>
+      <a href="ch07.html"><span data-lang-th>บทที่ 7</span><span data-lang-en>Ch 7</span></a>
+      <a href="ch08.html" class="is-active"><span data-lang-th>บทที่ 8</span><span data-lang-en>Ch 8</span></a>
+      <a href="ch09.html"><span data-lang-th>บทที่ 9</span><span data-lang-en>Ch 9</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 8</span><span data-lang-en>Chapter 8</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 12</span><span data-lang-en>Week 12</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 2 ชม. + ปฏิบัติ 2 ชม.</span><span data-lang-en>2 h lecture + 2 h laboratory</span></span>
+      <span class="badge badge--sky"><i class="fa-solid fa-film"></i> <span data-lang-th>แอนิเมชัน 3 ชุด</span><span data-lang-en>3 animations</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 8 · ระบบหุ่นยนต์อุตสาหกรรม</span>
+      <span data-lang-en>Chapter 8 · Industrial Robot Systems</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>เจ็ดบทที่ผ่านมาเป็นเรื่องของการวัดและการควบคุมปริมาณเดียว เช่น อุณหภูมิหรือระดับน้ำ บทนี้เปลี่ยนไปสู่เครื่องจักรที่ต้องควบคุมหลายแกนให้ประสานกันเพื่อ <em>วางของให้ตรงตำแหน่ง</em> เราจะเริ่มจากองค์ประกอบของเซลล์หุ่นยนต์ ข้อต่อและองศาอิสระ รูปร่างของปริภูมิทำงาน ความหมายที่แท้จริงของตัวเลขในแค็ตตาล็อก ระบบพิกัดที่ทำให้สอนงานหุ่นยนต์ได้ และข้อกำหนดด้านความปลอดภัย โดยยังไม่แตะเมทริกซ์การแปลง ซึ่งรออยู่ในบทที่ 9</span>
+      <span data-lang-en>The last seven chapters controlled a single quantity — a temperature, a water level. This chapter turns to a machine that must coordinate several axes in order to <em>put something in the right place</em>. We start with the anatomy of a robot cell, then joints and degrees of freedom, the shape of the workspace, what the catalogue numbers actually mean, the coordinate frames that make a robot teachable, and the safety requirements. Transformation matrices are deliberately left for Chapter 9.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#anatomy"><span data-lang-th>8.1 องค์ประกอบของเซลล์หุ่นยนต์</span><span data-lang-en>8.1 Anatomy of a robot cell</span></a></li>
+      <li><a href="#joints"><span data-lang-th>8.2 ข้อต่อ ลิงก์ และองศาอิสระ</span><span data-lang-en>8.2 Joints, links and DOF</span></a></li>
+      <li><a href="#config"><span data-lang-th>8.3 โครงร่างและปริภูมิทำงาน</span><span data-lang-en>8.3 Configurations and workspace</span></a></li>
+      <li><a href="#specs"><span data-lang-th>8.4 ข้อกำหนดสมรรถนะ</span><span data-lang-en>8.4 Performance specifications</span></a></li>
+      <li><a href="#frames"><span data-lang-th>8.5 ระบบพิกัดและ TCP</span><span data-lang-en>8.5 Coordinate frames and the TCP</span></a></li>
+      <li><a href="#eoat"><span data-lang-th>8.6 อุปกรณ์ปลายแขน</span><span data-lang-en>8.6 End effectors</span></a></li>
+      <li><a href="#safety"><span data-lang-th>8.7 ความปลอดภัยและมาตรฐาน</span><span data-lang-en>8.7 Safety and standards</span></a></li>
+      <li><a href="#activity"><span data-lang-th>8.8 กิจกรรมในชั้นเรียน</span><span data-lang-en>8.8 In-class activity</span></a></li>
+      <li><a href="#lab"><span data-lang-th>8.9 ปฏิบัติการที่ 8</span><span data-lang-en>8.9 Laboratory 8</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>ระบุองค์ประกอบของเซลล์หุ่นยนต์อุตสาหกรรม และบอกหน้าที่ของแต่ละส่วน</span><span data-lang-en>Identify the parts of an industrial robot cell and state what each one does.</span></li>
+        <li><span data-lang-th>นับองศาอิสระจากชนิดและจำนวนข้อต่อ และบอกว่าต้องมีกี่องศาอิสระสำหรับงานที่กำหนด</span><span data-lang-en>Count degrees of freedom from the joints, and say how many a given task requires.</span></li>
+        <li><span data-lang-th>จำแนกโครงร่างหุ่นยนต์ทั้งห้าแบบ พร้อมวาดรูปร่างปริภูมิทำงานและคำนวณขนาดได้</span><span data-lang-en>Classify the five robot configurations, sketch each workspace and compute its size.</span></li>
+        <li><span data-lang-th>แยกความแตกต่างระหว่างความแม่นยำ ความเที่ยงตรง และความละเอียด และคำนวณแต่ละค่าจากข้อมูลวัด</span><span data-lang-en>Distinguish accuracy, repeatability and resolution, and compute each from measured data.</span></li>
+        <li><span data-lang-th>อธิบายหน้าที่ของเฟรมโลก เฟรมฐาน เฟรมเครื่องมือ และเฟรมชิ้นงาน และบอกว่าการ jog แต่ละโหมดทำอะไร</span><span data-lang-en>Explain the world, base, tool and work-object frames, and what each jog mode does.</span></li>
+        <li><span data-lang-th>เลือกชนิดของมือจับให้เหมาะกับผลิตผลเกษตร และคำนวณแรงจับหรือจำนวนถ้วยดูดที่ต้องใช้</span><span data-lang-en>Choose a gripper for an agricultural product and compute the grip force or number of cups.</span></li>
+        <li><span data-lang-th>คำนวณระยะแยกเพื่อการป้องกันสำหรับงานที่คนทำงานร่วมกับหุ่นยนต์</span><span data-lang-en>Compute the protective separation distance for work shared between a person and a robot.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ตอบก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิม ระบบเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer before reading. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch08-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 8.1 --------- -->
+    <section id="anatomy">
+      <h2><span data-lang-th>8.1 องค์ประกอบของเซลล์หุ่นยนต์</span><span data-lang-en>8.1 The anatomy of a robot cell</span></h2>
+
+      <p>
+        <span data-lang-th>คำว่า “หุ่นยนต์” ในภาษาพูดมักหมายถึงแขนกลเพียงชิ้นเดียว แต่ในการสั่งซื้อและติดตั้งจริง สิ่งที่เราทำงานด้วยคือ <strong>เซลล์หุ่นยนต์</strong> ซึ่งแขนกลเป็นเพียงหนึ่งในหกส่วน และหลายครั้งเป็นส่วนที่สร้างปัญหาน้อยที่สุด</span>
+        <span data-lang-en>In everyday speech a “robot” means the arm. In purchasing and installation, however, what one actually works with is a <strong>robot cell</strong>, in which the arm is one of six parts — and often the least troublesome of them.</span>
+      </p>
+
+      <ul>
+        <li><span data-lang-th><strong>แขนกล (manipulator)</strong> — โครงสร้างกลไกพร้อมมอเตอร์และตัวเข้ารหัสในทุกข้อต่อ เป็นส่วนที่กำหนดระยะเอื้อม น้ำหนักบรรทุก และความเที่ยงตรง</span><span data-lang-en><strong>The manipulator</strong> — the mechanical structure, with a motor and an encoder at every joint. It fixes the reach, the payload and the repeatability.</span></li>
+        <li><span data-lang-th><strong>ตู้ควบคุม (controller)</strong> — คอมพิวเตอร์ ไดรฟ์ของมอเตอร์ และวงจรความปลอดภัย ทำหน้าที่แปลคำสั่งเชิงตำแหน่งให้เป็นกระแสในมอเตอร์แต่ละตัว</span><span data-lang-en><strong>The controller</strong> — the computer, the motor drives and the safety circuits. It turns a position command into current in each motor.</span></li>
+        <li><span data-lang-th><strong>กล่องสอนงาน (teach pendant)</strong> — อุปกรณ์มือถือที่ใช้ขยับหุ่นยนต์ บันทึกจุด และแก้ไขโปรแกรม มีสวิตช์เปิดใช้งานสามจังหวะและปุ่มหยุดฉุกเฉินอยู่บนตัว</span><span data-lang-en><strong>The teach pendant</strong> — the hand-held unit used to jog the robot, record points and edit the program. It carries a three-position enabling switch and an emergency stop.</span></li>
+        <li><span data-lang-th><strong>อุปกรณ์ปลายแขน (end effector)</strong> — มือจับ หัวดูด หรือเครื่องมือที่ติดกับหน้าแปลนข้อมือ เป็นส่วนที่สัมผัสผลิตผลโดยตรง และเป็นส่วนที่ต้องออกแบบเองเกือบทุกครั้งในงานเกษตร</span><span data-lang-en><strong>The end effector</strong> — the gripper, suction head or tool bolted to the wrist flange. It is the part that touches the produce, and in agriculture it is nearly always the part one has to design oneself.</span></li>
+        <li><span data-lang-th><strong>อุปกรณ์รอบข้าง (peripherals)</strong> — สายพาน ฟีดเดอร์ กล้อง เซนเซอร์ และจิ๊กยึดชิ้นงาน ซึ่งต้องประสานจังหวะกับหุ่นยนต์ผ่าน I/O หรือฟีลด์บัสตามที่เรียนในบทที่ 5</span><span data-lang-en><strong>The peripherals</strong> — conveyors, feeders, cameras, sensors and work-holding jigs, all of which must be sequenced with the robot over the I/O or fieldbus of Chapter 5.</span></li>
+        <li><span data-lang-th><strong>ระบบความปลอดภัย (safety system)</strong> — รั้ว ม่านแสง สแกนเนอร์ สวิตช์ประตู และวงจรหยุดฉุกเฉิน ซึ่งกฎหมายและมาตรฐานบังคับ และต้องออกแบบจากการประเมินความเสี่ยง ไม่ใช่จากความเคยชิน</span><span data-lang-en><strong>The safety system</strong> — fencing, light curtains, scanners, gate switches and the emergency-stop circuit. Standards require it, and it must follow from a risk assessment rather than from habit.</span></li>
+      </ul>
+
+      <!-- ===================== Figure 8.1 ===================== -->
+      <figure class="figure">
+        <svg viewBox="0 0 860 330" role="img" aria-label="Layout of an industrial robot cell showing the manipulator, controller, teach pendant, end effector, conveyor and safety devices">
+          <!-- safety fence -->
+          <rect x="14" y="14" width="832" height="302" rx="14" class="dg-stroke" stroke-width="2" stroke-dasharray="9 6"/>
+          <text class="dg-text-sm" x="30" y="36" data-lang-th>รั้วนิรภัย</text>
+          <text class="dg-text-sm" x="30" y="36" data-lang-en>Safety fence</text>
+
+          <!-- floor -->
+          <line x1="40" y1="282" x2="820" y2="282" class="dg-stroke" stroke-width="2"/>
+
+          <!-- controller cabinet -->
+          <rect x="56" y="150" width="96" height="132" rx="6" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+          <line x1="56" y1="182" x2="152" y2="182" class="dg-stroke" stroke-width="1.5"/>
+          <circle cx="80" cy="166" r="5" class="dg-fill-green dg-stroke" stroke-width="1.5"/>
+          <circle cx="98" cy="166" r="5" class="dg-fill-gold dg-stroke" stroke-width="1.5"/>
+          <rect x="70" y="198" width="68" height="40" rx="3" class="dg-fill-surface dg-stroke" stroke-width="1.5"/>
+          <text class="dg-text-b" x="104" y="306" text-anchor="middle" data-lang-th>ตู้ควบคุม</text>
+          <text class="dg-text-b" x="104" y="306" text-anchor="middle" data-lang-en>Controller</text>
+
+          <!-- teach pendant, cabled to the cabinet -->
+          <path d="M152 212 C 190 212 196 236 214 240" class="dg-stroke" stroke-width="1.8"/>
+          <rect x="206" y="222" width="46" height="62" rx="7" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+          <rect x="213" y="230" width="32" height="24" rx="2" class="dg-fill-sky dg-stroke" stroke-width="1.2"/>
+          <circle cx="229" cy="268" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+          <text class="dg-text-sm" x="229" y="306" text-anchor="middle" data-lang-th>กล่องสอนงาน</text>
+          <text class="dg-text-sm" x="229" y="306" text-anchor="middle" data-lang-en>Teach pendant</text>
+
+          <!-- manipulator -->
+          <rect x="356" y="252" width="88" height="30" rx="5" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+          <rect x="376" y="206" width="48" height="48" rx="6" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+          <circle cx="400" cy="206" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+          <line x1="400" y1="206" x2="470" y2="116" class="dg-stroke-green" stroke-width="13" stroke-linecap="round"/>
+          <circle cx="470" cy="116" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+          <line x1="470" y1="116" x2="582" y2="140" class="dg-stroke-green" stroke-width="11" stroke-linecap="round"/>
+          <circle cx="582" cy="140" r="8" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+          <line x1="582" y1="140" x2="620" y2="176" class="dg-stroke-green" stroke-width="8" stroke-linecap="round"/>
+          <text class="dg-text-b" x="400" y="306" text-anchor="middle" data-lang-th>แขนกล</text>
+          <text class="dg-text-b" x="400" y="306" text-anchor="middle" data-lang-en>Manipulator</text>
+
+          <!-- end effector: two fingers holding a melon -->
+          <line x1="612" y1="178" x2="606" y2="200" class="dg-stroke" stroke-width="4" stroke-linecap="round"/>
+          <line x1="630" y1="186" x2="646" y2="202" class="dg-stroke" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="624" cy="206" r="15" class="dg-fill-green dg-stroke" stroke-width="1.8"/>
+          <text class="dg-text-sm" x="668" y="176" data-lang-th>อุปกรณ์ปลายแขน</text>
+          <text class="dg-text-sm" x="668" y="176" data-lang-en>End effector</text>
+
+          <!-- conveyor -->
+          <rect x="652" y="236" width="168" height="18" rx="4" class="dg-fill-soft dg-stroke" stroke-width="1.8"/>
+          <circle cx="672" cy="264" r="12" class="dg-fill-surface dg-stroke" stroke-width="1.6"/>
+          <circle cx="730" cy="264" r="12" class="dg-fill-surface dg-stroke" stroke-width="1.6"/>
+          <circle cx="788" cy="264" r="12" class="dg-fill-surface dg-stroke" stroke-width="1.6"/>
+          <circle cx="700" cy="226" r="11" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <circle cx="762" cy="226" r="11" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <text class="dg-text-sm" x="736" y="306" text-anchor="middle" data-lang-th>สายพาน (อุปกรณ์รอบข้าง)</text>
+          <text class="dg-text-sm" x="736" y="306" text-anchor="middle" data-lang-en>Conveyor (peripheral)</text>
+
+          <!-- light curtain at the cell entry -->
+          <rect x="296" y="60" width="12" height="112" rx="3" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <rect x="296" y="60" width="12" height="112" rx="3" class="dg-fill-gold dg-stroke" stroke-width="1.6" transform="translate(0,0)"/>
+          <line x1="308" y1="76" x2="356" y2="76" class="dg-stroke-gold" stroke-width="1.6" stroke-dasharray="5 4"/>
+          <line x1="308" y1="100" x2="356" y2="100" class="dg-stroke-gold" stroke-width="1.6" stroke-dasharray="5 4"/>
+          <line x1="308" y1="124" x2="356" y2="124" class="dg-stroke-gold" stroke-width="1.6" stroke-dasharray="5 4"/>
+          <line x1="308" y1="148" x2="356" y2="148" class="dg-stroke-gold" stroke-width="1.6" stroke-dasharray="5 4"/>
+          <rect x="356" y="60" width="12" height="112" rx="3" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <text class="dg-text-sm" x="332" y="48" text-anchor="middle" data-lang-th>ม่านแสง</text>
+          <text class="dg-text-sm" x="332" y="48" text-anchor="middle" data-lang-en>Light curtain</text>
+
+          <!-- e-stop -->
+          <circle cx="792" cy="64" r="18" class="dg-fill-gold dg-stroke" stroke-width="2.4"/>
+          <circle cx="792" cy="64" r="9" class="dg-stroke" stroke-width="2"/>
+          <text class="dg-text-sm" x="792" y="98" text-anchor="middle" data-lang-th>หยุดฉุกเฉิน</text>
+          <text class="dg-text-sm" x="792" y="98" text-anchor="middle" data-lang-en>E-stop</text>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 8.1</span><span data-lang-en>Figure 8.1</span></b>
+          <span data-lang-th> เซลล์คัดบรรจุเมล่อนตามแบบทั่วไป แขนกลเป็นเพียงหนึ่งในหกองค์ประกอบ ในงบประมาณของโครงการจริง อุปกรณ์ปลายแขน อุปกรณ์รอบข้าง และระบบความปลอดภัยรวมกันมักมีมูลค่ามากกว่าตัวแขนกลเอง และเป็นที่มาของงานออกแบบเกือบทั้งหมด</span>
+          <span data-lang-en> A typical melon-packing cell. The arm is one of six parts, and in a real project budget the end effector, the peripherals and the safety system together usually cost more than the arm — and account for nearly all of the design work.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--info">
+        <div class="callout__title"><i class="fa-solid fa-lightbulb"></i> <span data-lang-th>ทำไมหุ่นยนต์ในงานเกษตรจึงยากกว่าในโรงงานรถยนต์</span><span data-lang-en>Why agricultural robots are harder than automotive ones</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ตัวแขนกลไม่ต่างกันเลย ที่ต่างคือสิ่งที่มันหยิบ ชิ้นส่วนรถยนต์มีรูปร่าง ขนาด และความแข็งเท่ากันทุกชิ้น จึงออกแบบมือจับได้ครั้งเดียวใช้ได้ตลอด ส่วนมะม่วงสองผลไม่มีขนาดเท่ากัน ผิวบอบบาง ตำแหน่งไม่แน่นอน และสุกไม่เท่ากัน ปัญหาจึงย้ายจากการควบคุมแขนกลไปอยู่ที่การรับรู้และอุปกรณ์ปลายแขนเกือบทั้งหมด</span>
+          <span data-lang-en>The arm is no different at all. What differs is what it picks up. Car parts share a shape, a size and a stiffness, so a gripper is designed once and used for ever. No two mangoes are the same size, their skin bruises, their position is uncertain and they ripen unevenly. The problem therefore moves almost entirely out of arm control and into sensing and the end effector.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 8.2 --------- -->
+    <section id="joints">
+      <h2><span data-lang-th>8.2 ข้อต่อ ลิงก์ และองศาอิสระ</span><span data-lang-en>8.2 Joints, links and degrees of freedom</span></h2>
+
+      <p>
+        <span data-lang-th>แขนกลคือโครงสร้างของ <strong>ลิงก์</strong> ซึ่งเป็นชิ้นส่วนแข็ง ต่อกันด้วย <strong>ข้อต่อ</strong> ซึ่งเป็นจุดที่เคลื่อนที่ได้ หุ่นยนต์อุตสาหกรรมเกือบทั้งหมดใช้ข้อต่อเพียงสองชนิด</span>
+        <span data-lang-en>A manipulator is a chain of <strong>links</strong>, which are rigid, connected by <strong>joints</strong>, which move. Almost every industrial robot uses just two kinds of joint.</span>
+      </p>
+
+      <ul>
+        <li><span data-lang-th><strong>ข้อต่อหมุน (revolute joint, R)</strong> — หมุนรอบแกน ตัวแปรของข้อต่อคือมุม \( \theta \) วัดเป็นองศาหรือเรเดียน ให้ระยะเอื้อมมากต่อขนาดที่กินพื้นที่ แต่ความคลาดเคลื่อนเชิงมุมจะถูกขยายด้วยระยะทาง</span><span data-lang-en><strong>Revolute (R)</strong> — rotates about an axis; the joint variable is an angle \( \theta \). It buys a great deal of reach for the space it occupies, but an angular error is magnified by distance.</span></li>
+        <li><span data-lang-th><strong>ข้อต่อเลื่อน (prismatic joint, P)</strong> — เลื่อนตามแนวเส้นตรง ตัวแปรของข้อต่อคือระยะ \( d \) วัดเป็นมิลลิเมตร ความคลาดเคลื่อนไม่ถูกขยาย แต่ต้องใช้โครงสร้างยาวเท่ากับช่วงที่ต้องการเคลื่อนที่</span><span data-lang-en><strong>Prismatic (P)</strong> — slides along a line; the joint variable is a distance \( d \) in millimetres. Its error is not magnified, but the structure must be as long as the travel required.</span></li>
+      </ul>
+
+      <!-- ===================== Figure 8.2 ===================== -->
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 240" role="img" aria-label="A revolute joint whose variable is an angle, beside a prismatic joint whose variable is a distance">
+            <!-- revolute -->
+            <rect x="24" y="22" width="392" height="196" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="220" y="48" text-anchor="middle" data-lang-th>ข้อต่อหมุน (R)</text>
+            <text class="dg-text-b" x="220" y="48" text-anchor="middle" data-lang-en>Revolute joint (R)</text>
+
+            <rect x="86" y="168" width="70" height="26" rx="4" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+            <line x1="121" y1="168" x2="121" y2="140" class="dg-stroke" stroke-width="6"/>
+            <circle cx="121" cy="134" r="12" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <line x1="121" y1="134" x2="296" y2="134" class="dg-stroke" stroke-width="3" stroke-dasharray="6 5"/>
+            <line x1="121" y1="134" x2="286" y2="78" class="dg-stroke-green" stroke-width="11" stroke-linecap="round"/>
+            <path d="M201 134 A 80 80 0 0 0 277 107" class="dg-stroke-gold" stroke-width="2.4"/>
+            <polygon points="277,107 266,104 271,116" class="dg-arrow"/>
+            <circle cx="286" cy="78" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+
+            <!-- prismatic -->
+            <rect x="444" y="22" width="392" height="196" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <text class="dg-text-b" x="640" y="48" text-anchor="middle" data-lang-th>ข้อต่อเลื่อน (P)</text>
+            <text class="dg-text-b" x="640" y="48" text-anchor="middle" data-lang-en>Prismatic joint (P)</text>
+
+            <rect x="492" y="120" width="264" height="34" rx="5" class="dg-fill-soft dg-stroke" stroke-width="1.8"/>
+            <rect x="520" y="110" width="86" height="54" rx="6" class="dg-fill-green dg-stroke" stroke-width="2"/>
+            <line x1="606" y1="137" x2="722" y2="137" class="dg-stroke-gold" stroke-width="2.4" stroke-dasharray="5 4"/>
+            <polygon points="722,137 710,132 710,142" class="dg-arrow"/>
+            <line x1="492" y1="176" x2="520" y2="176" class="dg-stroke" stroke-width="1.4"/>
+            <line x1="492" y1="168" x2="492" y2="184" class="dg-stroke" stroke-width="1.4"/>
+            <line x1="520" y1="168" x2="520" y2="184" class="dg-stroke" stroke-width="1.4"/>
+            <circle cx="756" cy="137" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+          </svg>
+          <span class="fig-label" style="left:30.5%; top:44%">\( \theta \)</span>
+          <span class="fig-label" style="left:76.5%; top:49%">\( d \)</span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 8.2</span><span data-lang-en>Figure 8.2</span></b>
+          <span data-lang-th> ข้อต่อสองชนิดที่ประกอบกันขึ้นเป็นหุ่นยนต์อุตสาหกรรมทุกตัว ตัวแปรของข้อต่อหมุนคือมุม \( \theta \) ส่วนของข้อต่อเลื่อนคือระยะ \( d \) การตั้งชื่อโครงร่างหุ่นยนต์ทำได้โดยเรียงอักษรของข้อต่อสามตัวแรกจากฐานขึ้นมา เช่น RRR คืออาร์ติคูเลต และ PPP คือคาร์ทีเซียน</span>
+          <span data-lang-en> The two joints from which every industrial robot is built. The revolute variable is an angle \( \theta \), the prismatic one a distance \( d \). A configuration is named by listing the first three joints from the base upwards: RRR is articulated, PPP is Cartesian.</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        <span data-lang-th><strong>องศาอิสระ</strong> คือจำนวนตัวแปรอิสระที่ต้องสั่งเพื่อกำหนดท่าของหุ่นยนต์ให้ครบ ในแขนกลแบบอนุกรมที่ข้อต่อแต่ละตัวให้การเคลื่อนที่หนึ่งทาง จำนวนนี้คือจำนวนข้อต่อพอดี</span>
+        <span data-lang-en><strong>Degrees of freedom</strong> is the number of independent variables that must be commanded to fix the robot&rsquo;s pose. In a serial arm whose joints each provide one motion, it is simply the number of joints.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ n_{\text{DOF}} \;=\; \sum_{i=1}^{m} f_i \;=\; m \qquad \text{(}f_i = 1\text{)} $$</div>
+        <div class="eq__num">(8.1)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>คำถามที่สำคัญกว่าคือ <em>งานต้องการกี่องศาอิสระ</em> การกำหนดตำแหน่งของจุดหนึ่งในปริภูมิสามมิติต้องใช้สามตัวเลข และการกำหนดการวางตัวของวัตถุแข็งต้องใช้อีกสาม รวมเป็นหกองศาอิสระสำหรับการวางวัตถุให้ได้ทั้งตำแหน่งและมุมที่ต้องการ นี่คือเหตุผลที่หุ่นยนต์อุตสาหกรรมมาตรฐานมีหกแกน ไม่มากไม่น้อยกว่านี้</span>
+        <span data-lang-en>The more useful question is <em>how many the task needs</em>. Locating a point in three-dimensional space takes three numbers; orienting a rigid body takes three more. Six degrees of freedom therefore place an object at an arbitrary position and attitude, which is why the standard industrial robot has exactly six axes.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>แต่งานจริงหลายอย่างต้องการน้อยกว่านั้น และการจ่ายเงินซื้อแกนที่ไม่ได้ใช้เป็นการสิ้นเปลืองทั้งราคาและความเร็ว</span>
+        <span data-lang-en>Many real tasks need fewer, however, and paying for axes one never uses costs both money and speed.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 8.1 — องศาอิสระที่งานเกษตรแต่ละแบบต้องการจริง</span><span data-lang-en>Table 8.1 — The degrees of freedom that agricultural tasks actually need</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>งาน</span><span data-lang-en>Task</span></th>
+              <th><span data-lang-th>ที่ต้องกำหนด</span><span data-lang-en>What must be fixed</span></th>
+              <th>\( n_{\text{DOF}} \)</th>
+              <th><span data-lang-th>โครงร่างที่เหมาะ</span><span data-lang-en>Suitable configuration</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>หยิบผลไม้จากสายพานใส่ถาด</span><span data-lang-en>Picking fruit from a belt into a tray</span></td>
+              <td><span data-lang-th>ตำแหน่ง \( x, y, z \) และมุมหมุนรอบแกนตั้ง</span><span data-lang-en>Position \( x, y, z \) and rotation about the vertical</span></td>
+              <td>4</td>
+              <td><span data-lang-th>เดลต้า หรือ SCARA</span><span data-lang-en>Delta or SCARA</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ย้ายต้นกล้าจากถาดเพาะลงถาดปลูก</span><span data-lang-en>Transplanting seedlings between trays</span></td>
+              <td><span data-lang-th>ตำแหน่ง \( x, y, z \) เท่านั้น เพราะต้นกล้าหมุนได้อิสระ</span><span data-lang-en>Position \( x, y, z \) only; a seedling may rotate freely</span></td>
+              <td>3</td>
+              <td><span data-lang-th>คาร์ทีเซียน</span><span data-lang-en>Cartesian</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>เก็บมะม่วงที่ห้อยอยู่บนต้น</span><span data-lang-en>Harvesting a mango hanging on the tree</span></td>
+              <td><span data-lang-th>ตำแหน่งและการวางตัวครบ เพราะต้องเข้าหาขั้วผลในมุมที่ถูกต้อง</span><span data-lang-en>Full position and attitude, to approach the stalk at the right angle</span></td>
+              <td>6</td>
+              <td><span data-lang-th>อาร์ติคูเลต</span><span data-lang-en>Articulated</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>เรียงกระสอบอาหารสัตว์บนพาเลท</span><span data-lang-en>Palletising sacks of animal feed</span></td>
+              <td><span data-lang-th>ตำแหน่ง \( x, y, z \) และมุมหมุนรอบแกนตั้ง</span><span data-lang-en>Position \( x, y, z \) and rotation about the vertical</span></td>
+              <td>4</td>
+              <td><span data-lang-th>อาร์ติคูเลตพิกัดน้ำหนักสูง</span><span data-lang-en>High-payload articulated</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>แกนที่เกินมาไม่ได้ฟรี</span><span data-lang-en>Spare axes are not free</span></div>
+        <p class="mb-0">
+          <span data-lang-th>หุ่นยนต์หกแกนทำงานสี่องศาอิสระได้ แต่ทุกแกนที่เพิ่มเข้ามาคือมอเตอร์ ตัวเข้ารหัส ชุดเกียร์ และมวลที่แขนต้องยกเพิ่ม ผลคือเร็วช้าลง พิกัดน้ำหนักลดลง และราคาสูงขึ้น ในสายคัดบรรจุที่ต้องการ 80 ชิ้นต่อนาที หุ่นยนต์เดลต้าสี่แกนจะชนะหุ่นยนต์อาร์ติคูเลตหกแกนอย่างชัดเจน ไม่ใช่เพราะแม่นกว่า แต่เพราะมวลที่ต้องเร่งน้อยกว่ามาก</span>
+          <span data-lang-en>A six-axis robot can certainly do a four-degree-of-freedom job, but every extra axis is another motor, encoder and gearbox, and more mass for the arm to carry. The result is lower speed, lower payload and a higher price. On a packing line needing 80 picks a minute, a four-axis delta beats a six-axis articulated arm decisively — not because it is more accurate, but because there is far less mass to accelerate.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 8.3 --------- -->
+    <section id="config">
+      <h2><span data-lang-th>8.3 โครงร่างและปริภูมิทำงาน</span><span data-lang-en>8.3 Configurations and the workspace</span></h2>
+
+      <p>
+        <span data-lang-th>ชนิดของข้อต่อสามตัวแรกนับจากฐานขึ้นมาเป็นตัวกำหนด <strong>โครงร่าง</strong> ของหุ่นยนต์ และโครงร่างเป็นตัวกำหนด <strong>รูปร่างของปริภูมิทำงาน</strong> ซึ่งก็คือเซตของจุดทั้งหมดที่ปลายเครื่องมือไปถึงได้ นี่คือข้อมูลชิ้นแรกที่ต้องดูเวลาเลือกหุ่นยนต์ เพราะถ้ารูปร่างของปริภูมิทำงานไม่เข้ากับรูปร่างของพื้นที่ที่มีอยู่ ตัวเลขอื่นในแค็ตตาล็อกจะไม่มีความหมายเลย</span>
+        <span data-lang-en>The first three joints counted up from the base fix the robot&rsquo;s <strong>configuration</strong>, and the configuration fixes the <strong>shape of the workspace</strong> — the set of all points the tool can reach. This is the first thing to look at when choosing a robot, because if the shape of the workspace does not match the shape of the space available, none of the catalogue&rsquo;s other numbers matters.</span>
+      </p>
+
+      <!-- ===================== Figure 8.3 ===================== -->
+      <figure class="figure">
+        <svg viewBox="0 0 860 430" role="img" aria-label="Six robot configurations with the shape of the workspace each one produces">
+
+          <!-- ============ 1. Cartesian ============ -->
+          <rect x="12" y="10" width="272" height="200" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="148" y="34" text-anchor="middle" data-lang-th>คาร์ทีเซียน</text>
+          <text class="dg-text-b" x="148" y="34" text-anchor="middle" data-lang-en>Cartesian</text>
+          <text class="dg-text-sm" x="272" y="202" text-anchor="end">PPP</text>
+          <rect x="60" y="96" width="176" height="74" class="dg-fill-green" opacity="0.45"/>
+          <rect x="60" y="96" width="176" height="74" class="dg-stroke-green" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <rect x="50" y="76" width="196" height="12" rx="4" class="dg-fill-steel dg-stroke" stroke-width="1.6"/>
+          <line x1="56" y1="88" x2="56" y2="186" class="dg-stroke" stroke-width="3"/>
+          <line x1="240" y1="88" x2="240" y2="186" class="dg-stroke" stroke-width="3"/>
+          <line x1="44" y1="186" x2="252" y2="186" class="dg-stroke" stroke-width="2"/>
+          <rect x="128" y="72" width="32" height="20" rx="3" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <line x1="144" y1="92" x2="144" y2="132" class="dg-stroke" stroke-width="5"/>
+          <circle cx="144" cy="138" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <line x1="80" y1="60" x2="216" y2="60" class="dg-stroke-gold" stroke-width="1.6"/>
+          <polygon points="80,60 90,56 90,64" class="dg-arrow"/>
+          <polygon points="216,60 206,56 206,64" class="dg-arrow"/>
+
+          <!-- ============ 2. Cylindrical ============ -->
+          <rect x="294" y="10" width="272" height="200" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="430" y="34" text-anchor="middle" data-lang-th>ทรงกระบอก</text>
+          <text class="dg-text-b" x="430" y="34" text-anchor="middle" data-lang-en>Cylindrical</text>
+          <text class="dg-text-sm" x="554" y="202" text-anchor="end">RPP</text>
+          <ellipse cx="430" cy="152" rx="104" ry="28" class="dg-fill-green" opacity="0.45"/>
+          <ellipse cx="430" cy="152" rx="104" ry="28" class="dg-stroke-green" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <ellipse cx="430" cy="152" rx="36" ry="10" class="dg-fill-surface dg-stroke" stroke-width="1.2"/>
+          <ellipse cx="430" cy="182" rx="44" ry="12" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <path d="M392 190 A 44 14 0 0 0 468 190" class="dg-stroke-gold" stroke-width="1.8"/>
+          <polygon points="468,190 457,186 459,196" class="dg-arrow"/>
+          <rect x="418" y="86" width="24" height="90" rx="4" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <rect x="442" y="104" width="78" height="13" rx="4" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <circle cx="526" cy="110" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <line x1="404" y1="92" x2="404" y2="170" class="dg-stroke-gold" stroke-width="1.6"/>
+          <polygon points="404,92 400,102 408,102" class="dg-arrow"/>
+          <polygon points="404,170 400,160 408,160" class="dg-arrow"/>
+
+          <!-- ============ 3. Spherical ============ -->
+          <rect x="576" y="10" width="272" height="200" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="712" y="34" text-anchor="middle" data-lang-th>ทรงกลม</text>
+          <text class="dg-text-b" x="712" y="34" text-anchor="middle" data-lang-en>Spherical</text>
+          <text class="dg-text-sm" x="836" y="202" text-anchor="end">RRP</text>
+          <path d="M804 126 A 92 92 0 0 0 735.8 37.1 L 723.4 83.5 A 44 44 0 0 1 756 126 Z" class="dg-fill-green" opacity="0.45"/>
+          <path d="M804 126 A 92 92 0 0 0 735.8 37.1 L 723.4 83.5 A 44 44 0 0 1 756 126 Z" class="dg-stroke-green" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <ellipse cx="712" cy="182" rx="42" ry="11" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <rect x="702" y="130" width="20" height="50" rx="4" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <circle cx="712" cy="126" r="9" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+          <line x1="712" y1="126" x2="786" y2="86" class="dg-stroke-green" stroke-width="10" stroke-linecap="round"/>
+          <circle cx="792" cy="83" r="6" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <path d="M712 94 A 32 32 0 0 1 742 110" class="dg-stroke-gold" stroke-width="1.6"/>
+          <polygon points="712,94 707,104 716,103" class="dg-arrow"/>
+
+          <!-- ============ 4. SCARA ============ -->
+          <rect x="12" y="222" width="272" height="200" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="148" y="246" text-anchor="middle">SCARA</text>
+          <text class="dg-text-sm" x="272" y="414" text-anchor="end">RRP</text>
+          <text class="dg-text-sm" x="24" y="414" data-lang-th>(มองจากด้านบน)</text>
+          <text class="dg-text-sm" x="24" y="414" data-lang-en>(top view)</text>
+          <circle cx="140" cy="336" r="72" class="dg-fill-green" opacity="0.45"/>
+          <circle cx="140" cy="336" r="72" class="dg-stroke-green" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <circle cx="140" cy="336" r="22" class="dg-fill-surface dg-stroke" stroke-width="1.4"/>
+          <line x1="140" y1="336" x2="173" y2="313" class="dg-stroke-green" stroke-width="12" stroke-linecap="round"/>
+          <line x1="173" y1="313" x2="201" y2="303" class="dg-stroke-green" stroke-width="9" stroke-linecap="round"/>
+          <circle cx="140" cy="336" r="8" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+          <circle cx="173" cy="313" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <circle cx="201" cy="303" r="6" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+
+          <!-- ============ 5. Articulated ============ -->
+          <rect x="294" y="222" width="272" height="200" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="430" y="246" text-anchor="middle" data-lang-th>อาร์ติคูเลต</text>
+          <text class="dg-text-b" x="430" y="246" text-anchor="middle" data-lang-en>Articulated</text>
+          <text class="dg-text-sm" x="554" y="414" text-anchor="end">RRR</text>
+          <path d="M320 392 A 110 110 0 0 1 540 392 L 470 392 A 40 40 0 0 0 390 392 Z" class="dg-fill-green" opacity="0.45"/>
+          <path d="M320 392 A 110 110 0 0 1 540 392 L 470 392 A 40 40 0 0 0 390 392 Z" class="dg-stroke-green" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <rect x="408" y="392" width="44" height="16" rx="4" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <line x1="330" y1="408" x2="530" y2="408" class="dg-stroke" stroke-width="2"/>
+          <circle cx="430" cy="392" r="9" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+          <line x1="430" y1="392" x2="455" y2="338" class="dg-stroke-green" stroke-width="11" stroke-linecap="round"/>
+          <line x1="455" y1="338" x2="500" y2="334" class="dg-stroke-green" stroke-width="9" stroke-linecap="round"/>
+          <circle cx="455" cy="338" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <line x1="500" y1="334" x2="516" y2="346" class="dg-stroke" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="500" cy="334" r="6" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+
+          <!-- ============ 6. Delta (parallel) ============ -->
+          <rect x="576" y="222" width="272" height="200" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="712" y="246" text-anchor="middle" data-lang-th>เดลต้า (ขนาน)</text>
+          <text class="dg-text-b" x="712" y="246" text-anchor="middle" data-lang-en>Delta (parallel)</text>
+          <text class="dg-text-sm" x="836" y="414" text-anchor="end">3 &times; RR</text>
+          <ellipse cx="712" cy="366" rx="60" ry="28" class="dg-fill-green" opacity="0.45"/>
+          <ellipse cx="712" cy="366" rx="60" ry="28" class="dg-stroke-green" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <rect x="650" y="268" width="124" height="14" rx="4" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <line x1="664" y1="282" x2="698" y2="342" class="dg-stroke-green" stroke-width="5" stroke-linecap="round"/>
+          <line x1="712" y1="282" x2="712" y2="342" class="dg-stroke-green" stroke-width="5" stroke-linecap="round"/>
+          <line x1="760" y1="282" x2="726" y2="342" class="dg-stroke-green" stroke-width="5" stroke-linecap="round"/>
+          <rect x="692" y="342" width="40" height="10" rx="3" class="dg-fill-steel dg-stroke" stroke-width="1.6"/>
+          <circle cx="712" cy="360" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 8.3</span><span data-lang-en>Figure 8.3</span></b>
+          <span data-lang-th> หกโครงร่างและรูปร่างปริภูมิทำงานของแต่ละแบบ พื้นที่แรเงาคือบริเวณที่ปลายเครื่องมือไปถึงได้ สังเกตว่ามีเพียงคาร์ทีเซียนเท่านั้นที่ปริภูมิทำงานเป็นกล่องสี่เหลี่ยม ซึ่งเป็นเหตุผลที่โรงเรือนและระบบรางเหนือแปลงปลูกเลือกแบบนี้ ส่วนที่เหลือล้วนเป็นวงแหวนหรือทรงกลมกลวง ซึ่งต้องวางหุ่นยนต์ให้พื้นที่ทำงานตกลงในวงแหวนนั้นพอดี</span>
+          <span data-lang-en> Six configurations and the shape of workspace each gives. The shaded region is where the tool can reach. Only the Cartesian layout produces a rectangular box, which is why greenhouses and over-bed rail systems choose it; the rest are rings or hollow spheres, and the work must be placed so that it falls inside the ring.</span>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>8.3.1 ขนาดของปริภูมิทำงาน</span><span data-lang-en>8.3.1 The size of the workspace</span></h3>
+
+      <p>
+        <span data-lang-th>สำหรับแขนกลสองลิงก์ที่ข้อต่อทั้งสองเป็นแบบหมุน ระยะเอื้อมที่มากที่สุดคือเมื่อแขนเหยียดตรง และน้อยที่สุดคือเมื่อแขนพับกลับเข้าหาตัวเอง</span>
+        <span data-lang-en>For a two-link arm with both joints revolute, the reach is greatest when the arm is straight and least when it folds back on itself.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ R_{\max} \;=\; L_1 + L_2, \qquad R_{\min} \;=\; \lvert L_1 - L_2 \rvert $$</div>
+        <div class="eq__num">(8.2)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ปริภูมิทำงานในระนาบจึงเป็นวงแหวนระหว่างรัศมีสองค่านี้ และเมื่อหมุนรอบแกนตั้งอีกชั้นหนึ่งก็จะได้ปริมาตรทรงกระบอกกลวงสูงเท่ากับช่วงเคลื่อนที่ของแกนตั้ง \( h \)</span>
+        <span data-lang-en>The planar workspace is therefore the annulus between those two radii, and sweeping it about the vertical axis gives a hollow cylindrical volume of height \( h \), the travel of the vertical axis.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ A \;=\; \pi \left( R_{\max}^{2} - R_{\min}^{2} \right), \qquad V \;=\; A\,h $$</div>
+        <div class="eq__num">(8.3)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 8.1 — SCARA สำหรับย้ายต้นกล้า</span><span data-lang-en>Worked example 8.1 — A SCARA for seedling transfer</span></div>
+        <p>
+          <span data-lang-th>หุ่นยนต์ SCARA มี \( L_1 = 400 \) mm, \( L_2 = 250 \) mm และแกนตั้งเคลื่อนที่ได้ \( h = 150 \) mm ถาดเพาะกล้ามีขนาด 540 &times; 280 mm จะวางถาดสองใบ (ถาดต้นทางและถาดปลายทาง) ให้อยู่ในปริภูมิทำงานได้หรือไม่</span>
+          <span data-lang-en>A SCARA has \( L_1 = 400 \) mm, \( L_2 = 250 \) mm and a vertical travel \( h = 150 \) mm. A seedling tray measures 540 &times; 280 mm. Can two trays — source and destination — be placed inside the workspace?</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ R_{\max} = 650\ \text{mm}, \qquad R_{\min} = 150\ \text{mm} $$</div>
+          <div class="eq__num">(8.4)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ A = \pi\left(650^{2} - 150^{2}\right) = 1.26 \times 10^{6}\ \text{mm}^{2} = 1.26\ \text{m}^{2} $$</div>
+          <div class="eq__num">(8.5)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>พื้นที่ของถาดสองใบรวมกันเท่ากับ 0.30 m&sup2; ซึ่งน้อยกว่า 1.26 m&sup2; มาก แต่ตัวเลขนี้ยัง <em>ไม่ใช่</em> คำตอบ เพราะวงแหวนมีรูกลางรัศมี 150 mm ที่เอื้อมไม่ถึง และถาดเป็นสี่เหลี่ยมที่ต้องวางให้ทุกมุมอยู่ในวงแหวน การเทียบพื้นที่รวมจึงเป็นเพียงการตรวจขั้นต้น ขั้นตอนจริงต้องวาดถาดทับลงบนวงแหวนตามมาตราส่วน ซึ่งเป็นงานของกิจกรรมที่ 8.1</span>
+          <span data-lang-en>The two trays together occupy 0.30 m&sup2;, far less than 1.26 m&sup2; — but that figure is <em>not</em> the answer. The annulus has an unreachable hole of radius 150 mm at its centre, and the trays are rectangles whose every corner must lie inside the ring. Comparing total areas is only a first screen; the real step is to draw the trays onto the annulus to scale, which is the work of Activity 8.1.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--info">
+        <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>ปริภูมิที่เอื้อมถึง กับ ปริภูมิที่ใช้งานได้</span><span data-lang-en>Reachable versus dexterous workspace</span></div>
+        <p class="mb-0">
+          <span data-lang-th>สมการ (8.3) ให้ <strong>ปริภูมิที่เอื้อมถึง</strong> คือจุดที่ปลายเครื่องมือไปถึงได้ด้วยท่าใดท่าหนึ่ง แต่ที่ขอบนอกสุดแขนเหยียดตรง จึงเหลือการวางตัวได้เพียงทางเดียวและเคลื่อนที่ออกไปอีกไม่ได้เลย เรียกว่า <strong>จุดเอกฐาน</strong> บริเวณที่หุ่นยนต์ยังเลือกการวางตัวได้อย่างอิสระเรียกว่า <strong>ปริภูมิที่ใช้งานได้</strong> และเล็กกว่าอย่างมีนัยสำคัญ กฎจากหน้างานคืออย่าออกแบบงานให้อยู่เลย 90% ของระยะเอื้อมสูงสุด เพราะที่นั่นหุ่นยนต์จะเคลื่อนที่ช้าลง สั่น และความเที่ยงตรงแย่ลงอย่างเห็นได้ชัด</span>
+          <span data-lang-en>Equation (8.3) gives the <strong>reachable workspace</strong>: points the tool can touch in some pose. At the outer edge, however, the arm is straight, only one orientation is available and no further motion outwards is possible at all — a <strong>singularity</strong>. The region in which the robot can still choose its orientation freely is the <strong>dexterous workspace</strong>, and it is significantly smaller. The rule from the floor is to keep the work inside 90% of maximum reach, since beyond that the robot slows, shakes and loses repeatability noticeably.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 8.1 ===================== -->
+      <figure class="anim" data-anim="ch08-work">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 8.1 — ข้อต่อชนิดเดียวกัน ความยาวเท่ากัน แต่ปริภูมิทำงานต่างกัน</span>
+          <span data-lang-en>Animation 8.1 — Same link lengths, different joints, different workspace</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 420" role="img" aria-label="A two-joint arm seen from above, sweeping its workspace, switchable between Cartesian, polar and articulated joint arrangements">
+            <text class="dg-text-sm" x="26" y="26" data-lang-th>มองจากด้านบน</text>
+            <text class="dg-text-sm" x="26" y="26" data-lang-en>plan view</text>
+            <path id="a81-env" class="dg-fill-green" opacity="0.4" fill-rule="evenodd" d=""/>
+            <path id="a81-envline" class="dg-stroke-green" stroke-width="1.6" stroke-dasharray="5 4" fill-rule="evenodd" d=""/>
+            <polyline id="a81-trail" class="dg-stroke-gold" stroke-width="2" fill="none" points=""/>
+            <circle id="a81-base" cx="430" cy="210" r="15" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <line id="a81-l1" x1="430" y1="210" x2="430" y2="210" class="dg-stroke-green" stroke-width="12" stroke-linecap="round"/>
+            <line id="a81-l2" x1="430" y1="210" x2="430" y2="210" class="dg-stroke-green" stroke-width="9" stroke-linecap="round"/>
+            <circle id="a81-j1" cx="430" cy="210" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <circle id="a81-j2" cx="430" cy="210" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <circle id="a81-tool" cx="430" cy="210" r="7" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>ปริภูมิทำงาน</span><span data-lang-en>workspace</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>เส้นทางที่ปลายเครื่องมือผ่านมา</span><span data-lang-en>path the tool has traced</span></span>
+          <span style="color:var(--sky-500)"><i></i><span data-lang-th>ปลายเครื่องมือ</span><span data-lang-en>tool point</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="cart" aria-pressed="false">PP <span data-lang-th>คาร์ทีเซียน</span><span data-lang-en>Cartesian</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="polar" aria-pressed="false">RP <span data-lang-th>โพลาร์</span><span data-lang-en>Polar</span></button>
+          <button class="anim__btn is-on" type="button" data-anim-toggle="artic" aria-pressed="true">RR <span data-lang-th>อาร์ติคูเลต</span><span data-lang-en>Articulated</span></button>
+          <label class="anim__param">
+            \( L_1 \)
+            <input type="range" data-anim-param="l1" data-unit="mm" min="300" max="900" step="50" value="600">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            \( L_2 \)
+            <input type="range" data-anim-param="l2" data-unit="mm" min="200" max="700" step="50" value="400">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 8.1</span><span data-lang-en>Animation 8.1</span></b>
+          <span data-lang-th> ตั้ง \( L_1 \) และ \( L_2 \) ไว้คงที่ แล้วสลับชนิดข้อต่อทั้งสามแบบ จะเห็นว่าโครงสร้างที่มีความยาวเท่ากันให้พื้นที่ทำงานต่างกันหลายเท่า แบบ RR ชนะในแง่พื้นที่ แต่มีรูกลางที่เอื้อมไม่ถึงตามสมการ (8.2) ส่วนแบบ PP ได้พื้นที่น้อยที่สุดแต่เป็นสี่เหลี่ยมที่ไม่มีรู และทุกจุดในนั้นเข้าถึงได้ด้วยท่าเดียวเสมอ ลองลด \( L_2 \) ให้ใกล้ \( L_1 \) ดู แล้วสังเกตว่ารูกลางของแบบ RR หายไป</span>
+          <span data-lang-en> Hold \( L_1 \) and \( L_2 \) fixed and switch between the three joint arrangements: the same lengths give areas that differ several-fold. RR wins on area but carries the unreachable hole of equation (8.2), while PP gives the least area — as a rectangle with no hole, every point of which is reached by exactly one pose. Now bring \( L_2 \) close to \( L_1 \) and watch the RR hole disappear.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 8.4 --------- -->
+    <section id="specs">
+      <h2><span data-lang-th>8.4 ข้อกำหนดสมรรถนะ และความหมายที่แท้จริงของตัวเลขในแค็ตตาล็อก</span><span data-lang-en>8.4 Performance specifications, and what the catalogue numbers mean</span></h2>
+
+      <p>
+        <span data-lang-th>แค็ตตาล็อกหุ่นยนต์ทุกเล่มให้ตัวเลขชุดเดียวกัน และนักศึกษามักตีความผิดอย่างน้อยสองตัว หัวข้อนี้แยกความหมายของแต่ละตัวให้ชัด พร้อมวิธีคำนวณและกับดักที่พบบ่อย</span>
+        <span data-lang-en>Every robot catalogue quotes the same handful of numbers, and at least two of them are routinely misread. This section separates them, with the arithmetic for each and the trap that usually goes with it.</span>
+      </p>
+
+      <h3><span data-lang-th>8.4.1 ความเที่ยงตรง ความแม่นยำ และความละเอียด</span><span data-lang-en>8.4.1 Repeatability, accuracy and resolution</span></h3>
+
+      <p>
+        <span data-lang-th>สั่งให้หุ่นยนต์กลับมาที่จุดเดิมซ้ำ \( n \) ครั้ง แล้ววัดว่าปลายเครื่องมือหยุดที่ไหนจริงในแต่ละครั้ง จะได้กลุ่มจุด \( \vect{p}_1, \dots, \vect{p}_n \) ซึ่งมีค่าเฉลี่ย \( \bar{\vect{p}} \) จากข้อมูลชุดเดียวนี้เราอ่านค่าได้สองค่าที่แตกต่างกันโดยสิ้นเชิง</span>
+        <span data-lang-en>Command the robot back to the same point \( n \) times and measure where the tool actually stops. The result is a cluster \( \vect{p}_1, \dots, \vect{p}_n \) with a mean \( \bar{\vect{p}} \). From this one data set two entirely different numbers can be read.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \text{RP} \;=\; \pm 3\sigma, \qquad \sigma \;=\; \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} \lVert \vect{p}_i - \bar{\vect{p}} \rVert^{2}} $$</div>
+        <div class="eq__num">(8.6)</div>
+      </div>
+
+      <div class="eq">
+        <div class="eq__body">$$ \text{AC} \;=\; \lVert \bar{\vect{p}} - \vect{p}_{\text{cmd}} \rVert $$</div>
+        <div class="eq__num">(8.7)</div>
+      </div>
+
+      <ul>
+        <li><span data-lang-th><strong>ความเที่ยงตรง (repeatability, RP)</strong> คือการกระจายของกลุ่มจุดรอบค่าเฉลี่ย <em>ของตัวมันเอง</em> ไม่เกี่ยวกับจุดที่สั่ง เป็นตัวเลขที่แค็ตตาล็อกให้มา เช่น ±0.02 mm และเป็นค่าที่หุ่นยนต์ทำได้ดีมากเพราะมันกลับไปที่ชุดมุมข้อต่อเดิมได้แม่นเสมอ</span><span data-lang-en><strong>Repeatability (RP)</strong> is the spread of the cluster about <em>its own</em> mean, and has nothing to do with the commanded point. It is the figure the catalogue quotes — ±0.02 mm, say — and robots are very good at it, because returning to the same set of joint angles is something they do precisely.</span></li>
+        <li><span data-lang-th><strong>ความแม่นยำ (accuracy, AC)</strong> คือระยะจากค่าเฉลี่ยของกลุ่มจุดไปถึงจุดที่สั่งจริง ๆ ตัวเลขนี้แค็ตตาล็อก <em>ไม่</em> ให้มา และมักแย่กว่าความเที่ยงตรงสิบถึงห้าสิบเท่า เพราะขึ้นกับความคลาดเคลื่อนของความยาวลิงก์ การสอบเทียบ อุณหภูมิ และการเสียรูปของโครงสร้างใต้ภาระ</span><span data-lang-en><strong>Accuracy (AC)</strong> is the distance from the cluster&rsquo;s mean to the point actually commanded. The catalogue does <em>not</em> quote it, and it is typically ten to fifty times worse than the repeatability, because it depends on link-length errors, calibration, temperature and how the structure deflects under load.</span></li>
+        <li><span data-lang-th><strong>ความละเอียด (resolution)</strong> คือขั้นเล็กที่สุดที่ระบบสั่งได้ กำหนดโดยตัวเข้ารหัสและอัตราทดเกียร์ ไม่ใช่โดยกลไก</span><span data-lang-en><strong>Resolution</strong> is the smallest step the system can command, fixed by the encoder and the gear ratio rather than by the mechanics.</span></li>
+      </ul>
+
+      <div class="eq">
+        <div class="eq__body">$$ \Delta\theta \;=\; \frac{360\deg}{N\,g}, \qquad \Delta s \;=\; R \, \Delta\theta_{\text{rad}} $$</div>
+        <div class="eq__num">(8.8)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 8.2 — ความละเอียดไม่ใช่ตัวจำกัด</span><span data-lang-en>Worked example 8.2 — Resolution is not the limit</span></div>
+        <p>
+          <span data-lang-th>ข้อต่อหนึ่งใช้ตัวเข้ารหัสแบบเพิ่มทีละขั้นที่ให้ \( N = 8192 \) นับต่อรอบ (2048 ช่องอ่านแบบควอเดรเจอร์) ผ่านชุดเกียร์ \( g = 100 \) จงหาความละเอียดเชิงมุมของข้อต่อ และความละเอียดเชิงเส้นที่ปลายเครื่องมือเมื่อ \( R = 650 \) mm</span>
+          <span data-lang-en>A joint uses an incremental encoder giving \( N = 8192 \) counts per revolution (2048 lines read in quadrature) through a gearbox of \( g = 100 \). Find the joint&rsquo;s angular resolution, and the linear resolution at the tool when \( R = 650 \) mm.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ \Delta\theta = \frac{360\deg}{(8192)(100)} = 4.4 \times 10^{-4}\deg = 7.7 \times 10^{-6}\ \text{rad} $$</div>
+          <div class="eq__num">(8.9)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ \Delta s = (650)\left(7.7 \times 10^{-6}\right) = 5.0 \times 10^{-3}\ \text{mm} = 5\ \mu\text{m} $$</div>
+          <div class="eq__num">(8.10)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ความละเอียด 5 µm แต่แค็ตตาล็อกของหุ่นยนต์ตัวนี้ระบุความเที่ยงตรง ±20 µm ซึ่งหยาบกว่าสี่เท่า ส่วนต่างนี้ไม่ได้มาจากอิเล็กทรอนิกส์เลย แต่มาจากแบ็กแลชในชุดเกียร์ การยืดหยุ่นของโครงสร้าง และการขยายตัวตามอุณหภูมิ บทเรียนคือการเลือกตัวเข้ารหัสที่ละเอียดขึ้นจะไม่ช่วยอะไร ถ้ากลไกยังเป็นตัวจำกัดอยู่</span>
+          <span data-lang-en>The resolution is 5 µm, yet the catalogue for this robot quotes a repeatability of ±20 µm — four times coarser. None of that gap comes from the electronics; it comes from gearbox backlash, structural compliance and thermal expansion. The lesson is that a finer encoder buys nothing while the mechanics are the limit.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 8.2 ===================== -->
+      <figure class="anim" data-anim="ch08-acc">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 8.2 — ความแม่นยำกับความเที่ยงตรงไม่ใช่เรื่องเดียวกัน</span>
+          <span data-lang-en>Animation 8.2 — Accuracy and repeatability are not the same thing</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 340" role="img" aria-label="A target on which a robot lands repeatedly, showing the scatter of the cluster and its offset from the commanded point">
+            <!-- rings, 400 px per mm -->
+            <circle cx="430" cy="170" r="20" class="dg-stroke" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <circle cx="430" cy="170" r="40" class="dg-stroke" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <circle cx="430" cy="170" r="60" class="dg-stroke" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <circle cx="430" cy="170" r="80" class="dg-stroke" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <circle cx="430" cy="170" r="100" class="dg-stroke" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text class="dg-text-sm" x="434" y="88" data-lang-th>0.20 มม.</text>
+            <text class="dg-text-sm" x="434" y="88" data-lang-en>0.20 mm</text>
+            <text class="dg-text-sm" x="434" y="148" data-lang-th>0.05 มม.</text>
+            <text class="dg-text-sm" x="434" y="148" data-lang-en>0.05 mm</text>
+
+            <!-- commanded point, crosshair -->
+            <line x1="330" y1="170" x2="530" y2="170" class="dg-stroke" stroke-width="1"/>
+            <line x1="430" y1="70" x2="430" y2="270" class="dg-stroke" stroke-width="1"/>
+            <circle cx="430" cy="170" r="4" class="dg-fill-sky dg-stroke" stroke-width="1.6"/>
+            <text class="dg-text-sm" x="330" y="286" text-anchor="middle" data-lang-th>จุดที่สั่ง</text>
+            <text class="dg-text-sm" x="330" y="286" text-anchor="middle" data-lang-en>commanded point</text>
+            <line x1="380" y1="276" x2="424" y2="178" class="dg-stroke" stroke-width="1" stroke-dasharray="3 3"/>
+
+            <!-- landed points go here -->
+            <g id="a82-dots"></g>
+
+            <!-- repeatability circle about the cluster mean -->
+            <circle id="a82-rep" cx="430" cy="170" r="0" class="dg-stroke-gold" stroke-width="2" stroke-dasharray="6 4"/>
+            <!-- accuracy: commanded point to cluster mean -->
+            <line id="a82-acc" x1="430" y1="170" x2="430" y2="170" class="dg-stroke-green" stroke-width="2.4"/>
+            <g id="a82-meanmark">
+              <line id="a82-m1" x1="430" y1="170" x2="430" y2="170" class="dg-stroke-green" stroke-width="2.4"/>
+              <line id="a82-m2" x1="430" y1="170" x2="430" y2="170" class="dg-stroke-green" stroke-width="2.4"/>
+            </g>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--sky-500)"><i></i><span data-lang-th>จุดที่สั่ง</span><span data-lang-en>commanded point</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>ความเที่ยงตรง \( \pm 3\sigma \) รอบค่าเฉลี่ย</span><span data-lang-en>repeatability \( \pm 3\sigma \) about the mean</span></span>
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>ความแม่นยำ จากจุดที่สั่งถึงค่าเฉลี่ย</span><span data-lang-en>accuracy, commanded point to mean</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="calib" aria-pressed="false"><i class="fa-solid fa-crosshairs"></i><span data-lang-th>สอบเทียบแล้ว</span><span data-lang-en>Calibrated</span></button>
+          <label class="anim__param">
+            <span data-lang-th>อคติเชิงระบบ</span><span data-lang-en>Systematic bias</span>
+            <input type="range" data-anim-param="bias" data-unit="mm" min="0" max="0.2" step="0.01" value="0.12">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>การกระจาย</span><span data-lang-en>Scatter</span> \( \sigma \)
+            <input type="range" data-anim-param="sd" data-unit="mm" min="0.005" max="0.05" step="0.005" value="0.01">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 8.2</span><span data-lang-en>Animation 8.2</span></b>
+          <span data-lang-th> ตั้งอคติเชิงระบบไว้สูงแต่ให้การกระจายต่ำ จะได้กลุ่มจุดที่เกาะกันแน่นมากแต่ไปเกาะอยู่ผิดที่ นั่นคือ <em>เที่ยงตรงสูง แม่นยำต่ำ</em> ซึ่งเป็นสภาพของหุ่นยนต์อุตสาหกรรมทั่วไปที่ยังไม่สอบเทียบ จากนั้นกดปุ่มสอบเทียบ กลุ่มจุดจะย้ายมาทับจุดที่สั่งโดย <em>ขนาดของกลุ่มไม่เปลี่ยนเลย</em> เพราะการสอบเทียบแก้ความแม่นยำได้ แต่แก้ความเที่ยงตรงไม่ได้ สุดท้ายเพิ่มการกระจายขึ้น จะเห็นว่าวงสีทองโตขึ้นและไม่มีการสอบเทียบใดช่วยได้</span>
+          <span data-lang-en> Set a large systematic bias with a small scatter and the cluster is very tight but in the wrong place: <em>highly repeatable, poorly accurate</em>, which is the state of an ordinary uncalibrated industrial robot. Now press Calibrated. The cluster moves onto the commanded point while <em>its size does not change at all</em>, because calibration fixes accuracy and can do nothing for repeatability. Finally raise the scatter: the gold circle grows, and no amount of calibration helps.</span>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>8.4.2 พิกัดน้ำหนักและโมเมนต์ที่ข้อมือ</span><span data-lang-en>8.4.2 Payload and the wrist moment</span></h3>
+
+      <p>
+        <span data-lang-th>ตัวเลข “พิกัดน้ำหนัก 6 kg” เป็นเพียงเงื่อนไขหนึ่งในสองข้อที่ต้องผ่าน เงื่อนไขที่สองคือโมเมนต์ที่กระทำกับข้อมือ ซึ่งขึ้นกับว่ามวลนั้นอยู่ <em>ห่าง</em> จากหน้าแปลนเท่าใด และนี่คือเงื่อนไขที่งานเกษตรตกบ่อยที่สุด เพราะผลไม้ต้องถูกจับด้วยมือจับที่ยาวและนุ่ม</span>
+        <span data-lang-en>A “6 kg payload” is only one of two conditions to satisfy. The second is the moment at the wrist, which depends on how <em>far</em> that mass sits from the flange — and this is the condition agricultural work fails most often, since fruit must be held in a long, compliant gripper.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ M \;=\; \sum_j m_j\, g\, d_j \;\le\; M_{\text{rated}} $$</div>
+        <div class="eq__num">(8.11)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 8.3 — ผ่านพิกัดน้ำหนัก แต่ไม่ผ่านโมเมนต์</span><span data-lang-en>Worked example 8.3 — Within payload, over the moment</span></div>
+        <p>
+          <span data-lang-th>หุ่นยนต์มีพิกัดน้ำหนัก 6.0 kg และโมเมนต์ที่ข้อมือ \( M_{\text{rated}} = 11.8 \) N·m มือจับมวล 1.8 kg มีจุดศูนย์ถ่วงห่างหน้าแปลน 90 mm พิจารณาสองงาน</span>
+          <span data-lang-en>A robot is rated at 6.0 kg payload and a wrist moment \( M_{\text{rated}} = 11.8 \) N·m. The gripper weighs 1.8 kg with its centre of gravity 90 mm from the flange. Consider two tasks.</span>
+        </p>
+        <p>
+          <span data-lang-th><strong>งานที่ 1 — เมล่อน 2.5 kg จับที่ระยะ 180 mm:</strong></span>
+          <span data-lang-en><strong>Task 1 — a 2.5 kg melon held at 180 mm:</strong></span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ M = (1.8)(9.81)(0.090) + (2.5)(9.81)(0.180) = 1.59 + 4.41 = 6.0\ \text{N·m} $$</div>
+          <div class="eq__num">(8.12)</div>
+        </div>
+        <p>
+          <span data-lang-th>มวลรวม 4.3 kg ผ่าน และโมเมนต์ 6.0 N·m ผ่านด้วย เหลือเผื่อถึงครึ่งหนึ่ง</span>
+          <span data-lang-en>Total mass 4.3 kg passes, and 6.0 N·m passes too, with half the rating in reserve.</span>
+        </p>
+        <p>
+          <span data-lang-th><strong>งานที่ 2 — กล้วยหนึ่งหวี 4.0 kg ที่ต้องใช้มือจับยาวจับที่ระยะ 400 mm:</strong></span>
+          <span data-lang-en><strong>Task 2 — a 4.0 kg bunch of bananas needing a long gripper, held at 400 mm:</strong></span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ M = 1.59 + (4.0)(9.81)(0.400) = 1.59 + 15.70 = 17.3\ \text{N·m} \;>\; 11.8\ \text{N·m} $$</div>
+          <div class="eq__num">(8.13)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>มวลรวม 5.8 kg ยังต่ำกว่าพิกัด 6.0 kg จึง “ผ่าน” ถ้าดูแต่น้ำหนัก แต่โมเมนต์เกินไป 47% ผลที่เกิดจริงคือข้อมือจะเสียเร็วและความเที่ยงตรงลดลงทันที ทางแก้ไม่ใช่การซื้อหุ่นยนต์ที่พิกัดน้ำหนักสูงขึ้น แต่คือการออกแบบมือจับให้จุดศูนย์ถ่วงเข้าใกล้หน้าแปลนมากขึ้น ซึ่งถูกกว่ามาก</span>
+          <span data-lang-en>The total of 5.8 kg is still under the 6.0 kg rating, so it “passes” on weight alone — but the moment is 47% over. In practice the wrist wears out early and repeatability drops at once. The remedy is not a robot with a higher payload rating but a gripper designed to bring its centre of gravity nearer the flange, which costs far less.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>8.4.3 เวลารอบการทำงาน</span><span data-lang-en>8.4.3 Cycle time</span></h3>
+
+      <p>
+        <span data-lang-th>แค็ตตาล็อกให้ความเร็วสูงสุดของแต่ละแกน แต่หุ่นยนต์แทบไม่เคยถึงความเร็วนั้นในงานจริง เพราะการเคลื่อนที่ส่วนใหญ่สั้นเกินกว่าจะเร่งขึ้นไปทัน สำหรับการเคลื่อนที่ระยะ \( L \) ด้วยความเร่ง \( a \) และความเร็วสูงสุด \( v \) เวลาที่ใช้จะแบ่งเป็นสองกรณี</span>
+        <span data-lang-en>Catalogues quote a maximum speed per axis, but a robot rarely reaches it in real work, because most moves are too short to accelerate up to it. For a move of length \( L \) at acceleration \( a \) with a speed limit \( v \), the time falls into two cases.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ t \;=\; \begin{cases} 2\sqrt{L/a} & L \le v^{2}/a \quad \text{(triangular)} \\[4pt] \dfrac{L}{v} + \dfrac{v}{a} & L > v^{2}/a \quad \text{(trapezoidal)} \end{cases} $$</div>
+        <div class="eq__num">(8.14)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ในสายคัดบรรจุที่ระยะหยิบ–วางสั้นเพียง 300 mm การเคลื่อนที่จะอยู่ในกรณีสามเหลี่ยมเกือบทั้งหมด เวลาจึงขึ้นกับ <em>ความเร่ง</em> ไม่ใช่ความเร็วสูงสุด นี่คือเหตุผลที่หุ่นยนต์เดลต้าซึ่งมีมวลเคลื่อนที่น้อยจึงเร็วกว่าหุ่นยนต์อาร์ติคูเลตที่โฆษณาความเร็วสูงกว่า</span>
+        <span data-lang-en>On a packing line where a pick-and-place move is only 300 mm, almost every move is triangular, so the time depends on <em>acceleration</em> rather than on top speed. That is why a delta robot, with little mass in motion, beats an articulated arm that advertises a higher speed.</span>
+      </p>
+    </section>
+
+    <!-- ---------------------------------------------------- 8.5 --------- -->
+    <section id="frames">
+      <h2><span data-lang-th>8.5 ระบบพิกัด เฟรมอ้างอิง และ TCP</span><span data-lang-en>8.5 Coordinate systems, frames and the TCP</span></h2>
+
+      <p>
+        <span data-lang-th>คำถามว่า “หุ่นยนต์อยู่ที่ตำแหน่งใด” ไม่มีคำตอบเดียว จนกว่าจะระบุว่า <em>วัดจากอะไร</em> และ <em>วัดที่จุดไหนของหุ่นยนต์</em> ระบบควบคุมหุ่นยนต์จึงเก็บ <strong>เฟรมอ้างอิง</strong> ไว้หลายชุดพร้อมกัน และการเข้าใจว่าแต่ละชุดทำหน้าที่อะไรคือทักษะที่แยกคนที่สอนงานหุ่นยนต์ได้จากคนที่ทำไม่ได้</span>
+        <span data-lang-en>The question “where is the robot?” has no single answer until one says <em>measured from what</em> and <em>measured at which point on the robot</em>. A robot controller therefore holds several <strong>reference frames</strong> at once, and knowing what each is for is the skill that separates those who can teach a robot from those who cannot.</span>
+      </p>
+
+      <ul>
+        <li><span data-lang-th><strong>เฟรมโลก \( \{W\} \)</strong> — จุดอ้างอิงคงที่ของทั้งเซลล์ มักอยู่ที่มุมพื้นหรือจุดอ้างอิงของอาคาร ใช้เมื่อมีหุ่นยนต์มากกว่าหนึ่งตัวหรือมีรางเลื่อน</span><span data-lang-en><strong>World frame \( \{W\} \)</strong> — the fixed reference for the whole cell, usually a floor corner or a building datum. Needed once there is more than one robot, or a travel rail.</span></li>
+        <li><span data-lang-th><strong>เฟรมฐาน \( \{B\} \)</strong> — ติดอยู่กับฐานหุ่นยนต์ เป็นเฟรมที่ระบบคำนวณจลนศาสตร์ใช้เป็นหลัก ถ้ามีหุ่นยนต์ตัวเดียวและไม่มีราง เฟรมนี้มักตั้งให้ตรงกับเฟรมโลก</span><span data-lang-en><strong>Base frame \( \{B\} \)</strong> — attached to the robot base; the frame the kinematics are computed in. With a single robot and no rail it is usually made to coincide with the world frame.</span></li>
+        <li><span data-lang-th><strong>เฟรมเครื่องมือ \( \{T\} \)</strong> — ติดอยู่กับอุปกรณ์ปลายแขน จุดกำเนิดของเฟรมนี้คือ <strong>TCP</strong> ซึ่งเป็นจุดที่เราอยากควบคุมจริง ๆ เช่น ปลายหัวดูดหรือกลางระหว่างนิ้วจับ ไม่ใช่หน้าแปลนข้อมือ</span><span data-lang-en><strong>Tool frame \( \{T\} \)</strong> — attached to the end effector. Its origin is the <strong>TCP</strong>, the point one actually wants to control: the tip of the suction cup or the centre between the fingers, not the wrist flange.</span></li>
+        <li><span data-lang-th><strong>เฟรมชิ้นงาน \( \{O\} \)</strong> — ติดอยู่กับจิ๊กหรือถาด เมื่อสอนจุดทั้งหมดในเฟรมนี้ การย้ายถาดไปตำแหน่งใหม่จะแก้ได้ด้วยการวัดเฟรมใหม่เพียงครั้งเดียว โดยไม่ต้องสอนจุดใหม่ทั้งหมด</span><span data-lang-en><strong>Work-object frame \( \{O\} \)</strong> — attached to the jig or tray. Teach every point in this frame and moving the tray to a new place is fixed by re-measuring the frame once, instead of re-teaching every point.</span></li>
+      </ul>
+
+      <!-- ===================== Figure 8.4 ===================== -->
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 330" role="img" aria-label="A robot cell with the world, base, tool and work-object frames marked">
+            <rect x="20" y="18" width="820" height="294" rx="12" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="5 5"/>
+
+            <!-- world frame -->
+            <line x1="70" y1="272" x2="126" y2="272" class="dg-stroke" stroke-width="2.4"/>
+            <polygon points="126,272 115,268 115,276" class="dg-arrow"/>
+            <line x1="70" y1="272" x2="70" y2="216" class="dg-stroke" stroke-width="2.4"/>
+            <polygon points="70,216 66,227 74,227" class="dg-arrow"/>
+            <circle cx="70" cy="272" r="4" class="dg-fill-steel dg-stroke" stroke-width="1.4"/>
+
+            <!-- robot base -->
+            <rect x="272" y="246" width="56" height="20" rx="4" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <line x1="300" y1="246" x2="356" y2="246" class="dg-stroke-green" stroke-width="2.4"/>
+            <polygon points="356,246 345,242 345,250" class="dg-arrow"/>
+            <line x1="300" y1="246" x2="300" y2="190" class="dg-stroke-green" stroke-width="2.4"/>
+            <polygon points="300,190 296,201 304,201" class="dg-arrow"/>
+
+            <!-- arm -->
+            <line x1="300" y1="246" x2="392" y2="140" class="dg-stroke-green" stroke-width="12" stroke-linecap="round"/>
+            <line x1="392" y1="140" x2="498" y2="178" class="dg-stroke-green" stroke-width="10" stroke-linecap="round"/>
+            <circle cx="300" cy="246" r="8" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <circle cx="392" cy="140" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+
+            <!-- wrist flange and tool -->
+            <circle cx="498" cy="178" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <line x1="498" y1="178" x2="520" y2="200" class="dg-stroke" stroke-width="7" stroke-linecap="round"/>
+            <text class="dg-text-sm" x="452" y="146" text-anchor="end" data-lang-th>หน้าแปลนข้อมือ</text>
+            <text class="dg-text-sm" x="452" y="146" text-anchor="end" data-lang-en>wrist flange</text>
+            <line x1="456" y1="152" x2="492" y2="172" class="dg-stroke" stroke-width="1" stroke-dasharray="3 3"/>
+
+            <!-- tool frame at the TCP -->
+            <circle cx="524" cy="204" r="4" class="dg-fill-sky dg-stroke" stroke-width="1.6"/>
+            <line x1="524" y1="204" x2="572" y2="226" class="dg-stroke-gold" stroke-width="2.4"/>
+            <polygon points="572,226 561,221 558,229" class="dg-arrow"/>
+            <line x1="524" y1="204" x2="546" y2="156" class="dg-stroke-gold" stroke-width="2.4"/>
+            <polygon points="546,156 538,165 546,168" class="dg-arrow"/>
+            <text class="dg-text-sm" x="592" y="196">TCP</text>
+            <line x1="588" y1="198" x2="532" y2="204" class="dg-stroke" stroke-width="1" stroke-dasharray="3 3"/>
+
+            <!-- work object: a tray -->
+            <rect x="620" y="208" width="186" height="80" rx="6" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <circle cx="656" cy="232" r="10" class="dg-fill-green dg-stroke" stroke-width="1.4"/>
+            <circle cx="700" cy="232" r="10" class="dg-fill-green dg-stroke" stroke-width="1.4"/>
+            <circle cx="744" cy="232" r="10" class="dg-fill-green dg-stroke" stroke-width="1.4"/>
+            <circle cx="656" cy="266" r="10" class="dg-fill-green dg-stroke" stroke-width="1.4"/>
+            <circle cx="700" cy="266" r="10" class="dg-fill-green dg-stroke" stroke-width="1.4"/>
+            <circle cx="744" cy="266" r="10" class="dg-fill-green dg-stroke" stroke-width="1.4"/>
+            <line x1="620" y1="288" x2="676" y2="288" class="dg-stroke" stroke-width="2.4"/>
+            <polygon points="676,288 665,284 665,292" class="dg-arrow"/>
+            <line x1="620" y1="288" x2="620" y2="232" class="dg-stroke" stroke-width="2.4"/>
+            <polygon points="620,232 616,243 624,243" class="dg-arrow"/>
+            <circle cx="620" cy="288" r="4" class="dg-fill-steel dg-stroke" stroke-width="1.4"/>
+
+            <!-- relation arrows -->
+            <path d="M80 258 C 150 206 220 206 288 238" class="dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+            <polygon points="288,238 277,232 274,241" class="dg-arrow"/>
+            <path d="M86 276 C 260 322 470 322 612 294" class="dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+            <polygon points="612,294 601,290 603,299" class="dg-arrow"/>
+          </svg>
+          <span class="fig-label" style="left:3.0%; top:84%">\( \{W\} \)</span>
+          <span class="fig-label" style="left:38.5%; top:70%">\( \{B\} \)</span>
+          <span class="fig-label" style="left:60.5%; top:37%">\( \{T\} \)</span>
+          <span class="fig-label" style="left:66.5%; top:91%">\( \{O\} \)</span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 8.4</span><span data-lang-en>Figure 8.4</span></b>
+          <span data-lang-th> เฟรมอ้างอิงสี่ชุดในเซลล์คัดบรรจุเดียวกัน จุดสำคัญคือ TCP ซึ่งเป็นจุดกำเนิดของเฟรมเครื่องมือ \( \{T\} \) ไม่ได้อยู่ที่หน้าแปลนข้อมือ แต่เลื่อนออกไปตามรูปร่างของมือจับ เส้นประแสดงความสัมพันธ์ที่ตัวควบคุมต้องรู้ คือ \( \{W\} \) ถึง \( \{B\} \) ซึ่งตั้งตอนติดตั้ง และ \( \{W\} \) ถึง \( \{O\} \) ซึ่งวัดใหม่ทุกครั้งที่ย้ายถาด</span>
+          <span data-lang-en> Four frames in one packing cell. The point to notice is that the TCP — the origin of the tool frame \( \{T\} \) — is not at the wrist flange but displaced along the gripper. The dashed arrows are the relations the controller must know: \( \{W\} \) to \( \{B\} \), set at installation, and \( \{W\} \) to \( \{O\} \), re-measured whenever the tray moves.</span>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>8.5.1 การตั้ง TCP และเหตุผลที่มันสำคัญ</span><span data-lang-en>8.5.1 Defining the TCP, and why it matters</span></h3>
+
+      <p>
+        <span data-lang-th>เมื่อยังไม่ได้ตั้งค่าเครื่องมือ ตัวควบคุมถือว่า TCP อยู่ที่กลางหน้าแปลนข้อมือพอดี การติดมือจับยาว 150 mm เข้าไปจึงทำให้จุดที่เราสนใจเลื่อนออกจากจุดที่ระบบควบคุมอยู่ สำหรับกรณีที่เครื่องมือไม่ได้ถูกหมุน ความสัมพันธ์เป็นเพียงการบวกเวกเตอร์</span>
+        <span data-lang-en>Until a tool is defined, the controller assumes the TCP sits exactly at the centre of the wrist flange. Bolting on a 150 mm gripper therefore moves the point of interest away from the point being controlled. When the tool is not rotated, the relation is simply a vector sum.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \vect{p}_{\text{TCP}} \;=\; \vect{p}_{\text{flange}} + \vect{t}_{\text{tool}} $$</div>
+        <div class="eq__num">(8.15)</div>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>สมการ (8.15) ใช้ได้เฉพาะเมื่อเครื่องมือไม่หมุน</span><span data-lang-en>Equation (8.15) holds only while the tool does not rotate</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ทันทีที่หุ่นยนต์หมุนข้อมือ เวกเตอร์ \( \vect{t}_{\text{tool}} \) ก็หมุนไปด้วย การบวกตรง ๆ จึงใช้ไม่ได้อีก และต้องแปลงเวกเตอร์เข้าสู่เฟรมฐานก่อนด้วยเมทริกซ์การหมุน นั่นคือเนื้อหาของบทที่ 9 ซึ่งจะเขียนสมการ (8.15) ใหม่ในรูปเมทริกซ์การแปลงที่จัดการทั้งการเลื่อนและการหมุนในขั้นเดียว ที่สำคัญคือ TCP ที่ตั้งผิดจะทำให้การ jog แบบหมุนรอบเครื่องมือเหวี่ยงไปไกลจากที่คาด ซึ่งเป็นสาเหตุของการชนในห้องปฏิบัติการบ่อยที่สุด</span>
+          <span data-lang-en>The moment the robot rotates its wrist, the vector \( \vect{t}_{\text{tool}} \) rotates with it and a plain sum no longer works: the vector must first be carried into the base frame by a rotation matrix. That is the subject of Chapter 9, which rewrites equation (8.15) as a transformation matrix handling translation and rotation in one step. What matters here is that a wrongly defined TCP makes a reorientation jog swing much further than expected, and that is the commonest cause of a collision in the laboratory.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>8.5.2 โหมดการ jog</span><span data-lang-en>8.5.2 Jog modes</span></h3>
+
+      <p>
+        <span data-lang-th>กล่องสอนงานมีโหมดการขยับหุ่นยนต์อยู่สองกลุ่มหลัก และนักศึกษาเกือบทุกคนเริ่มจากโหมดที่ผิดสำหรับงานที่ทำ</span>
+        <span data-lang-en>A teach pendant offers two main families of jog mode, and nearly every student starts in the wrong one for the job at hand.</span>
+      </p>
+
+      <ul>
+        <li><span data-lang-th><strong>โหมดข้อต่อ (joint jog)</strong> — ปุ่มแต่ละคู่ขยับข้อต่อเดียวทีละตัว เส้นทางที่ปลายเครื่องมือเดินจะเป็นส่วนโค้ง ใช้สำหรับพาหุ่นยนต์ออกจากจุดเอกฐาน ปลดจากท่าที่พับติดกัน หรือกลับไปท่าบ้าน</span><span data-lang-en><strong>Joint jog</strong> — each pair of buttons drives one joint, so the tool traces an arc. Used to get the robot out of a singularity, to unfold a tangled pose, or to go home.</span></li>
+        <li><span data-lang-th><strong>โหมดเชิงเส้น (linear หรือ Cartesian jog)</strong> — ปุ่มแต่ละคู่เลื่อน TCP ไปตามแกนของเฟรมที่เลือก เส้นทางเป็นเส้นตรง แต่ข้อต่อหลายตัวต้องเคลื่อนที่พร้อมกันด้วยอัตราที่ไม่คงที่ ใช้สำหรับเข้าหาชิ้นงาน ถอยออกตามแนวดิ่ง และปรับตำแหน่งละเอียด</span><span data-lang-en><strong>Linear (or Cartesian) jog</strong> — each pair of buttons moves the TCP along an axis of the chosen frame. The path is straight, but several joints must move together at rates that are not constant. Used to approach the work, retract vertically, and make fine corrections.</span></li>
+      </ul>
+
+      <!-- ===================== Animation 8.3 ===================== -->
+      <figure class="anim" data-anim="ch08-jog">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 8.3 — เดินจากจุด A ไปจุด B สองวิธี</span>
+          <span data-lang-en>Animation 8.3 — Two ways of getting from A to B</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 330" role="img" aria-label="A two-link arm moving between two points, in joint-interpolated mode tracing a curve and in linear mode tracing a straight line">
+            <line x1="40" y1="296" x2="820" y2="296" class="dg-stroke" stroke-width="2"/>
+
+            <!-- the straight reference between A and B -->
+            <line x1="286" y1="118" x2="610" y2="196" class="dg-stroke" stroke-width="1.4" stroke-dasharray="5 4"/>
+            <circle cx="286" cy="118" r="7" class="dg-fill-sky dg-stroke" stroke-width="1.8"/>
+            <circle cx="610" cy="196" r="7" class="dg-fill-sky dg-stroke" stroke-width="1.8"/>
+            <text class="dg-text-b" x="264" y="124" text-anchor="middle">A</text>
+            <text class="dg-text-b" x="634" y="202" text-anchor="middle">B</text>
+
+            <!-- the overhead beam the curved path runs into -->
+            <rect id="a83-box" x="382" y="8" width="130" height="80" rx="4" class="dg-fill-gold dg-stroke" stroke-width="1.8" opacity="0.9"/>
+            <text class="dg-text-sm" x="447" y="106" text-anchor="middle" data-lang-th>คานหลังคาโรงเรือน</text>
+            <text class="dg-text-sm" x="447" y="106" text-anchor="middle" data-lang-en>greenhouse roof beam</text>
+
+            <!-- traced path -->
+            <polyline id="a83-trail" class="dg-stroke-gold" stroke-width="2.6" fill="none" points=""/>
+
+            <!-- arm -->
+            <rect x="406" y="296" width="48" height="18" rx="4" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <line id="a83-l1" x1="430" y1="296" x2="430" y2="296" class="dg-stroke-green" stroke-width="12" stroke-linecap="round"/>
+            <line id="a83-l2" x1="430" y1="296" x2="430" y2="296" class="dg-stroke-green" stroke-width="9" stroke-linecap="round"/>
+            <circle id="a83-j1" cx="430" cy="296" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <circle id="a83-j2" cx="430" cy="296" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <circle id="a83-tool" cx="430" cy="296" r="7" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>เส้นทางที่ TCP เดินจริง</span><span data-lang-en>the path the TCP actually takes</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>เส้นตรงระหว่าง A กับ B</span><span data-lang-en>the straight line from A to B</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="linear" aria-pressed="false"><i class="fa-solid fa-ruler-horizontal"></i><span data-lang-th>โหมดเชิงเส้น</span><span data-lang-en>Linear mode</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ความเร็ว</span><span data-lang-en>Speed</span>
+            <input type="range" data-anim-param="speed" data-unit="&times;" min="0.2" max="2" step="0.1" value="0.7">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 8.3</span><span data-lang-en>Animation 8.3</span></b>
+          <span data-lang-th> เริ่มที่โหมดข้อต่อ ซึ่งแปรค่ามุมทั้งสองเป็นเส้นตรงเทียบกับเวลา เส้นทางของ TCP จะโป่งออกเป็นส่วนโค้งจนชนคานหลังคา ทั้งที่จุด A และจุด B ไม่ได้ชนอะไรเลย จากนั้นเปิดโหมดเชิงเส้น ระบบจะแปรค่า <em>ตำแหน่งของ TCP</em> เป็นเส้นตรงแทน แล้วคำนวณมุมข้อต่อย้อนกลับในทุกจังหวะ เส้นทางจึงตรงและผ่านพ้นสิ่งกีดขวาง สังเกตค่ามุมทั้งสองในแถบตัวเลข จะเห็นว่าในโหมดเชิงเส้นมุมเปลี่ยนด้วยอัตราที่ไม่สม่ำเสมอเลย</span>
+          <span data-lang-en> Start in joint mode, which interpolates the two angles linearly in time. The TCP bulges out along an arc and strikes the beam, although neither A nor B touches anything. Now switch on linear mode: the controller interpolates the <em>TCP position</em> instead and solves backwards for the joint angles at every instant, so the path is straight and clears the obstacle. Watch the two angles in the readout — in linear mode they change at rates that are anything but uniform.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 8.6 --------- -->
+    <section id="eoat">
+      <h2><span data-lang-th>8.6 อุปกรณ์ปลายแขน</span><span data-lang-en>8.6 End effectors</span></h2>
+
+      <p>
+        <span data-lang-th>ในโครงการหุ่นยนต์เกษตร อุปกรณ์ปลายแขนเป็นส่วนที่ซื้อสำเร็จไม่ได้และต้องออกแบบเกือบทุกครั้ง เพราะผลิตผลแต่ละชนิดมีขนาด รูปร่าง ผิว และความทนต่อแรงกดต่างกันหมด การเลือกเริ่มจากการถามว่าจะยึดผลิตผลด้วย <em>กลไกใด</em></span>
+        <span data-lang-en>On an agricultural robot project the end effector is the part that cannot be bought off the shelf and nearly always has to be designed, because every product differs in size, shape, surface and tolerance to pressure. The choice begins by asking <em>by what mechanism</em> the product will be held.</span>
+      </p>
+
+      <!-- ===================== Figure 8.5 ===================== -->
+      <figure class="figure">
+        <svg viewBox="0 0 860 240" role="img" aria-label="Four kinds of end effector: a parallel two-finger gripper, a three-finger centring gripper, a vacuum cup array and a soft bellows gripper">
+
+          <!-- 1. parallel two-finger -->
+          <rect x="10" y="10" width="200" height="200" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="110" y="34" text-anchor="middle" data-lang-th>สองนิ้วขนาน</text>
+          <text class="dg-text-b" x="110" y="34" text-anchor="middle" data-lang-en>Parallel, 2 finger</text>
+          <rect x="78" y="52" width="64" height="26" rx="4" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <rect x="72" y="78" width="16" height="66" rx="3" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <rect x="132" y="78" width="16" height="66" rx="3" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <rect x="92" y="96" width="36" height="44" rx="5" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <line x1="54" y1="110" x2="68" y2="110" class="dg-stroke-gold" stroke-width="2"/>
+          <polygon points="68,110 58,106 58,114" class="dg-arrow"/>
+          <line x1="166" y1="110" x2="152" y2="110" class="dg-stroke-gold" stroke-width="2"/>
+          <polygon points="152,110 162,106 162,114" class="dg-arrow"/>
+          <text class="dg-text-sm" x="110" y="176" text-anchor="middle" data-lang-th>มะเขือเทศ กล่อง ถาด</text>
+          <text class="dg-text-sm" x="110" y="176" text-anchor="middle" data-lang-en>tomatoes, boxes, trays</text>
+          <text class="dg-text-sm" x="110" y="196" text-anchor="middle" data-lang-th>ควบคุมแรงได้ แต่ต้องรู้ขนาด</text>
+          <text class="dg-text-sm" x="110" y="196" text-anchor="middle" data-lang-en>force is controllable, size must be known</text>
+
+          <!-- 2. three-finger centring -->
+          <rect x="220" y="10" width="200" height="200" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="320" y="34" text-anchor="middle" data-lang-th>สามนิ้วจับกลาง</text>
+          <text class="dg-text-b" x="320" y="34" text-anchor="middle" data-lang-en>Three-finger centring</text>
+          <circle cx="320" cy="108" r="46" class="dg-fill-soft dg-stroke" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <circle cx="320" cy="108" r="26" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <rect x="312" y="56" width="16" height="26" rx="3" class="dg-fill-green dg-stroke" stroke-width="1.6" transform="rotate(0 320 69)"/>
+          <rect x="274" y="122" width="16" height="26" rx="3" class="dg-fill-green dg-stroke" stroke-width="1.6" transform="rotate(-120 282 135)"/>
+          <rect x="350" y="122" width="16" height="26" rx="3" class="dg-fill-green dg-stroke" stroke-width="1.6" transform="rotate(120 358 135)"/>
+          <text class="dg-text-sm" x="320" y="176" text-anchor="middle" data-lang-th>ส้ม แอปเปิล ขวด</text>
+          <text class="dg-text-sm" x="320" y="176" text-anchor="middle" data-lang-en>oranges, apples, bottles</text>
+          <text class="dg-text-sm" x="320" y="196" text-anchor="middle" data-lang-th>จัดให้เข้าศูนย์เองโดยไม่ต้องวัดตำแหน่ง</text>
+          <text class="dg-text-sm" x="320" y="196" text-anchor="middle" data-lang-en>self-centring, no position measurement</text>
+
+          <!-- 3. vacuum cups -->
+          <rect x="430" y="10" width="200" height="200" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="530" y="34" text-anchor="middle" data-lang-th>ถ้วยดูดสุญญากาศ</text>
+          <text class="dg-text-b" x="530" y="34" text-anchor="middle" data-lang-en>Vacuum cups</text>
+          <rect x="470" y="54" width="120" height="16" rx="4" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <path d="M486 70 L 478 100 L 510 100 L 502 70 Z" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <path d="M522 70 L 514 100 L 546 100 L 538 70 Z" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <path d="M558 70 L 550 100 L 582 100 L 574 70 Z" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <rect x="466" y="100" width="128" height="40" rx="3" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <line x1="530" y1="48" x2="530" y2="30" class="dg-stroke" stroke-width="2.4"/>
+          <text class="dg-text-sm" x="530" y="176" text-anchor="middle" data-lang-th>ถาดไข่ กล่องกระดาษ ถุงเมล็ด</text>
+          <text class="dg-text-sm" x="530" y="176" text-anchor="middle" data-lang-en>egg trays, cartons, seed bags</text>
+          <text class="dg-text-sm" x="530" y="196" text-anchor="middle" data-lang-th>เร็วและเบา แต่ต้องมีผิวเรียบปิดสนิท</text>
+          <text class="dg-text-sm" x="530" y="196" text-anchor="middle" data-lang-en>fast and light, needs a sealing surface</text>
+
+          <!-- 4. soft bellows -->
+          <rect x="640" y="10" width="200" height="200" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="740" y="34" text-anchor="middle" data-lang-th>มือจับแบบนุ่ม</text>
+          <text class="dg-text-b" x="740" y="34" text-anchor="middle" data-lang-en>Soft gripper</text>
+          <rect x="708" y="52" width="64" height="20" rx="4" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <path d="M712 72 C 692 92 694 124 716 136" class="dg-stroke-green" stroke-width="9" stroke-linecap="round"/>
+          <path d="M768 72 C 788 92 786 124 764 136" class="dg-stroke-green" stroke-width="9" stroke-linecap="round"/>
+          <path d="M740 72 C 740 96 740 118 740 132" class="dg-stroke-green" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
+          <ellipse cx="740" cy="116" rx="26" ry="22" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <text class="dg-text-sm" x="740" y="176" text-anchor="middle" data-lang-th>มะม่วง พีช เห็ด</text>
+          <text class="dg-text-sm" x="740" y="176" text-anchor="middle" data-lang-en>mangoes, peaches, mushrooms</text>
+          <text class="dg-text-sm" x="740" y="196" text-anchor="middle" data-lang-th>ปรับรูปตามผล แต่ควบคุมแรงยาก</text>
+          <text class="dg-text-sm" x="740" y="196" text-anchor="middle" data-lang-en>conforms to shape, force is hard to control</text>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 8.5</span><span data-lang-en>Figure 8.5</span></b>
+          <span data-lang-th> สี่กลไกหลักในการยึดผลิตผล ลำดับการเลือกคือเริ่มจากถามว่าผิวของผลิตผลปิดสุญญากาศได้หรือไม่ ถ้าได้ให้ใช้ถ้วยดูดเพราะเบาและเร็วที่สุด ถ้าไม่ได้ให้ถามต่อว่าขนาดแน่นอนหรือไม่ ถ้าแน่นอนให้ใช้นิ้วจับที่ควบคุมแรงได้ ถ้าไม่แน่นอนและผิวบอบบางจึงไปที่มือจับแบบนุ่ม ซึ่งแลกความสามารถในการควบคุมแรงกับการปรับรูปตามผล</span>
+          <span data-lang-en> The four principal ways of holding produce. The order of choice is: can the surface hold a vacuum? If so use cups, which are the lightest and fastest. If not, is the size consistent? If it is, use fingers, where the force can be controlled. If it is not, and the skin bruises, go to a soft gripper, which trades controllable force for the ability to conform.</span>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>8.6.1 การคำนวณถ้วยดูด</span><span data-lang-en>8.6.1 Sizing a vacuum gripper</span></h3>
+
+      <p>
+        <span data-lang-th>แรงที่ถ้วยดูดหนึ่งใบสร้างได้คือผลคูณของความต่างความดันกับพื้นที่ปิดผนึก และจำนวนถ้วยที่ต้องใช้มาจากการเทียบกับแรงที่ต้องการ ซึ่งรวมทั้งน้ำหนักและแรงจากความเร่งของหุ่นยนต์ คูณด้วยตัวประกอบความปลอดภัย \( S \)</span>
+        <span data-lang-en>The force one cup can produce is the pressure difference times the sealed area, and the number of cups follows from the force required — weight plus the force from the robot&rsquo;s own acceleration, multiplied by a safety factor \( S \).</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ F_{\text{cup}} \;=\; \Delta p \, A, \qquad n \;\ge\; \frac{m\,(g + a)\,S}{\Delta p \, A} $$</div>
+        <div class="eq__num">(8.16)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 8.4 — ถ้วยดูดสำหรับเมล่อน 2.5 กก.</span><span data-lang-en>Worked example 8.4 — Vacuum cups for a 2.5 kg melon</span></div>
+        <p>
+          <span data-lang-th>ใช้ถ้วยดูดเส้นผ่านศูนย์กลาง 40 mm กับเวนทูริที่ให้ \( \Delta p = 60 \) kPa หุ่นยนต์เร่งในแนวดิ่งได้ \( a = 3g \) และใช้ตัวประกอบความปลอดภัย \( S = 2 \) ต้องใช้ถ้วยกี่ใบ</span>
+          <span data-lang-en>With 40 mm cups on a venturi giving \( \Delta p = 60 \) kPa, a vertical acceleration of \( a = 3g \) and a safety factor \( S = 2 \), how many cups are needed?</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ A = \pi (0.020)^{2} = 1.26 \times 10^{-3}\ \text{m}^{2}, \qquad F_{\text{cup}} = (60{\times}10^{3})(1.26{\times}10^{-3}) = 75\ \text{N} $$</div>
+          <div class="eq__num">(8.17)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ n \ge \frac{(2.5)(9.81 + 29.4)(2)}{75} = \frac{196}{75} = 2.6 \;\Rightarrow\; 3\ \text{cups} $$</div>
+          <div class="eq__num">(8.18)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ถ้าตัดความเร่งออกจากการคำนวณจะได้ \( n = 0.65 \) คือถ้วยเดียวพอ ซึ่งเป็นความผิดพลาดที่ทำให้ผลไม้หลุดกลางอากาศเสมอ เพราะความเร่ง \( 3g \) ทำให้แรงที่ต้องการเพิ่มขึ้นสี่เท่า ข้อควรระวังอีกข้อคือผิวเมล่อนโค้งและมีไข ถ้วยแบนจะปิดไม่สนิท ต้องใช้ถ้วยแบบลูกฟูกที่ยุบตัวตามผิวได้ และพื้นที่ปิดผนึกจริงจะน้อยกว่าที่คำนวณไว้ จึงควรเผื่อเป็นสี่ใบในงานจริง</span>
+          <span data-lang-en>Leaving the acceleration out gives \( n = 0.65 \) — one cup — the mistake that drops fruit in mid-air every time, since \( 3g \) raises the required force fourfold. A second caution: a melon&rsquo;s skin is curved and waxy, so a flat cup will not seal and a bellows cup that collapses onto the surface is needed. Its real sealed area is smaller than the calculation assumes, so four cups is the figure to build.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>8.6.2 การคำนวณมือจับแบบเสียดทาน</span><span data-lang-en>8.6.2 Sizing a friction gripper</span></h3>
+
+      <p>
+        <span data-lang-th>มือจับที่ยึดด้วยแรงเสียดทานต้องบีบแรงพอที่แรงเสียดทานจะรับน้ำหนักและความเร่งไว้ได้</span>
+        <span data-lang-en>A gripper that holds by friction must squeeze hard enough for the friction to carry both the weight and the acceleration.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ F_{\text{grip}} \;\ge\; \frac{m\,(g + a)\,S}{\mu\,n_f}, \qquad p_{\text{contact}} \;=\; \frac{F_{\text{grip}}}{A_{\text{pad}}} $$</div>
+        <div class="eq__num">(8.19)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 8.5 — จับมะม่วงโดยไม่ให้ช้ำ</span><span data-lang-en>Worked example 8.5 — Holding a mango without bruising it</span></div>
+        <p>
+          <span data-lang-th>มะม่วงมวล 0.35 kg จับด้วยนิ้วยาง 2 นิ้ว ที่ \( \mu = 0.4 \) หุ่นยนต์เร่ง \( a = 2g \) ใช้ \( S = 2 \) แผ่นสัมผัสของนิ้วมีขนาด 20 &times; 30 mm เนื้อมะม่วงเริ่มช้ำที่ความดันสัมผัสราว 50 kPa</span>
+          <span data-lang-en>A 0.35 kg mango is held by two rubber fingers at \( \mu = 0.4 \), the robot accelerating at \( a = 2g \), with \( S = 2 \). Each pad is 20 &times; 30 mm, and mango flesh begins to bruise at a contact pressure of about 50 kPa.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ F_{\text{grip}} \ge \frac{(0.35)(9.81 + 19.6)(2)}{(0.4)(2)} = \frac{20.6}{0.8} = 25.7\ \text{N} $$</div>
+          <div class="eq__num">(8.20)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ p_{\text{contact}} = \frac{25.7}{(0.020)(0.030)} = 42.8\ \text{kPa} $$</div>
+          <div class="eq__num">(8.21)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>42.8 kPa อยู่ต่ำกว่าเกณฑ์ 50 kPa เพียง 14% ซึ่งแคบเกินไปสำหรับงานจริงที่ผลไม้มีขนาดและความสุกต่างกัน ทางแก้ที่ได้ผลที่สุดไม่ใช่การเปลี่ยนยางให้ฝืดขึ้น แต่คือการ <em>ลดความเร่ง</em> ถ้าลด \( a \) จาก \( 2g \) เป็น \( 0.5g \) แรงที่ต้องการจะลดเหลือ 12.9 N และความดันสัมผัสเหลือ 21 kPa ซึ่งปลอดภัยชัดเจน นี่คือการแลกเวลารอบการทำงานกับคุณภาพผลผลิต และเป็นการตัดสินใจเชิงวิศวกรรมที่ต้องคุยกับฝ่ายผลิต ไม่ใช่ตัดสินเองในห้องออกแบบ</span>
+          <span data-lang-en>42.8 kPa sits only 14% below the 50 kPa threshold, which is far too narrow for real fruit that varies in size and ripeness. The most effective remedy is not a grippier rubber but <em>less acceleration</em>: dropping \( a \) from \( 2g \) to \( 0.5g \) brings the force to 12.9 N and the contact pressure to 21 kPa, which is clearly safe. That is a trade of cycle time against product quality — an engineering decision to be settled with the production side, not alone at the drawing board.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 8.7 --------- -->
+    <section id="safety">
+      <h2><span data-lang-th>8.7 ความปลอดภัยและมาตรฐาน</span><span data-lang-en>8.7 Safety and standards</span></h2>
+
+      <p>
+        <span data-lang-th>หุ่นยนต์อุตสาหกรรมเคลื่อนที่ได้เร็วกว่า 2 m/s และมีมวลหลายสิบกิโลกรัม มันไม่มีทางรู้ว่ามีคนอยู่ตรงหน้าถ้าไม่มีเซนเซอร์บอก การป้องกันจึงต้องอยู่ในระบบ ไม่ใช่ในความระมัดระวังของผู้ใช้ มาตรฐานที่กำกับเรื่องนี้มีสามฉบับที่ต้องรู้จัก</span>
+        <span data-lang-en>An industrial robot moves faster than 2 m/s and carries tens of kilograms. It has no way of knowing a person is in front of it unless a sensor says so, so the protection has to live in the system rather than in the operator&rsquo;s care. Three standards govern this and are worth knowing by name.</span>
+      </p>
+
+      <ul>
+        <li><span data-lang-th><strong>ISO 10218-1</strong> — ข้อกำหนดด้านความปลอดภัยของ <em>ตัวหุ่นยนต์</em> เป็นหน้าที่ของผู้ผลิต ครอบคลุมวงจรหยุด ความเร็วที่จำกัดได้ และโหมดสอนงาน</span><span data-lang-en><strong>ISO 10218-1</strong> — safety requirements for the <em>robot itself</em>, the manufacturer&rsquo;s responsibility: stop circuits, limitable speed and the teaching mode.</span></li>
+        <li><span data-lang-th><strong>ISO 10218-2</strong> — ข้อกำหนดของ <em>ระบบและการติดตั้ง</em> เป็นหน้าที่ของผู้ออกแบบเซลล์ ซึ่งก็คือเรา ครอบคลุมรั้ว อุปกรณ์ตรวจจับ การประเมินความเสี่ยง และขั้นตอนการทำงาน</span><span data-lang-en><strong>ISO 10218-2</strong> — requirements for the <em>system and its installation</em>, the responsibility of whoever designs the cell, which is us: fencing, detection devices, risk assessment and working procedures.</span></li>
+        <li><span data-lang-th><strong>ISO/TS 15066</strong> — ข้อกำหนดเพิ่มเติมสำหรับงานที่คนและหุ่นยนต์ทำงานในพื้นที่เดียวกัน กำหนดขีดจำกัดแรงและความดันที่ยอมรับได้ต่อส่วนของร่างกายแต่ละส่วน และสูตรคำนวณระยะแยก</span><span data-lang-en><strong>ISO/TS 15066</strong> — the additional requirements where a person and a robot share a space: the permissible force and pressure limits for each part of the body, and the separation-distance formula.</span></li>
+      </ul>
+
+      <p>
+        <span data-lang-th>งานร่วมระหว่างคนกับหุ่นยนต์ทำได้สี่โหมดตามมาตรฐาน และคำว่า “หุ่นยนต์ร่วมปฏิบัติงาน” ไม่ได้หมายความว่าปลอดภัยโดยอัตโนมัติ ความปลอดภัยมาจาก <em>วิธีใช้งาน</em> ที่ผ่านการประเมินความเสี่ยงแล้ว ไม่ใช่จากฉลากบนตัวเครื่อง</span>
+        <span data-lang-en>Shared work is permitted in four modes, and the word “collaborative” does not by itself mean safe. Safety comes from an <em>application</em> that has passed a risk assessment, not from a label on the machine.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 8.2 — สี่โหมดการทำงานร่วมตาม ISO/TS 15066</span><span data-lang-en>Table 8.2 — The four collaborative modes of ISO/TS 15066</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>โหมด</span><span data-lang-en>Mode</span></th>
+              <th><span data-lang-th>หลักการ</span><span data-lang-en>Principle</span></th>
+              <th><span data-lang-th>ตัวอย่างในงานเกษตร</span><span data-lang-en>Agricultural example</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>หยุดเฝ้าระวังที่รับรองความปลอดภัย</span><span data-lang-en>Safety-rated monitored stop</span></td>
+              <td><span data-lang-th>หุ่นยนต์หยุดนิ่งแต่ยังจ่ายกำลังอยู่ ขณะที่คนอยู่ในพื้นที่ร่วม</span><span data-lang-en>The robot halts but stays powered while a person is in the shared space</span></td>
+              <td><span data-lang-th>คนวางถาดกล้าเข้าไปในเซลล์แล้วถอยออก หุ่นยนต์จึงทำงานต่อ</span><span data-lang-en>A worker sets a seedling tray down and steps back; the robot then resumes</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>การนำด้วยมือ</span><span data-lang-en>Hand guiding</span></td>
+              <td><span data-lang-th>ผู้ใช้จับหุ่นยนต์พาไปที่ตำแหน่งโดยตรงผ่านอุปกรณ์ที่รับรองแล้ว</span><span data-lang-en>The operator moves the robot directly through a rated guiding device</span></td>
+              <td><span data-lang-th>สอนตำแหน่งหยิบผลไม้ใหม่ทุกครั้งที่เปลี่ยนชนิดผลผลิต</span><span data-lang-en>Teaching new pick positions each time the product changes</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>การเฝ้าระวังความเร็วและระยะแยก</span><span data-lang-en>Speed and separation monitoring</span></td>
+              <td><span data-lang-th>หุ่นยนต์ลดความเร็วหรือหยุดตามระยะที่เซนเซอร์วัดได้ ตามสมการ (8.22)</span><span data-lang-en>The robot slows or stops according to the measured distance, per equation (8.22)</span></td>
+              <td><span data-lang-th>คนเดินผ่านด้านข้างสายคัดบรรจุที่หุ่นยนต์ยังทำงานอยู่</span><span data-lang-en>A person walking past a packing line while the robot keeps working</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>การจำกัดกำลังและแรง</span><span data-lang-en>Power and force limiting</span></td>
+              <td><span data-lang-th>ออกแบบให้การสัมผัสที่เกิดขึ้นไม่เกินขีดจำกัดแรงและความดันของมาตรฐาน</span><span data-lang-en>Designed so that any contact stays within the standard&rsquo;s force and pressure limits</span></td>
+              <td><span data-lang-th>แขนกลเล็กคัดเกรดผลไม้บนโต๊ะเดียวกับผู้ปฏิบัติงาน</span><span data-lang-en>A small arm grading fruit at the same bench as a worker</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3><span data-lang-th>8.7.1 ระยะแยกเพื่อการป้องกัน</span><span data-lang-en>8.7.1 The protective separation distance</span></h3>
+
+      <p>
+        <span data-lang-th>ในโหมดเฝ้าระวังความเร็วและระยะแยก ระบบต้องรักษาระยะระหว่างคนกับหุ่นยนต์ไม่ให้ต่ำกว่า \( S_p \) ซึ่งเป็นผลรวมของระยะที่คนเดินเข้ามาได้ ระยะที่หุ่นยนต์ยังเดินต่อก่อนรู้ตัว ระยะที่ใช้ในการหยุด และค่าเผื่อความไม่แน่นอน</span>
+        <span data-lang-en>In speed-and-separation monitoring the system must keep the distance between person and robot above \( S_p \): the sum of how far the person can walk in, how far the robot still travels before it reacts, how far it needs in order to stop, and the allowances for uncertainty.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ S_p \;=\; \underbrace{v_h\,(T_r + T_s)}_{\text{คน / human}} \;+\; \underbrace{v_r T_r + \tfrac{1}{2} v_r T_s}_{\text{หุ่นยนต์ / robot}} \;+\; \underbrace{C + Z}_{\text{ค่าเผื่อ / allowances}} $$</div>
+        <div class="eq__num">(8.22)</div>
+      </div>
+
+      <!-- ===================== Figure 8.6 ===================== -->
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 260" role="img" aria-label="A person approaching a robot across a monitored field, with the protective separation distance marked">
+            <line x1="30" y1="214" x2="830" y2="214" class="dg-stroke" stroke-width="2"/>
+
+            <!-- robot -->
+            <rect x="92" y="190" width="56" height="24" rx="4" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <line x1="120" y1="190" x2="188" y2="118" class="dg-stroke-green" stroke-width="12" stroke-linecap="round"/>
+            <line x1="188" y1="118" x2="272" y2="146" class="dg-stroke-green" stroke-width="10" stroke-linecap="round"/>
+            <circle cx="120" cy="190" r="8" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <circle cx="188" cy="118" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <circle cx="272" cy="146" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <line x1="286" y1="146" x2="352" y2="146" class="dg-stroke-green" stroke-width="2.4"/>
+            <polygon points="352,146 341,141 341,151" class="dg-arrow"/>
+
+            <!-- monitored field -->
+            <rect x="300" y="150" width="280" height="64" class="dg-fill-sky" opacity="0.35"/>
+            <rect x="300" y="150" width="280" height="64" class="dg-stroke" stroke-width="1.4" stroke-dasharray="5 4"/>
+            <text class="dg-text-sm" x="440" y="236" text-anchor="middle" data-lang-th>สนามตรวจจับของสแกนเนอร์</text>
+            <text class="dg-text-sm" x="440" y="236" text-anchor="middle" data-lang-en>scanner detection field</text>
+
+            <!-- person -->
+            <circle cx="660" cy="110" r="16" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <line x1="660" y1="126" x2="660" y2="176" class="dg-stroke" stroke-width="5"/>
+            <line x1="660" y1="140" x2="634" y2="158" class="dg-stroke" stroke-width="4"/>
+            <line x1="660" y1="140" x2="688" y2="156" class="dg-stroke" stroke-width="4"/>
+            <line x1="660" y1="176" x2="642" y2="214" class="dg-stroke" stroke-width="4.5"/>
+            <line x1="660" y1="176" x2="682" y2="214" class="dg-stroke" stroke-width="4.5"/>
+            <line x1="616" y1="110" x2="552" y2="110" class="dg-stroke-gold" stroke-width="2.4"/>
+            <polygon points="552,110 563,105 563,115" class="dg-arrow"/>
+
+            <!-- the separation span -->
+            <line x1="286" y1="72" x2="634" y2="72" class="dg-stroke" stroke-width="1.8"/>
+            <polygon points="286,72 297,67 297,77" class="dg-arrow"/>
+            <polygon points="634,72 623,67 623,77" class="dg-arrow"/>
+            <line x1="286" y1="60" x2="286" y2="140" class="dg-stroke" stroke-width="1" stroke-dasharray="3 3"/>
+            <line x1="634" y1="60" x2="634" y2="150" class="dg-stroke" stroke-width="1" stroke-dasharray="3 3"/>
+          </svg>
+          <span class="fig-label" style="left:40.5%; top:12%">\( S_p \)</span>
+          <span class="fig-label" style="left:37.5%; top:49%">\( v_r \)</span>
+          <span class="fig-label" style="left:66.5%; top:35%">\( v_h \)</span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 8.6</span><span data-lang-en>Figure 8.6</span></b>
+          <span data-lang-th> ระยะแยกเพื่อการป้องกันวัดจากจุดที่ใกล้ที่สุดของหุ่นยนต์ไปถึงจุดที่ใกล้ที่สุดของคน มาตรฐานกำหนดให้ใช้ \( v_h = 1.6 \) m/s เป็นความเร็วที่คนเดินเข้าหา เว้นแต่มีข้อมูลที่ดีกว่า เมื่อระยะวัดได้ลดลงต่ำกว่า \( S_p \) ระบบต้องลดความเร็วหุ่นยนต์หรือหยุด ซึ่งทำให้ \( S_p \) ลดลงตามไปด้วย จึงเกิดเป็นวงป้อนกลับที่ทำให้คนเข้าใกล้ได้มากขึ้นเมื่อหุ่นยนต์เดินช้าลง</span>
+          <span data-lang-en> The protective separation distance is measured from the nearest point of the robot to the nearest point of the person. The standard requires \( v_h = 1.6 \) m/s for a person walking in, unless better data exists. Once the measured distance falls below \( S_p \) the system must slow the robot or stop it — which lowers \( S_p \) in turn, so the arrangement is a feedback loop that lets a person come closer as the robot slows down.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 8.6 — การลดความเร็วหุ่นยนต์ช่วยได้น้อยกว่าที่คิด</span><span data-lang-en>Worked example 8.6 — Slowing the robot helps less than expected</span></div>
+        <p>
+          <span data-lang-th>สายคัดบรรจุใช้ \( v_h = 1.6 \) m/s, \( v_r = 0.8 \) m/s, \( T_r = 0.10 \) s, \( T_s = 0.25 \) s, \( C = 0.20 \) m และ \( Z = 0.10 \) m</span>
+          <span data-lang-en>A packing line has \( v_h = 1.6 \) m/s, \( v_r = 0.8 \) m/s, \( T_r = 0.10 \) s, \( T_s = 0.25 \) s, \( C = 0.20 \) m and \( Z = 0.10 \) m.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ S_p = (1.6)(0.35) + (0.8)(0.10) + \tfrac{1}{2}(0.8)(0.25) + 0.20 + 0.10 = 1.04\ \text{m} $$</div>
+          <div class="eq__num">(8.23)</div>
+        </div>
+        <p>
+          <span data-lang-th>ทีมหนึ่งเสนอให้ลดความเร็วหุ่นยนต์ลงครึ่งหนึ่งเป็น 0.4 m/s เพื่อให้วางเซลล์ได้แคบลง ผลที่ได้คือ</span>
+          <span data-lang-en>One team proposes halving the robot speed to 0.4 m/s so the cell can be made narrower. The result is</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ S_p = 0.56 + 0.04 + 0.05 + 0.30 = 0.95\ \text{m} $$</div>
+          <div class="eq__num">(8.24)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ลดลงเพียง 9% แต่เสียกำลังผลิตไปครึ่งหนึ่ง เหตุผลอยู่ในสมการ (8.22) คือพจน์ของคนมีค่า 0.56 m ซึ่งเป็นสัดส่วนที่ใหญ่ที่สุด และไม่ขึ้นกับความเร็วหุ่นยนต์เลย ถ้าเปลี่ยนไปลดเวลาหยุด \( T_s \) จาก 0.25 s เป็น 0.10 s แทน จะได้ \( S_p = 0.74 \) m คือลดลง 29% โดยยังเดินเร็ว 0.8 m/s ได้เต็มที่ นี่คือเหตุผลที่เงินลงทุนควรไปที่เบรกและวงจรความปลอดภัยที่ตอบสนองเร็ว ไม่ใช่ที่การตั้งค่าความเร็วให้ต่ำลง</span>
+          <span data-lang-en>A 9% reduction, bought with half the throughput. The reason is in equation (8.22): the human term is 0.56 m, the largest single contribution, and it does not depend on the robot&rsquo;s speed at all. Cutting the stopping time \( T_s \) from 0.25 s to 0.10 s instead gives \( S_p = 0.74 \) m — a 29% reduction while still running at the full 0.8 m/s. That is why the money belongs in brakes and a fast safety circuit rather than in a lower speed setting.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>สามข้อที่ห้ามพลาดในห้องปฏิบัติการ</span><span data-lang-en>Three things never to get wrong in the laboratory</span></div>
+        <p class="mb-0">
+          <span data-lang-th>หนึ่ง ตรวจสอบว่าปุ่มหยุดฉุกเฉินบนกล่องสอนงานและบนตู้ควบคุมทำงานจริง <em>ก่อน</em> จ่ายไฟให้มอเตอร์ทุกครั้ง สอง ขณะสอนงานต้องอยู่ในโหมดความเร็วจำกัดเสมอ และไม่มีใครอยู่ในระยะเอื้อมของหุ่นยนต์นอกจากผู้ถือกล่องสอนงาน สาม การตั้งค่า TCP ต้องทำและตรวจสอบก่อนสั่งเคลื่อนที่แบบหมุนรอบเครื่องมือ เพราะ TCP ที่ผิดจะทำให้ปลายแขนเหวี่ยงออกไปในทิศที่คาดไม่ถึง ซึ่งเป็นสาเหตุของอุบัติเหตุในชั้นเรียนมากที่สุด</span>
+          <span data-lang-en>First, prove that the emergency stops on both the pendant and the cabinet actually work <em>before</em> powering the motors, every time. Second, stay in reduced-speed mode while teaching, and let nobody but the person holding the pendant stand within the robot&rsquo;s reach. Third, define and verify the TCP before commanding any reorientation move, because a wrong TCP throws the arm in an unexpected direction — the single commonest cause of accidents in class.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 8.8 --------- -->
+    <section id="activity">
+      <h2><span data-lang-th>8.8 กิจกรรมในชั้นเรียน</span><span data-lang-en>8.8 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 8.1 — เลือกหุ่นยนต์ให้สายย้ายต้นกล้า</span><span data-lang-en>Activity 8.1 — Specifying a robot for a transplanting line</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 40 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Groups of 3–4 &middot; 40 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>โจทย์</span><span data-lang-en>The brief</span></h4>
+          <p>
+            <span data-lang-th>โรงเพาะกล้าต้องการย้ายต้นกล้าจากถาดเพาะขนาด 540 &times; 280 mm ไปยังถาดปลูกขนาด 600 &times; 400 mm ที่อัตรา 40 ต้นต่อนาที มือจับที่ออกแบบไว้มีมวล 0.9 kg จุดศูนย์ถ่วงห่างหน้าแปลน 60 mm และจับต้นกล้าพร้อมก้อนดินมวล 0.08 kg ที่ระยะ 140 mm ระยะหยิบ–วางโดยเฉลี่ย 420 mm ผู้ปฏิบัติงานต้องเดินเข้ามาเปลี่ยนถาดด้วยมือทุก 3 นาที โดยหุ่นยนต์ยังทำงานอยู่ ให้เลือกหุ่นยนต์หนึ่งตัวจากสี่ตัวในตาราง พร้อมแสดงการตรวจทุกเงื่อนไข</span>
+            <span data-lang-en>A nursery needs seedlings moved from a 540 &times; 280 mm propagation tray to a 600 &times; 400 mm growing tray at 40 plants a minute. The gripper designed for the job weighs 0.9 kg with its centre of gravity 60 mm from the flange, and holds a seedling with its plug, 0.08 kg, at 140 mm. The average pick-and-place move is 420 mm. An operator must walk in to change trays by hand every three minutes while the robot keeps running. Choose one of the four robots in the table, showing every check.</span>
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <caption><span data-lang-th>ตารางที่ 8.3 — ข้อมูลหุ่นยนต์ที่เสนอมาสี่ตัว</span><span data-lang-en>Table 8.3 — The four robots on offer</span></caption>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>ตัวเลือก</span><span data-lang-en>Option</span></th>
+                  <th><span data-lang-th>โครงร่าง</span><span data-lang-en>Configuration</span></th>
+                  <th><span data-lang-th>ปริภูมิทำงาน</span><span data-lang-en>Workspace</span></th>
+                  <th><span data-lang-th>พิกัดน้ำหนัก</span><span data-lang-en>Payload</span></th>
+                  <th>\( M_{\text{rated}} \)</th>
+                  <th><span data-lang-th>ความเที่ยงตรง</span><span data-lang-en>Repeatability</span></th>
+                  <th>\( a \)</th>
+                  <th>\( v_{\max} \)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>A</td>
+                  <td>SCARA</td>
+                  <td>\( L_1 = 400 \), \( L_2 = 250 \), \( h = 150 \) mm</td>
+                  <td>6 kg</td><td>11.8 N·m</td><td>±0.02 mm</td><td>25 m/s&sup2;</td><td>7.1 m/s</td>
+                </tr>
+                <tr>
+                  <td>B</td>
+                  <td><span data-lang-th>เดลต้า</span><span data-lang-en>Delta</span></td>
+                  <td>\( R = 400 \), \( h = 200 \) mm</td>
+                  <td>3 kg</td><td>1.5 N·m</td><td>±0.10 mm</td><td>100 m/s&sup2;</td><td>10 m/s</td>
+                </tr>
+                <tr>
+                  <td>C</td>
+                  <td><span data-lang-th>อาร์ติคูเลต 6 แกน</span><span data-lang-en>Articulated, 6 axis</span></td>
+                  <td><span data-lang-th>ระยะเอื้อม 900 mm</span><span data-lang-en>900 mm reach</span></td>
+                  <td>10 kg</td><td>22 N·m</td><td>±0.05 mm</td><td>15 m/s&sup2;</td><td>5.0 m/s</td>
+                </tr>
+                <tr>
+                  <td>D</td>
+                  <td><span data-lang-th>คาร์ทีเซียน</span><span data-lang-en>Cartesian</span></td>
+                  <td>1200 &times; 600 &times; 300 mm</td>
+                  <td>15 kg</td><td>30 N·m</td><td>±0.10 mm</td><td>8 m/s&sup2;</td><td>2.0 m/s</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>ขั้นตอน</span><span data-lang-en>Steps</span></h4>
+          <ol>
+            <li><span data-lang-th>วาดปริภูมิทำงานของแต่ละตัวเลือกตามมาตราส่วน 1:10 แล้ววางถาดทั้งสองใบลงไป ตัดตัวเลือกที่วางถาดทั้งสองใบไม่ได้ออกก่อน อย่าลืมรูกลางของตัวเลือกที่เป็นวงแหวน</span><span data-lang-en>Draw each workspace at 1:10 and lay both trays on it, eliminating any option that cannot hold both. Do not forget the central hole of the annular options.</span></li>
+            <li><span data-lang-th>ตรวจมวลรวมและโมเมนต์ที่ข้อมือด้วยสมการ (8.11) สำหรับทุกตัวเลือกที่เหลือ</span><span data-lang-en>Check the total mass and the wrist moment with equation (8.11) for every surviving option.</span></li>
+            <li><span data-lang-th>ประมาณเวลารอบการทำงานจากสมการ (8.14) โดยใช้ระยะ 420 mm แล้วเทียบกับ 40 ต้นต่อนาทีที่ต้องการ ระบุว่าการเคลื่อนที่อยู่ในกรณีสามเหลี่ยมหรือสี่เหลี่ยมคางหมู</span><span data-lang-en>Estimate the cycle time from equation (8.14) over 420 mm and compare with the 40 plants a minute required, saying whether the move is triangular or trapezoidal.</span></li>
+            <li><span data-lang-th>คำนวณ \( S_p \) จากสมการ (8.22) โดยสมมติ \( T_r = 0.10 \) s, \( T_s = 0.20 \) s, \( C = 0.20 \) m, \( Z = 0.10 \) m แล้วบอกว่าเซลล์ต้องกว้างเท่าใดสำหรับตัวเลือกที่เลือก</span><span data-lang-en>Compute \( S_p \) from equation (8.22) with \( T_r = 0.10 \) s, \( T_s = 0.20 \) s, \( C = 0.20 \) m and \( Z = 0.10 \) m, and say how wide the cell must be for your choice.</span></li>
+            <li><span data-lang-th>ตัดสินใจเลือกหนึ่งตัว และเขียนเหตุผลที่ <em>ปฏิเสธ</em> อีกสามตัวให้ชัดเจน โดยอ้างเงื่อนไขที่แต่ละตัวไม่ผ่าน</span><span data-lang-en>Settle on one, and write down clearly why each of the other three was <em>rejected</em>, citing the condition it failed.</span></li>
+          </ol>
+
+          <div class="callout callout--info" style="margin-bottom:1rem">
+            <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>คำใบ้สองข้อ</span><span data-lang-en>Two hints</span></div>
+            <p class="mb-0">
+              <span data-lang-th>ข้อแรก มีตัวเลือกหนึ่งที่พิกัดน้ำหนักเหลือเฟือแต่ตกเงื่อนไขโมเมนต์ และอีกตัวที่ผ่านทุกเงื่อนไขทางกลแต่ทำอัตราผลิตไม่ถึง ข้อที่สอง ความเที่ยงตรง ±0.10 mm ก็เพียงพอสำหรับก้อนดินเพาะกล้าที่มีขนาดคลาดเคลื่อนเองเป็นมิลลิเมตร การเลือกตัวที่เที่ยงตรงที่สุดจึงไม่ใช่คำตอบโดยอัตโนมัติ</span>
+              <span data-lang-en>First, one option has payload to spare but fails on moment, and another passes every mechanical check but cannot make the rate. Second, ±0.10 mm is ample for a propagation plug whose own size varies by millimetres, so picking the most repeatable robot is not automatically the answer.</span>
+            </p>
+          </div>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ภาพวาดมาตราส่วนของปริภูมิทำงานที่เลือก พร้อมถาดสองใบวางอยู่ในนั้น</span><span data-lang-en>A scale drawing of the chosen workspace with both trays placed on it.</span></li>
+            <li><span data-lang-th>ตารางสรุปการตรวจสี่เงื่อนไข (ปริภูมิ โมเมนต์ อัตราผลิต ระยะแยก) ของทั้งสี่ตัวเลือก</span><span data-lang-en>A table of the four checks — workspace, moment, rate, separation — for all four options.</span></li>
+            <li><span data-lang-th>คำตัดสินหนึ่งย่อหน้า พร้อมเหตุผลการปฏิเสธอีกสามตัว</span><span data-lang-en>A one-paragraph decision, with the reason each of the other three was rejected.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 8.9 --------- -->
+    <section id="lab">
+      <h2><span data-lang-th>8.9 ปฏิบัติการที่ 8</span><span data-lang-en>8.9 Laboratory 8</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <h3><span data-lang-th>ปฏิบัติการที่ 8 — เฟรมอ้างอิง การ jog และการวัดความเที่ยงตรง</span><span data-lang-en>Laboratory 8 — Frames, jogging and measuring repeatability</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 2 ชั่วโมง &middot; ห้องปฏิบัติการหุ่นยนต์</span><span data-lang-en>Groups of 3–4 &middot; 2 hours &middot; Robotics laboratory</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ข้อ 3–5</span><span data-lang-en>Maps to objectives 3–5</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 6% ของคะแนนรวม</span><span data-lang-en>6% of the course total</span></span>
+            <span class="badge badge--gold"><i class="fa-solid fa-link"></i> <span data-lang-th>ค่า TCP ที่ตั้งได้จะใช้ต่อในปฏิบัติการที่ 9</span><span data-lang-en>The TCP set here is reused in Laboratory 9</span></span>
+          </div>
+
+          <h4><span data-lang-th>อุปกรณ์</span><span data-lang-en>Equipment</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>หุ่นยนต์อาร์ติคูเลต 6 แกนพร้อมกล่องสอนงาน และมือจับสองนิ้ว</span><span data-lang-en>A six-axis articulated robot with its teach pendant, and a two-finger gripper</span></li>
+            <li><span data-lang-th>แท่งปลายแหลมสำหรับตั้ง TCP และหมุดอ้างอิงที่ยึดแน่นกับโต๊ะ</span><span data-lang-en>A pointed tool for TCP definition, and a reference pin clamped to the bench</span></li>
+            <li><span data-lang-th>ไดอัลอินดิเคเตอร์ความละเอียด 0.01 mm สองตัวพร้อมขาตั้งแม่เหล็ก</span><span data-lang-en>Two dial indicators reading to 0.01 mm, with magnetic stands</span></li>
+            <li><span data-lang-th>เกจบล็อกหรือแผ่นวัดที่ทราบขนาดแน่นอน สำหรับตรวจความแม่นยำ</span><span data-lang-en>A gauge block or plate of known dimension, for the accuracy check</span></li>
+            <li><span data-lang-th>ถาดเพาะกล้าหนึ่งใบ พร้อมที่ยึดถาดที่ถอดและย้ายตำแหน่งได้</span><span data-lang-en>One seedling tray with a holder that can be unclamped and moved</span></li>
+          </ul>
+
+          <h4><span data-lang-th>ขั้นตอนการทดลอง</span><span data-lang-en>Procedure</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>ตรวจความปลอดภัยก่อนจ่ายไฟ</span><span data-lang-en>Safety checks before power</span></b><br>
+              <span data-lang-th>ทดสอบปุ่มหยุดฉุกเฉินทั้งบนกล่องสอนงานและบนตู้ควบคุม บันทึกว่าหุ่นยนต์หยุดภายในกี่วินาที ตรวจว่าโหมดความเร็วจำกัดทำงานอยู่ และตั้งขีดจำกัดพื้นที่ในซอฟต์แวร์ให้ครอบคลุมเฉพาะบริเวณการทดลอง</span>
+              <span data-lang-en>Test the emergency stops on both the pendant and the cabinet, recording how long the robot takes to halt. Confirm that reduced-speed mode is active, and set the software area limits to cover only the experiment.</span></li>
+            <li><b><span data-lang-th>เปรียบเทียบโหมดการ jog</span><span data-lang-en>Compare the jog modes</span></b><br>
+              <span data-lang-th>สอนจุด A และจุด B ให้ห่างกันราว 300 mm โดยมีกล่องเตี้ยวางกลางทาง สั่งเคลื่อนที่แบบแปรค่าข้อต่อ แล้วแบบเชิงเส้น บันทึกว่าแบบใดชนกล่อง และบันทึกค่ามุมของสองข้อต่อแรกที่กึ่งกลางทางของทั้งสองแบบ</span>
+              <span data-lang-en>Teach points A and B about 300 mm apart with a low box between them. Run a joint-interpolated move and then a linear move, recording which one strikes the box, and the first two joint angles at the midpoint of each.</span></li>
+            <li><b><span data-lang-th>สำรวจขอบปริภูมิทำงาน</span><span data-lang-en>Map the edge of the workspace</span></b><br>
+              <span data-lang-th>ใช้การ jog แบบเชิงเส้นพาปลายเครื่องมือออกไปจนระบบปฏิเสธคำสั่ง บันทึกระยะเอื้อมสูงสุดที่วัดได้ในสามทิศทาง เทียบกับตัวเลขในแค็ตตาล็อก แล้วสังเกตพฤติกรรมของหุ่นยนต์เมื่อเข้าใกล้ขอบ</span>
+              <span data-lang-en>Jog linearly outwards until the controller refuses the command. Record the maximum reach measured in three directions, compare with the catalogue figure, and note how the robot behaves as the edge approaches.</span></li>
+            <li><b><span data-lang-th>ตั้งเฟรมเครื่องมือและตรวจสอบ</span><span data-lang-en>Define and verify the tool frame</span></b><br>
+              <span data-lang-th>ติดแท่งปลายแหลม ตั้ง TCP ด้วยวิธีสี่จุด โดยพาปลายแหลมมาแตะหมุดอ้างอิงเดิมในสี่ท่าที่ต่างกันมาก จดค่า \( \vect{t}_{\text{tool}} \) ที่ระบบคำนวณได้ จากนั้นตรวจสอบโดยสั่งหมุนรอบ TCP 90 องศา ถ้าตั้งถูกปลายแหลมจะอยู่นิ่งที่เดิม ให้วัดระยะที่มันเลื่อนไปและบันทึกเป็นค่าความคลาดเคลื่อนของ TCP</span>
+              <span data-lang-en>Fit the pointed tool and define the TCP by the four-point method, touching the same reference pin in four widely different poses. Note the \( \vect{t}_{\text{tool}} \) the controller computes, then verify it by commanding a 90-degree rotation about the TCP: if it is correct the point stays still. Measure how far it does move and record that as the TCP error.</span></li>
+            <li><b><span data-lang-th>ตั้งเฟรมชิ้นงานแล้วย้ายถาด</span><span data-lang-en>Define a work-object frame, then move the tray</span></b><br>
+              <span data-lang-th>ตั้งเฟรมชิ้นงานที่มุมถาด สอนจุดหยิบสามจุดโดยอ้างในเฟรมนี้ รันโปรแกรมให้ผ่าน จากนั้นปลดที่ยึดถาดแล้วย้ายไป 100 mm พร้อมหมุนราว 15 องศา วัดเฟรมชิ้นงานใหม่เพียงครั้งเดียวแล้วรันโปรแกรมเดิมซ้ำ บันทึกว่าต้องแก้จุดใดเพิ่มหรือไม่</span>
+              <span data-lang-en>Define a work-object frame at the corner of the tray and teach three pick points referenced to it. Run the program. Now unclamp the tray, shift it 100 mm and rotate it about 15 degrees, re-measure the frame once only, and run the same program again, recording whether any point needed further editing.</span></li>
+            <li><b><span data-lang-th>วัดความเที่ยงตรงและความแม่นยำ</span><span data-lang-en>Measure repeatability and accuracy</span></b><br>
+              <span data-lang-th>ตั้งไดอัลอินดิเคเตอร์สองตัวให้สัมผัสหน้าแปลนในแนว \( x \) และ \( y \) สั่งหุ่นยนต์ออกไปไกลแล้วกลับมาที่จุดเดิม 20 ครั้ง บันทึกค่าทั้งสองแกนทุกครั้ง คำนวณ \( \pm 3\sigma \) ตามสมการ (8.6) จากนั้นวัดระยะระหว่างสองจุดที่สั่งห่างกัน 200.00 mm ด้วยเกจ เทียบกับระยะที่วัดได้จริง และคำนวณความแม่นยำตามสมการ (8.7)</span>
+              <span data-lang-en>Set the two indicators against the flange in \( x \) and \( y \). Send the robot away and back to the same point twenty times, recording both axes each time, and compute \( \pm 3\sigma \) by equation (8.6). Then command two points 200.00 mm apart, measure the actual separation with the gauge, and compute the accuracy by equation (8.7).</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 8.1</span><span data-lang-en>Data sheet 8.1</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>ครั้งที่</span><span data-lang-en>Trial</span></th>
+                  <th>\( x \) (mm)</th>
+                  <th>\( y \) (mm)</th>
+                  <th>\( \lVert \vect{p}_i - \bar{\vect{p}} \rVert \) (mm)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>&hellip;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>20</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><b><span data-lang-th>ค่าเฉลี่ย</span><span data-lang-en>mean</span></b></td><td>&nbsp;</td><td>&nbsp;</td><td>\( \sigma = \)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 8.2</span><span data-lang-en>Data sheet 8.2</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>รายการ</span><span data-lang-en>Item</span></th>
+                  <th><span data-lang-th>ค่าที่วัดหรือคำนวณได้</span><span data-lang-en>Measured or computed</span></th>
+                  <th><span data-lang-th>ค่าจากแค็ตตาล็อก</span><span data-lang-en>Catalogue value</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>เวลาหยุดหลังกดปุ่มฉุกเฉิน</span><span data-lang-en>Stopping time after the e-stop</span></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ระยะเอื้อมสูงสุดที่วัดได้</span><span data-lang-en>Maximum reach measured</span></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>\( \vect{t}_{\text{tool}} = (x, y, z) \)</td><td>&nbsp;</td><td>&mdash;</td></tr>
+                <tr><td><span data-lang-th>ความคลาดเคลื่อนของ TCP จากการหมุนตรวจสอบ</span><span data-lang-en>TCP error from the rotation check</span></td><td>&nbsp;</td><td>&mdash;</td></tr>
+                <tr><td><span data-lang-th>ความเที่ยงตรง \( \pm 3\sigma \)</span><span data-lang-en>Repeatability \( \pm 3\sigma \)</span></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ความแม่นยำบนระยะ 200.00 mm</span><span data-lang-en>Accuracy over 200.00 mm</span></td><td>&nbsp;</td><td>&mdash;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>การวิเคราะห์ผล</span><span data-lang-en>Analysis</span></h4>
+          <ol>
+            <li><span data-lang-th>ความเที่ยงตรงที่วัดได้ตรงกับที่แค็ตตาล็อกระบุหรือไม่ ถ้าแย่กว่าให้เสนอสาเหตุที่เป็นไปได้สามข้อ และบอกว่าจะแยกแยะแต่ละข้อออกจากกันด้วยการทดลองใดได้</span><span data-lang-en>Does the measured repeatability match the catalogue? If it is worse, propose three possible causes and say what experiment would separate them.</span></li>
+            <li><span data-lang-th>ความแม่นยำที่วัดได้แย่กว่าความเที่ยงตรงกี่เท่า และอธิบายว่าทำไมแค็ตตาล็อกจึงไม่ระบุตัวเลขนี้</span><span data-lang-en>By what factor is the accuracy worse than the repeatability, and why does the catalogue not quote it?</span></li>
+            <li><span data-lang-th>ที่กึ่งกลางทางของการเคลื่อนที่ ค่ามุมข้อต่อของโหมดข้อต่อกับโหมดเชิงเส้นต่างกันเท่าใด และอธิบายว่าความต่างนั้นทำให้เส้นทางต่างกันอย่างไร</span><span data-lang-en>At the midpoint of the move, how far apart are the joint angles in the two modes, and how does that difference produce the different paths?</span></li>
+            <li><span data-lang-th>หลังย้ายถาด ต้องแก้จุดที่สอนไว้หรือไม่ และผลนี้บอกอะไรเกี่ยวกับประโยชน์ของเฟรมชิ้นงานในงานที่ต้องเปลี่ยนจิ๊กบ่อย</span><span data-lang-en>After moving the tray, did any taught point need editing, and what does that say about the value of a work-object frame where jigs change often?</span></li>
+            <li><span data-lang-th>ใช้เวลาหยุดที่วัดได้ในขั้นตอนที่ 1 คำนวณ \( S_p \) จากสมการ (8.22) สำหรับหุ่นยนต์ตัวนี้ที่ความเร็ว 1.0 m/s แล้วเทียบกับระยะจากขอบรั้วถึงจุดที่หุ่นยนต์เอื้อมถึงได้ไกลสุด ว่าเพียงพอหรือไม่</span><span data-lang-en>Using the stopping time from step 1, compute \( S_p \) from equation (8.22) for this robot at 1.0 m/s, and compare it with the distance from the fence to the robot&rsquo;s furthest reach. Is it sufficient?</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>Deliverables</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานปฏิบัติการไม่เกิน 5 หน้า ส่งภายใน 1 สัปดาห์</span><span data-lang-en>A report of at most five pages, due within one week.</span></li>
+            <li><span data-lang-th>กราฟกระจายของจุดทั้ง 20 ครั้งในระนาบ \( xy \) พร้อมวงกลม \( \pm 3\sigma \) รอบค่าเฉลี่ย</span><span data-lang-en>A scatter plot of all twenty landings in the \( xy \) plane, with the \( \pm 3\sigma \) circle about the mean.</span></li>
+            <li><span data-lang-th>ภาพวาดเส้นทางของ TCP ทั้งสองโหมดทับกันในภาพเดียว พร้อมตำแหน่งของกล่องที่วางกีดขวาง</span><span data-lang-en>One drawing with both TCP paths overlaid and the position of the obstructing box.</span></li>
+            <li><span data-lang-th>ค่า \( \vect{t}_{\text{tool}} \) ที่ตั้งได้ ซึ่งต้องนำไปใช้ต่อในปฏิบัติการที่ 9</span><span data-lang-en>The \( \vect{t}_{\text{tool}} \) obtained, to be carried into Laboratory 9.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>การตั้ง TCP ที่ผ่านการตรวจสอบด้วยการหมุน และความคลาดเคลื่อนที่ได้</span><span data-lang-en>A TCP definition verified by the rotation check, and the error achieved</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>การวัดความเที่ยงตรง 20 ครั้งและการคำนวณ \( \pm 3\sigma \) อย่างถูกต้อง</span><span data-lang-en>Twenty repeatability trials and a correct \( \pm 3\sigma \) calculation</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การแยกความแม่นยำออกจากความเที่ยงตรงด้วยข้อมูลที่วัดได้เอง</span><span data-lang-en>Separating accuracy from repeatability using your own measurements</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การสาธิตเฟรมชิ้นงานและการอธิบายประโยชน์จากผลที่เกิด</span><span data-lang-en>The work-object demonstration and the explanation of its value</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ความปลอดภัยและความเป็นระเบียบในการปฏิบัติงาน</span><span data-lang-en>Safe and orderly laboratory practice</span></td><td>15</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--danger" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></div>
+            <p class="mb-0">
+              <span data-lang-th>ขั้นตอนที่ 3 พาหุ่นยนต์ออกไปถึงขอบปริภูมิทำงาน ซึ่งเป็นบริเวณที่การเคลื่อนที่คาดเดาได้น้อยที่สุดและข้อต่ออาจเหวี่ยงเร็วกว่าที่คาด ต้องอยู่ในโหมดความเร็วจำกัดตลอด และให้มีเพียงผู้ถือกล่องสอนงานอยู่ในระยะเอื้อม ขั้นตอนที่ 4 มีแท่งปลายแหลมติดอยู่ที่ข้อมือ ซึ่งอันตรายต่อดวงตาเมื่อหุ่นยนต์หมุนรอบ TCP ให้สวมแว่นนิรภัยและยืนด้านข้างเสมอ ส่วนขั้นตอนที่ 6 มีไดอัลอินดิเคเตอร์อยู่ในเส้นทางของหุ่นยนต์ ต้องเดินโปรแกรมด้วยความเร็วต่ำสุดครั้งแรกก่อนทุกครั้ง</span>
+              <span data-lang-en>Step 3 takes the robot to the edge of its workspace, where motion is least predictable and a joint may swing faster than expected: stay in reduced-speed mode and let only the pendant holder stand within reach. Step 4 leaves a pointed tool on the wrist, which is an eye hazard while the robot rotates about the TCP — wear safety glasses and always stand to one side. In step 6 the dial indicators sit in the robot&rsquo;s path, so run the program at minimum speed on the first pass, every time.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>เซลล์หุ่นยนต์มีหกองค์ประกอบ และงานออกแบบส่วนใหญ่ในงานเกษตรอยู่ที่อุปกรณ์ปลายแขนกับการรับรู้ ไม่ใช่ที่ตัวแขนกล</span><span data-lang-en>A robot cell has six parts, and in agriculture most of the design work lies in the end effector and the sensing, not in the arm.</span></li>
+        <li><span data-lang-th>งานต้องการหกองศาอิสระเฉพาะเมื่อต้องกำหนดทั้งตำแหน่งและการวางตัว งานคัดบรรจุส่วนใหญ่ต้องการสี่หรือสามเท่านั้น</span><span data-lang-en>Six degrees of freedom are needed only when both position and attitude must be set; most packing work needs four or three.</span></li>
+        <li><span data-lang-th>โครงร่างเป็นตัวกำหนดรูปร่างปริภูมิทำงาน มีเพียงคาร์ทีเซียนที่ให้กล่องสี่เหลี่ยมไม่มีรู ที่เหลือเป็นวงแหวนที่มีบริเวณกลางเอื้อมไม่ถึง</span><span data-lang-en>The configuration fixes the shape of the workspace; only the Cartesian layout gives a box with no hole, the rest being rings with an unreachable centre.</span></li>
+        <li><span data-lang-th>ปริภูมิที่ใช้งานได้เล็กกว่าปริภูมิที่เอื้อมถึง จึงไม่ควรออกแบบงานให้เลย 90% ของระยะเอื้อมสูงสุด</span><span data-lang-en>The dexterous workspace is smaller than the reachable one, so work should stay inside 90% of maximum reach.</span></li>
+        <li><span data-lang-th>ความเที่ยงตรงคือการกระจายรอบค่าเฉลี่ยของตัวเอง ความแม่นยำคือระยะจากค่าเฉลี่ยถึงจุดที่สั่ง การสอบเทียบแก้ได้เฉพาะอย่างหลัง</span><span data-lang-en>Repeatability is the spread about one&rsquo;s own mean; accuracy is the distance from that mean to the commanded point. Calibration fixes only the latter.</span></li>
+        <li><span data-lang-th>ความละเอียดละเอียดกว่าความเที่ยงตรงเกือบทุกครั้ง ตัวจำกัดจริงคือกลไก ไม่ใช่อิเล็กทรอนิกส์</span><span data-lang-en>Resolution is nearly always finer than repeatability: the real limit is mechanical, not electronic.</span></li>
+        <li><span data-lang-th>การผ่านพิกัดน้ำหนักไม่ได้แปลว่าผ่านโมเมนต์ที่ข้อมือ ซึ่งเป็นเงื่อนไขที่มือจับผลไม้ขนาดยาวตกบ่อยที่สุด</span><span data-lang-en>Passing the payload rating does not mean passing the wrist moment, which is the condition a long fruit gripper most often fails.</span></li>
+        <li><span data-lang-th>ในการเคลื่อนที่ระยะสั้น เวลารอบขึ้นกับความเร่ง ไม่ใช่ความเร็วสูงสุดที่โฆษณาไว้</span><span data-lang-en>Over short moves the cycle time depends on acceleration, not on the advertised top speed.</span></li>
+        <li><span data-lang-th>TCP คือจุดที่เราควบคุมจริง การสอนจุดในเฟรมชิ้นงานทำให้ย้ายจิ๊กได้โดยวัดเฟรมใหม่ครั้งเดียว</span><span data-lang-en>The TCP is the point actually controlled, and teaching in a work-object frame lets a jig move with a single re-measurement.</span></li>
+        <li><span data-lang-th>แรงจับถูกกำหนดโดยความเร่งเป็นหลัก การลดความเร่งจึงเป็นทางแก้ปัญหาผลไม้ช้ำที่ตรงจุดที่สุด</span><span data-lang-en>Grip force is set mainly by acceleration, so reducing acceleration is the most direct cure for bruised fruit.</span></li>
+        <li><span data-lang-th>ในสมการระยะแยก พจน์ของคนมักใหญ่ที่สุด การลดเวลาหยุดจึงช่วยได้มากกว่าการลดความเร็วหุ่นยนต์</span><span data-lang-en>In the separation-distance formula the human term usually dominates, so cutting the stopping time helps more than cutting the robot&rsquo;s speed.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>องศาอิสระ (DOF)</span><span data-lang-en>Degrees of freedom</span></div>
+          <div class="deflist__def"><span data-lang-th>จำนวนตัวแปรอิสระที่ต้องสั่งเพื่อกำหนดท่าของหุ่นยนต์ให้ครบ เท่ากับจำนวนข้อต่อในแขนกลแบบอนุกรม</span><span data-lang-en>The number of independent variables needed to fix a pose, equal to the number of joints in a serial arm</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ปริภูมิที่ใช้งานได้</span><span data-lang-en>Dexterous workspace</span></div>
+          <div class="deflist__def"><span data-lang-th>บริเวณที่ปลายเครื่องมือไปถึงได้โดยยังเลือกการวางตัวได้อย่างอิสระ เล็กกว่าปริภูมิที่เอื้อมถึง</span><span data-lang-en>Where the tool can be placed with its orientation still freely selectable; smaller than the reachable workspace</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>จุดเอกฐาน (Singularity)</span><span data-lang-en>Singularity</span></div>
+          <div class="deflist__def"><span data-lang-th>ท่าที่หุ่นยนต์เสียความสามารถเคลื่อนที่ในบางทิศ เช่น เมื่อแขนเหยียดตรงจนสุด</span><span data-lang-en>A pose in which the robot loses the ability to move in some direction, such as a fully extended arm</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ความเที่ยงตรง (Repeatability)</span><span data-lang-en>Repeatability</span></div>
+          <div class="deflist__def"><span data-lang-th>การกระจายของตำแหน่งที่หยุดได้รอบค่าเฉลี่ยของตัวเอง เมื่อสั่งกลับจุดเดิมซ้ำ ๆ รายงานเป็น \( \pm 3\sigma \)</span><span data-lang-en>The spread of landings about their own mean on repeated returns to one point, reported as \( \pm 3\sigma \)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ความแม่นยำ (Accuracy)</span><span data-lang-en>Accuracy</span></div>
+          <div class="deflist__def"><span data-lang-th>ระยะจากค่าเฉลี่ยของตำแหน่งที่หยุดได้ ไปถึงจุดที่สั่งจริง แก้ได้ด้วยการสอบเทียบ</span><span data-lang-en>The distance from the mean of those landings to the point actually commanded; correctable by calibration</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">TCP</div>
+          <div class="deflist__def"><span data-lang-th>จุดกำเนิดของเฟรมเครื่องมือ คือจุดบนอุปกรณ์ปลายแขนที่ระบบควบคุมตำแหน่งไว้จริง</span><span data-lang-en>The origin of the tool frame: the point on the end effector whose position the controller actually holds</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>เฟรมชิ้นงาน</span><span data-lang-en>Work-object frame</span></div>
+          <div class="deflist__def"><span data-lang-th>เฟรมที่ติดกับจิ๊กหรือถาด ทำให้ย้ายตำแหน่งจิ๊กได้โดยวัดเฟรมใหม่เพียงครั้งเดียว</span><span data-lang-en>A frame attached to the jig or tray, so moving it requires only one re-measurement</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ระยะแยกเพื่อการป้องกัน \( S_p \)</span><span data-lang-en>Protective separation distance \( S_p \)</span></div>
+          <div class="deflist__def"><span data-lang-th>ระยะต่ำสุดที่ต้องรักษาไว้ระหว่างคนกับหุ่นยนต์ในโหมดเฝ้าระวังความเร็วและระยะแยก ตามสมการ (8.22)</span><span data-lang-en>The minimum distance to be held between person and robot under speed-and-separation monitoring, per equation (8.22)</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>สิบข้อ เน้นการคำนวณตรวจเงื่อนไข การแยกความแม่นยำจากความเที่ยงตรง และการตัดสินใจเลือกอุปกรณ์ เกณฑ์ผ่าน 70%</span>
+        <span data-lang-en>Ten items on checking a specification by calculation, separating accuracy from repeatability, and choosing hardware. Pass mark 70%.</span>
+      </p>
+      <div data-quiz="ch08-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>International Organization for Standardization. (2011). <em>ISO 10218-1: Robots and robotic devices — Safety requirements for industrial robots — Part 1: Robots</em>. ISO. <span data-lang-th>— ข้อกำหนดด้านความปลอดภัยของตัวหุ่นยนต์ ที่อ้างในหัวข้อ 8.7</span><span data-lang-en>— the robot-side safety requirements cited in §8.7.</span></li>
+        <li>International Organization for Standardization. (2011). <em>ISO 10218-2: Robots and robotic devices — Safety requirements for industrial robots — Part 2: Robot systems and integration</em>. ISO.</li>
+        <li>International Organization for Standardization. (2016). <em>ISO/TS 15066: Robots and robotic devices — Collaborative robots</em>. ISO. <span data-lang-th>— ที่มาของสมการ (8.22) และขีดจำกัดแรงต่อส่วนของร่างกาย</span><span data-lang-en>— the source of equation (8.22) and of the body-region force limits.</span></li>
+        <li>Craig, J. J. (2018). <em>Introduction to Robotics: Mechanics and Control</em> (4th ed.). Pearson. <span data-lang-th>— บทที่ 1–2 ครอบคลุมข้อต่อ องศาอิสระ และเฟรมอ้างอิง และเป็นสะพานไปสู่บทที่ 9</span><span data-lang-en>— chapters 1–2 cover joints, DOF and frames, and bridge into Chapter 9.</span></li>
+        <li>Siciliano, B., Sciavicco, L., Villani, L., &amp; Oriolo, G. (2010). <em>Robotics: Modelling, Planning and Control</em>. Springer.</li>
+        <li>Spong, M. W., Hutchinson, S., &amp; Vidyasagar, M. (2020). <em>Robot Modeling and Control</em> (2nd ed.). Wiley.</li>
+        <li>Niku, S. B. (2020). <em>Introduction to Robotics: Analysis, Control, Applications</em> (3rd ed.). Wiley. <span data-lang-th>— อธิบายโครงร่างและปริภูมิทำงานแต่ละแบบอย่างละเอียดพร้อมภาพ</span><span data-lang-en>— a thorough, well-illustrated treatment of each configuration and its workspace.</span></li>
+        <li>Groover, M. P. (2019). <em>Automation, Production Systems, and Computer-Integrated Manufacturing</em> (5th ed.). Pearson. <span data-lang-th>— มุมมองเชิงระบบการผลิต รวมถึงการคำนวณเวลารอบและการจัดวางเซลล์</span><span data-lang-en>— the production-systems view, including cycle-time calculation and cell layout.</span></li>
+        <li>Monkman, G. J., Hesse, S., Steinmann, R., &amp; Schunk, H. (2007). <em>Robot Grippers</em>. Wiley-VCH. <span data-lang-th>— ตำราอ้างอิงเรื่องมือจับ ที่มาของสมการ (8.16) และ (8.19)</span><span data-lang-en>— the reference work on grippers, behind equations (8.16) and (8.19).</span></li>
+        <li>Bac, C. W., van Henten, E. J., Hemming, J., &amp; Edan, Y. (2014). Harvesting robots for high-value crops: State-of-the-art review and challenges ahead. <em>Journal of Field Robotics, 31</em>(6), 888–911.</li>
+        <li>Vrochidou, E., Tsakalidou, V. N., Kalathas, I., Gkrimpizis, T., Pachidis, T., &amp; Kaburlasos, V. G. (2022). An overview of end effectors in agricultural robotic harvesting systems. <em>Agriculture, 12</em>(8), 1240. <span data-lang-th>— ทบทวนอุปกรณ์ปลายแขนสำหรับการเก็บเกี่ยว ซึ่งขยายหัวข้อ 8.6</span><span data-lang-en>— a review of harvesting end effectors, extending §8.6.</span></li>
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press.</li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="ch07.html">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>บทก่อนหน้า</span><span data-lang-en>Previous chapter</span></small>
+        <b><span data-lang-th>บทที่ 7 · ตัวควบคุมกระบวนการ</span><span data-lang-en>Chapter 7 · Process Controllers</span></b>
+      </a>
+      <a class="is-next" href="ch09.html">
+        <small><span data-lang-th>บทถัดไป</span><span data-lang-en>Next chapter</span> <i class="fa-solid fa-arrow-right"></i></small>
+        <b><span data-lang-th>บทที่ 9 · จลนศาสตร์หุ่นยนต์และการจำลอง</span><span data-lang-en>Chapter 9 · Robot Kinematics and Simulation</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#config"><span data-lang-th>โครงร่างและปริภูมิทำงาน</span><span data-lang-en>Configurations and workspace</span></a></li>
+          <li><a href="#specs"><span data-lang-th>ข้อกำหนดสมรรถนะ</span><span data-lang-en>Performance specifications</span></a></li>
+          <li><a href="#lab"><span data-lang-th>ปฏิบัติการที่ 8</span><span data-lang-en>Laboratory 8</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script src="../js/ch08-quiz.js"></script>
+<script src="../js/ch08-anim.js"></script>
+</body>
+</html>

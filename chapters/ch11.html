@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 11 · การประยุกต์ในงานวิศวกรรมเกษตร" data-title-en="Chapter 11 · Applications in Agricultural Engineering">Chapter 11 · Applications in Agricultural Engineering</title>
+<meta name="description" content="Chapter 11: the layered architecture of a smart farm, networks and data flow, two integrated case studies, the design and handover process, availability, the economics of automation, and the integrated design project.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="ch08.html"><span data-lang-th>บทที่ 8</span><span data-lang-en>Ch 8</span></a>
+      <a href="ch09.html"><span data-lang-th>บทที่ 9</span><span data-lang-en>Ch 9</span></a>
+      <a href="ch10.html"><span data-lang-th>บทที่ 10</span><span data-lang-en>Ch 10</span></a>
+      <a href="ch11.html" class="is-active"><span data-lang-th>บทที่ 11</span><span data-lang-en>Ch 11</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 11</span><span data-lang-en>Chapter 11</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 16</span><span data-lang-en>Week 16</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 2 ชม. + นำเสนอโครงงาน 2 ชม.</span><span data-lang-en>2 h lecture + 2 h project presentations</span></span>
+      <span class="badge badge--sky"><i class="fa-solid fa-film"></i> <span data-lang-th>แอนิเมชัน 3 ชุด</span><span data-lang-en>3 animations</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 11 · การประยุกต์ในงานวิศวกรรมเกษตร</span>
+      <span data-lang-en>Chapter 11 · Applications in Agricultural Engineering</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>สิบบทที่ผ่านมาสอนชิ้นส่วนทีละชิ้น คือเซนเซอร์ แอคชูเอเตอร์ PLC ตัวควบคุม แขนกล และรถอัตโนมัติ บทสุดท้ายนี้ถามคำถามที่ยากที่สุด คือชิ้นส่วนเหล่านั้นประกอบกันเป็นระบบที่ใช้งานได้จริงในฟาร์มอย่างไร คำตอบไม่ได้อยู่ที่ชิ้นส่วนใดชิ้นส่วนหนึ่ง แต่อยู่ที่สถาปัตยกรรมที่เชื่อมมันเข้าด้วยกัน การสื่อสารระหว่างกัน ความพร้อมใช้งานเมื่อมีสิ่งใดเสีย และตัวเลขที่บอกว่าทั้งหมดนั้นคุ้มค่าหรือไม่</span>
+      <span data-lang-en>Ten chapters have taught the pieces one at a time: sensors, actuators, PLCs, controllers, arms and autonomous vehicles. This last chapter asks the hardest question — how those pieces assemble into something that actually works on a farm. The answer lies not in any one piece but in the architecture that joins them, how they talk to each other, what survives when one of them fails, and the figures that say whether any of it was worth doing.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#architecture"><span data-lang-th>11.1 สถาปัตยกรรมห้าชั้น</span><span data-lang-en>11.1 The five-layer architecture</span></a></li>
+      <li><a href="#networks"><span data-lang-th>11.2 การสื่อสารและการไหลของข้อมูล</span><span data-lang-en>11.2 Networks and data flow</span></a></li>
+      <li><a href="#greenhouse"><span data-lang-th>11.3 กรณีศึกษา: โรงเรือนเมล่อน</span><span data-lang-en>11.3 Case study: a melon greenhouse</span></a></li>
+      <li><a href="#packline"><span data-lang-th>11.4 กรณีศึกษา: สายคัดบรรจุ</span><span data-lang-en>11.4 Case study: a packing line</span></a></li>
+      <li><a href="#process"><span data-lang-th>11.5 กระบวนการออกแบบและส่งมอบ</span><span data-lang-en>11.5 Designing and handing over</span></a></li>
+      <li><a href="#economics"><span data-lang-th>11.6 ความคุ้มค่าทางเศรษฐศาสตร์</span><span data-lang-en>11.6 The economics</span></a></li>
+      <li><a href="#failure"><span data-lang-th>11.7 สิ่งที่ทำให้โครงการล้มเหลว</span><span data-lang-en>11.7 Why projects fail</span></a></li>
+      <li><a href="#activity"><span data-lang-th>11.8 กิจกรรมในชั้นเรียน</span><span data-lang-en>11.8 In-class activity</span></a></li>
+      <li><a href="#project"><span data-lang-th>11.9 โครงงานบูรณาการ</span><span data-lang-en>11.9 The integrated project</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>อธิบายสถาปัตยกรรมห้าชั้นของระบบเกษตรอัจฉริยะ และระบุว่าหน้าที่ใดควรอยู่ชั้นใด</span><span data-lang-en>Describe the five-layer architecture of a smart farm and place each function in the right layer.</span></li>
+        <li><span data-lang-th>เลือกเครือข่ายสื่อสารให้เหมาะกับอัตราข้อมูล ระยะทาง และพลังงานที่มีอยู่ พร้อมตรวจว่ารับภาระได้จริง</span><span data-lang-en>Choose a network for the data rate, range and power available, and check that it can carry the load.</span></li>
+        <li><span data-lang-th>เขียนแผนผังระบบของงานเกษตรหนึ่งงาน โดยระบุเซนเซอร์ แอคชูเอเตอร์ ตัวควบคุม และเส้นทางข้อมูลครบถ้วน</span><span data-lang-en>Draw the system diagram of one agricultural task, naming every sensor, actuator, controller and data path.</span></li>
+        <li><span data-lang-th>คำนวณความพร้อมใช้งานของระบบจากความพร้อมใช้งานของชิ้นส่วน และระบุจุดอ่อนที่สุด</span><span data-lang-en>Compute system availability from component availability and identify the weakest point.</span></li>
+        <li><span data-lang-th>อธิบายกระบวนการออกแบบแบบรูปตัววี และบอกว่าการทดสอบแต่ละขั้นตรวจสอบข้อกำหนดขั้นใด</span><span data-lang-en>Explain the V-model and say which level of requirement each test verifies.</span></li>
+        <li><span data-lang-th>คำนวณระยะเวลาคืนทุนและมูลค่าปัจจุบันสุทธิของการลงทุนในระบบอัตโนมัติ</span><span data-lang-en>Compute the payback period and net present value of an investment in automation.</span></li>
+        <li><span data-lang-th>ระบุสาเหตุที่พบบ่อยของความล้มเหลวในโครงการเกษตรอัจฉริยะ และออกแบบเพื่อหลีกเลี่ยง</span><span data-lang-en>Name the common causes of failure in smart-farm projects and design against them.</span></li>
+        <li><span data-lang-th>ออกแบบ นำเสนอ และปกป้องระบบอัตโนมัติสำหรับงานเกษตรหนึ่งงานได้อย่างครบถ้วน</span><span data-lang-en>Design, present and defend a complete automated system for one agricultural task.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ตอบก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิม ระบบเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer before reading. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch11-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 11.1 -------- -->
+    <section id="architecture">
+      <h2><span data-lang-th>11.1 สถาปัตยกรรมห้าชั้นของระบบเกษตรอัจฉริยะ</span><span data-lang-en>11.1 The five-layer architecture of a smart farm</span></h2>
+
+      <p>
+        <span data-lang-th>ระบบอัตโนมัติในฟาร์มที่ใช้งานได้จริงทุกระบบมีโครงสร้างเดียวกัน คือแบ่งเป็นชั้น ๆ ที่ทำงานคนละจังหวะเวลาและมีหน้าที่ชัดเจน การแบ่งนี้ไม่ใช่เรื่องของความสวยงามทางทฤษฎี แต่เป็นเรื่องของ <em>สิ่งที่ยังทำงานต่อได้เมื่อชั้นบนล้มเหลว</em> ซึ่งเป็นคำถามที่ตัดสินว่าระบบจะอยู่รอดในฟาร์มจริงหรือไม่</span>
+        <span data-lang-en>Every farm automation system that genuinely works has the same shape: layers that run on different timescales with clearly separated duties. The division is not a matter of theoretical tidiness but of <em>what keeps working when a higher layer fails</em> — the question that decides whether a system survives on a real farm.</span>
+      </p>
+
+      <!-- ===================== Figure 11.1 ===================== -->
+      <figure class="figure">
+        <svg viewBox="0 0 860 430" role="img" aria-label="The five layers of a smart farm system, from the biological process at the bottom to planning at the top, with measurement flowing up and commands flowing down">
+          <!-- layer 5 -->
+          <rect x="130" y="20" width="600" height="62" rx="8" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="150" y="46" data-lang-th>5 · การตัดสินใจและการวางแผน</text>
+          <text class="dg-text-b" x="150" y="46" data-lang-en>5 · Decision and planning</text>
+          <text class="dg-text-sm" x="150" y="68" data-lang-th>แผนการปลูก แผนการเก็บเกี่ยว การเปรียบเทียบฤดูกาล · เป็นวัน ถึง เป็นฤดู</text>
+          <text class="dg-text-sm" x="150" y="68" data-lang-en>cropping plans, harvest scheduling, season comparisons · days to seasons</text>
+
+          <!-- layer 4 -->
+          <rect x="130" y="94" width="600" height="62" rx="8" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="150" y="120" data-lang-th>4 · การเฝ้าระวังและเก็บข้อมูล</text>
+          <text class="dg-text-b" x="150" y="120" data-lang-en>4 · Supervision and data</text>
+          <text class="dg-text-sm" x="150" y="142" data-lang-th>หน้าจอรวม การบันทึกย้อนหลัง การแจ้งเตือน · เป็นวินาที ถึง เป็นนาที</text>
+          <text class="dg-text-sm" x="150" y="142" data-lang-en>dashboards, historians, alarms · seconds to minutes</text>
+
+          <!-- layer 3 -->
+          <rect x="130" y="168" width="600" height="62" rx="8" class="dg-fill-green dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="150" y="194" data-lang-th>3 · การควบคุม</text>
+          <text class="dg-text-b" x="150" y="194" data-lang-en>3 · Control</text>
+          <text class="dg-text-sm" x="150" y="216" data-lang-th>PLC ลำดับงาน วงรอบ PID ตัวควบคุมหุ่นยนต์ · เป็นมิลลิวินาที ถึง เป็นวินาที</text>
+          <text class="dg-text-sm" x="150" y="216" data-lang-en>PLC sequencing, PID loops, robot controllers · milliseconds to seconds</text>
+
+          <!-- layer 2 -->
+          <rect x="130" y="242" width="600" height="62" rx="8" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="150" y="268" data-lang-th>2 · อุปกรณ์หน้างาน</text>
+          <text class="dg-text-b" x="150" y="268" data-lang-en>2 · Field devices</text>
+          <text class="dg-text-sm" x="150" y="290" data-lang-th>เซนเซอร์ แอคชูเอเตอร์ ไดรฟ์ วงจรความปลอดภัย · เป็นไมโครวินาที ถึง เป็นมิลลิวินาที</text>
+          <text class="dg-text-sm" x="150" y="290" data-lang-en>sensors, actuators, drives, safety circuits · microseconds to milliseconds</text>
+
+          <!-- layer 1 -->
+          <rect x="130" y="316" width="600" height="62" rx="8" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="150" y="342" data-lang-th>1 · กระบวนการทางชีวภาพ</text>
+          <text class="dg-text-b" x="150" y="342" data-lang-en>1 · The biological process</text>
+          <text class="dg-text-sm" x="150" y="364" data-lang-th>พืช ดิน อากาศ ผลผลิต · เป็นชั่วโมง ถึง เป็นสัปดาห์ และไม่เคยหยุดรอเรา</text>
+          <text class="dg-text-sm" x="150" y="364" data-lang-en>crop, soil, climate, produce · hours to weeks, and it never waits for us</text>
+
+          <!-- measurement flows up on the left -->
+          <line x1="96" y1="350" x2="96" y2="40" class="dg-stroke-green" stroke-width="3"/>
+          <polygon points="96,34 90,48 102,48" class="dg-fill-green"/>
+          <text class="dg-text-sm" x="78" y="200" text-anchor="middle" transform="rotate(-90 78 200)" data-lang-th>การวัดไหลขึ้น</text>
+          <text class="dg-text-sm" x="78" y="200" text-anchor="middle" transform="rotate(-90 78 200)" data-lang-en>measurement flows up</text>
+
+          <!-- commands flow down on the right -->
+          <line x1="764" y1="40" x2="764" y2="350" class="dg-stroke-gold" stroke-width="3"/>
+          <polygon points="764,356 758,342 770,342" class="dg-arrow"/>
+          <text class="dg-text-sm" x="788" y="200" text-anchor="middle" transform="rotate(90 788 200)" data-lang-th>คำสั่งไหลลง</text>
+          <text class="dg-text-sm" x="788" y="200" text-anchor="middle" transform="rotate(90 788 200)" data-lang-en>commands flow down</text>
+
+          <!-- where each chapter lives -->
+          <text class="dg-text-sm" x="716" y="46" text-anchor="end">11</text>
+          <text class="dg-text-sm" x="716" y="120" text-anchor="end">5, 11</text>
+          <text class="dg-text-sm" x="716" y="194" text-anchor="end">4, 6, 7, 8, 9, 10</text>
+          <text class="dg-text-sm" x="716" y="268" text-anchor="end">3, 5, 8</text>
+          <text class="dg-text-sm" x="716" y="342" text-anchor="end">1, 2</text>
+          <text class="dg-text-sm" x="430" y="404" text-anchor="middle" data-lang-th>ตัวเลขทางขวาคือบทที่สอนเรื่องของชั้นนั้น</text>
+          <text class="dg-text-sm" x="430" y="404" text-anchor="middle" data-lang-en>the numbers at the right are the chapters that cover each layer</text>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 11.1</span><span data-lang-en>Figure 11.1</span></b>
+          <span data-lang-th> ห้าชั้นของระบบเกษตรอัจฉริยะ สังเกตว่าจังหวะเวลาเร็วที่สุดอยู่ล่างสุดและช้าลงเรื่อย ๆ เมื่อขึ้นไป ซึ่งเป็นกฎที่ใช้ตัดสินได้ว่าหน้าที่ใดควรอยู่ชั้นใด งานที่ต้องตอบสนองภายในมิลลิวินาที เช่น การตัดวงจรเมื่อกดปุ่มฉุกเฉิน ต้องอยู่ชั้นล่างเสมอและห้ามพึ่งเครือข่ายหรือระบบคลาวด์เด็ดขาด ส่วนงานที่ตัดสินใจเป็นวัน เช่น การเลือกวันเก็บเกี่ยว อยู่ชั้นบนได้สบาย</span>
+          <span data-lang-en> The five layers of a smart farm. Note that the fastest timescale sits at the bottom and slows on the way up, which is the rule for deciding where a function belongs. Anything that must respond within milliseconds — cutting power when an emergency stop is pressed — belongs at the bottom and must never depend on a network or a cloud service. Anything decided over days, such as choosing a harvest date, sits comfortably at the top.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>กฎที่ใช้ตัดสินใจได้เสมอ</span><span data-lang-en>The rule that always decides</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ถามว่า “ถ้าชั้นนี้หายไป ระบบยังปลอดภัยและยังทำงานต่อได้หรือไม่” ถ้าคำตอบคือไม่ แสดงว่าวางหน้าที่ไว้ผิดชั้น ตัวอย่างที่พบบ่อยที่สุดในงานจริงคือการเขียนวงรอบควบคุมอุณหภูมิไว้บนคลาวด์ ซึ่งทำงานได้ดีมากจนวันที่อินเทอร์เน็ตล่ม แล้วโรงเรือนก็ร้อนจนพืชตายทั้งโรง วงรอบควบคุมต้องอยู่ที่ชั้น 3 และเครือข่ายมีไว้ส่ง <em>ค่าเป้าหมาย</em> ลงไปเท่านั้น ไม่ใช่ส่งคำสั่งเปิดปิดฮีตเตอร์ทีละครั้ง</span>
+          <span data-lang-en>Ask: &ldquo;if this layer disappeared, would the system still be safe and still run?&rdquo; If the answer is no, the function sits in the wrong layer. The commonest version of this mistake in real work is putting a temperature control loop in the cloud, where it performs beautifully until the day the internet drops and the greenhouse cooks the crop. The loop belongs in layer 3, and the network exists to send a <em>setpoint</em> down to it, not to switch the heater on and off one command at a time.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 11.1 ===================== -->
+      <figure class="anim" data-anim="ch11-layers">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 11.1 — ตัดชั้นไหนออก แล้วอะไรยังทำงานอยู่</span>
+          <span data-lang-en>Animation 11.1 — Take a layer away, and see what still works</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 400" role="img" aria-label="A greenhouse system in which the cloud link, the supervisory computer, a sensor or the controller can be failed, showing which functions survive each failure">
+            <!-- cloud -->
+            <g id="a111-cloud">
+              <path d="M292 46 a 26 26 0 0 1 48 -16 a 30 30 0 0 1 54 10 a 24 24 0 0 1 -6 48 H 304 a 22 22 0 0 1 -12 -42 z" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+              <text class="dg-text-sm" x="346" y="70" text-anchor="middle" data-lang-th>คลาวด์</text>
+              <text class="dg-text-sm" x="346" y="70" text-anchor="middle" data-lang-en>cloud</text>
+            </g>
+            <line id="a111-wan" x1="346" y1="88" x2="346" y2="128" class="dg-stroke" stroke-width="3"/>
+
+            <!-- supervisory computer -->
+            <g id="a111-scada">
+              <rect x="286" y="128" width="120" height="52" rx="7" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+              <text class="dg-text-sm" x="346" y="150" text-anchor="middle" data-lang-th>คอมพิวเตอร์เฝ้าระวัง</text>
+              <text class="dg-text-sm" x="346" y="150" text-anchor="middle" data-lang-en>supervisory PC</text>
+              <text class="dg-text-sm" x="346" y="170" text-anchor="middle" data-lang-th>หน้าจอ · บันทึกข้อมูล</text>
+              <text class="dg-text-sm" x="346" y="170" text-anchor="middle" data-lang-en>dashboard · historian</text>
+            </g>
+            <line id="a111-lan" x1="346" y1="180" x2="346" y2="218" class="dg-stroke" stroke-width="3"/>
+
+            <!-- PLC -->
+            <g id="a111-plc">
+              <rect x="276" y="218" width="140" height="56" rx="7" class="dg-fill-green dg-stroke" stroke-width="2.4"/>
+              <text class="dg-text-b" x="346" y="242" text-anchor="middle">PLC</text>
+              <text class="dg-text-sm" x="346" y="262" text-anchor="middle" data-lang-th>ลำดับงาน · วงรอบ PID</text>
+              <text class="dg-text-sm" x="346" y="262" text-anchor="middle" data-lang-en>sequencing · PID loop</text>
+            </g>
+
+            <!-- sensors on the left, actuators on the right -->
+            <line id="a111-sline" x1="276" y1="246" x2="176" y2="246" class="dg-stroke-green" stroke-width="2.6"/>
+            <g id="a111-sensor">
+              <rect x="76" y="226" width="100" height="40" rx="6" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+              <text class="dg-text-sm" x="126" y="251" text-anchor="middle" data-lang-th>เซนเซอร์อุณหภูมิ</text>
+              <text class="dg-text-sm" x="126" y="251" text-anchor="middle" data-lang-en>temperature probe</text>
+            </g>
+            <line x1="416" y1="246" x2="516" y2="246" class="dg-stroke-gold" stroke-width="2.6"/>
+            <rect x="516" y="226" width="100" height="40" rx="6" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="566" y="251" text-anchor="middle" data-lang-th>ฮีตเตอร์และพัดลม</text>
+            <text class="dg-text-sm" x="566" y="251" text-anchor="middle" data-lang-en>heater and fan</text>
+
+            <!-- the hardwired safety chain, bypassing everything -->
+            <path d="M126 266 V 332 H 566 V 266" class="dg-stroke" stroke-width="2.6" stroke-dasharray="7 5"/>
+            <rect x="296" y="312" width="100" height="40" rx="6" class="dg-fill-surface dg-stroke" stroke-width="2.4"/>
+            <text class="dg-text-sm" x="346" y="337" text-anchor="middle" data-lang-th>วงจรความปลอดภัย</text>
+            <text class="dg-text-sm" x="346" y="337" text-anchor="middle" data-lang-en>safety circuit</text>
+            <circle cx="566" cy="332" r="13" class="dg-fill-gold dg-stroke" stroke-width="2.4"/>
+            <circle cx="566" cy="332" r="6" class="dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="566" y="364" text-anchor="middle" data-lang-th>หยุดฉุกเฉิน · ตัดตรง</text>
+            <text class="dg-text-sm" x="566" y="364" text-anchor="middle" data-lang-en>e-stop · hardwired</text>
+
+            <!-- status panel -->
+            <rect x="644" y="40" width="196" height="300" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4"/>
+            <text class="dg-text-sm" x="664" y="68" data-lang-th>สถานะของหน้าที่แต่ละอย่าง</text>
+            <text class="dg-text-sm" x="664" y="68" data-lang-en>status of each function</text>
+            <text class="dg-text-sm" x="664" y="104" data-lang-th>ควบคุมอุณหภูมิ</text>
+            <text class="dg-text-sm" x="664" y="104" data-lang-en>temperature control</text>
+            <text id="a111-f1" class="dg-text-b" x="664" y="126">—</text>
+            <text class="dg-text-sm" x="664" y="162" data-lang-th>หน้าจอและการแจ้งเตือน</text>
+            <text class="dg-text-sm" x="664" y="162" data-lang-en>dashboard and alarms</text>
+            <text id="a111-f2" class="dg-text-b" x="664" y="184">—</text>
+            <text class="dg-text-sm" x="664" y="220" data-lang-th>บันทึกข้อมูลระยะยาว</text>
+            <text class="dg-text-sm" x="664" y="220" data-lang-en>long-term data logging</text>
+            <text id="a111-f3" class="dg-text-b" x="664" y="242">—</text>
+            <text class="dg-text-sm" x="664" y="278" data-lang-th>การหยุดฉุกเฉิน</text>
+            <text class="dg-text-sm" x="664" y="278" data-lang-en>emergency stop</text>
+            <text id="a111-f4" class="dg-text-b" x="664" y="300">—</text>
+            <text id="a111-verdict" class="dg-text-sm" x="664" y="330">—</text>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>ยังทำงานอยู่</span><span data-lang-en>still working</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>ทำงานแบบจำกัด</span><span data-lang-en>working, but degraded</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>หยุดทำงาน</span><span data-lang-en>stopped</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="wan" aria-pressed="false"><i class="fa-solid fa-cloud"></i><span data-lang-th>อินเทอร์เน็ตล่ม</span><span data-lang-en>Internet down</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="pc" aria-pressed="false"><i class="fa-solid fa-display"></i><span data-lang-th>คอมพิวเตอร์ดับ</span><span data-lang-en>PC down</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="sensor" aria-pressed="false"><i class="fa-solid fa-temperature-half"></i><span data-lang-th>เซนเซอร์เสีย</span><span data-lang-en>Sensor failed</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="plc" aria-pressed="false"><i class="fa-solid fa-microchip"></i><span data-lang-th>PLC ดับ</span><span data-lang-en>PLC down</span></button>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 11.1</span><span data-lang-en>Animation 11.1</span></b>
+          <span data-lang-th> ลองตัดทีละอย่างแล้วดูว่าอะไรยังเหลืออยู่ อินเทอร์เน็ตล่มทำให้เสียเฉพาะการดูจากระยะไกล แต่พืชไม่เป็นอะไรเลย คอมพิวเตอร์ดับทำให้เสียหน้าจอและการบันทึก แต่วงรอบควบคุมที่อยู่ใน PLC ยังทำงานต่อ เซนเซอร์เสียทำให้การควบคุมทำงานแบบจำกัด เพราะ PLC ต้องถอยไปใช้แผนสำรอง และเมื่อ PLC ดับเท่านั้นที่การควบคุมหยุดสนิท สังเกตว่าการหยุดฉุกเฉินยังเขียวตลอดทุกกรณี เพราะมันเดินสายตรงโดยไม่ผ่านชั้นใดเลย ซึ่งคือเหตุผลทั้งหมดที่มาตรฐานในบทที่ 8 บังคับไว้เช่นนั้น</span>
+          <span data-lang-en> Fail one thing at a time and see what is left. Losing the internet costs only the remote view; the crop is untouched. Losing the PC costs the dashboard and the logging, while the loop inside the PLC carries on. A failed sensor degrades control, because the PLC must fall back to a safe default. Only when the PLC itself goes down does control stop entirely. Notice that the emergency stop stays green in every case, because it is hardwired past every layer — which is the whole reason the standards of Chapter 8 require it to be.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 11.2 -------- -->
+    <section id="networks">
+      <h2><span data-lang-th>11.2 การสื่อสารและการไหลของข้อมูล</span><span data-lang-en>11.2 Networks and data flow</span></h2>
+
+      <p>
+        <span data-lang-th>ฟาร์มหนึ่งแห่งไม่เคยใช้เครือข่ายเดียว เพราะข้อกำหนดของแต่ละชั้นในรูปที่ 11.1 ขัดแย้งกันเอง ชั้นควบคุมต้องการความเร็วและความแน่นอนของจังหวะเวลาแต่ครอบคลุมระยะสั้น ส่วนเซนเซอร์ในแปลงต้องการระยะทางไกลและกินพลังงานน้อยจนอยู่ได้เป็นปีด้วยแบตเตอรี่ก้อนเดียว ไม่มีเทคโนโลยีใดให้ทั้งสองอย่างพร้อมกัน การเลือกจึงเป็นการแลกอย่างตรงไปตรงมา</span>
+        <span data-lang-en>No farm uses a single network, because the layers of Figure 11.1 want contradictory things. The control layer wants speed and predictable timing over short distances; a sensor out in the field wants range and so little power that one battery lasts a year. No technology gives both, so the choice is a straightforward trade.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 11.1 — เครือข่ายที่ใช้ในฟาร์ม และสิ่งที่แต่ละแบบแลกมา</span><span data-lang-en>Table 11.1 — Networks used on a farm, and what each one trades</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>เครือข่าย</span><span data-lang-en>Network</span></th>
+              <th><span data-lang-th>ระยะ</span><span data-lang-en>Range</span></th>
+              <th><span data-lang-th>อัตราข้อมูล</span><span data-lang-en>Data rate</span></th>
+              <th><span data-lang-th>พลังงาน</span><span data-lang-en>Power</span></th>
+              <th><span data-lang-th>ใช้กับชั้นใด และทำไม</span><span data-lang-en>Which layer, and why</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Modbus RTU (RS-485)</td>
+              <td>&le; 1200 m</td><td>9.6–115 kbit/s</td>
+              <td><span data-lang-th>ต้องมีไฟเลี้ยง</span><span data-lang-en>mains needed</span></td>
+              <td><span data-lang-th>ชั้น 2–3 · เรียบง่าย ทนทาน และอุปกรณ์เกษตรแทบทุกยี่ห้อรองรับ</span><span data-lang-en>layers 2–3 · simple, rugged, and nearly every agricultural device speaks it</span></td>
+            </tr>
+            <tr>
+              <td>CAN / ISOBUS</td>
+              <td>&le; 40 m</td><td>250 kbit/s</td>
+              <td><span data-lang-th>ไฟจากรถ</span><span data-lang-en>vehicle power</span></td>
+              <td><span data-lang-th>ชั้น 2–3 บนรถ · ทนการสั่นสะเทือนและมีมาตรฐานร่วมระหว่างแทรกเตอร์กับอุปกรณ์พ่วง</span><span data-lang-en>layers 2–3 on vehicles · survives vibration, and standardised between tractor and implement</span></td>
+            </tr>
+            <tr>
+              <td>Ethernet (PROFINET, EtherNet/IP)</td>
+              <td>&le; 100 m <span data-lang-th>ต่อช่วง</span><span data-lang-en>per run</span></td>
+              <td>100 Mbit/s+</td>
+              <td><span data-lang-th>ต้องมีไฟเลี้ยง</span><span data-lang-en>mains needed</span></td>
+              <td><span data-lang-th>ชั้น 3–4 · เร็วพอสำหรับหุ่นยนต์และกล้อง แต่ลากสายในแปลงเปิดไม่คุ้ม</span><span data-lang-en>layers 3–4 · fast enough for robots and cameras, but not worth cabling across open ground</span></td>
+            </tr>
+            <tr>
+              <td>Wi-Fi</td>
+              <td>&le; 100 m</td><td>10–100 Mbit/s</td>
+              <td><span data-lang-th>กินมาก</span><span data-lang-en>high</span></td>
+              <td><span data-lang-th>ชั้น 4 · สะดวกในโรงเรือน แต่จังหวะเวลาไม่แน่นอนจึงห้ามใช้กับวงรอบควบคุม</span><span data-lang-en>layer 4 · convenient indoors, but its timing is not predictable, so never for a control loop</span></td>
+            </tr>
+            <tr>
+              <td>LoRaWAN</td>
+              <td>2–10 km</td><td>0.3–5 kbit/s</td>
+              <td><span data-lang-th>น้อยมาก</span><span data-lang-en>very low</span></td>
+              <td><span data-lang-th>ชั้น 2 ในแปลงไกล · เซนเซอร์ที่อยู่ได้เป็นปีด้วยแบตเตอรี่ แต่ส่งได้นาน ๆ ครั้ง</span><span data-lang-en>layer 2 out in the field · a year on a battery, but it may transmit only occasionally</span></td>
+            </tr>
+            <tr>
+              <td>NB-IoT / LTE-M</td>
+              <td><span data-lang-th>ตามโครงข่ายมือถือ</span><span data-lang-en>cellular coverage</span></td>
+              <td>20–1000 kbit/s</td>
+              <td><span data-lang-th>ปานกลาง</span><span data-lang-en>moderate</span></td>
+              <td><span data-lang-th>ชั้น 4–5 · ส่งข้อมูลออกจากฟาร์มโดยไม่ต้องตั้งเกตเวย์เอง แต่มีค่าบริการรายเดือน</span><span data-lang-en>layers 4–5 · gets data off the farm without running a gateway, at a monthly cost</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--info">
+        <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>โพรโทคอลไม่ใช่เครือข่าย</span><span data-lang-en>A protocol is not a network</span></div>
+        <p class="mb-0">
+          <span data-lang-th>นักศึกษามักสับสนระหว่าง MQTT หรือ OPC UA กับเครือข่ายในตารางที่ 11.1 ทั้งสองอย่างนั้นคือ <em>โพรโทคอลระดับแอปพลิเคชัน</em> ที่วิ่งอยู่บนเครือข่ายอีกชั้นหนึ่ง การบอกว่า “ใช้ MQTT” จึงยังไม่ได้ตอบว่าข้อมูลเดินทางด้วยสื่ออะไร ยังต้องระบุอยู่ดีว่าวิ่งบน Wi-Fi หรือ NB-IoT และข้อจำกัดเรื่องอัตราข้อมูลกับพลังงานมาจากชั้นล่างนั้นทั้งหมด</span>
+          <span data-lang-en>Students often confuse MQTT or OPC UA with the networks of Table 11.1. Both are <em>application protocols</em> that ride on top of a network. Saying &ldquo;we use MQTT&rdquo; therefore does not yet say how the data travels: it still has to be carried over Wi-Fi or NB-IoT or something else, and every limit on rate and on power comes from that lower layer.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>11.2.1 ตรวจว่าเครือข่ายรับภาระไหว</span><span data-lang-en>11.2.1 Checking that the network can carry the load</span></h3>
+
+      <p>
+        <span data-lang-th>ภาระรวมที่เครือข่ายต้องแบกคือผลรวมของข้อมูลจากทุกอุปกรณ์คูณด้วยความถี่ที่มันส่ง ซึ่งคำนวณได้ก่อนซื้ออุปกรณ์แม้แต่ชิ้นเดียว</span>
+        <span data-lang-en>The total load is the sum of every device&rsquo;s data multiplied by how often it sends, and it can be computed before a single device is bought.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ L \;=\; 8 \sum_{i} n_i\, b_i\, f_i $$</div>
+        <div class="eq__num">(11.1)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>แต่สำหรับเครือข่ายแบบถาม–ตอบอย่าง Modbus RTU ตัวเลขที่สำคัญกว่าคือ <em>รอบการสำรวจ</em> เพราะอุปกรณ์ตอบทีละตัวเรียงกันไป เวลาที่ใช้ครบหนึ่งรอบคือผลรวมของเวลาส่งเฟรมกับช่วงพักระหว่างรายการ โดยที่อักขระหนึ่งตัวใช้ 11 บิตบนสาย</span>
+        <span data-lang-en>For a polled network such as Modbus RTU the figure that matters more is the <em>poll cycle</em>, since devices answer one at a time. A full cycle is the sum of the frame times and the gaps between transactions, with each character costing 11 bits on the wire.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ t_{\text{cycle}} \;=\; N \left[ \frac{11\,(13 + 2n)}{R} + t_{\text{gap}} \right] $$</div>
+        <div class="eq__num">(11.2)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 11.1 — สาย Modbus ของโรงเรือน</span><span data-lang-en>Worked example 11.1 — The greenhouse Modbus line</span></div>
+        <p>
+          <span data-lang-th>โรงเรือนมีอุปกรณ์ 12 ตัวบนสาย RS-485 เดียวกัน แต่ละตัวต้องอ่าน 10 รีจิสเตอร์ ที่ความเร็ว 19 200 บอด และช่วงพักระหว่างรายการ 10 ms จงหารอบการสำรวจ</span>
+          <span data-lang-en>A greenhouse has 12 devices on one RS-485 line, each needing 10 registers read, at 19 200 baud with a 10 ms gap between transactions. Find the poll cycle.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ t_{\text{cycle}} = 12\left[ \frac{11(13 + 20)}{19\,200} + 0.010 \right] = 12\left[ 0.0189 + 0.010 \right] = 0.347\ \text{s} $$</div>
+          <div class="eq__num">(11.3)</div>
+        </div>
+        <p>
+          <span data-lang-th>ทีมหนึ่งเสนอให้เพิ่มความเร็วเป็น 115 200 บอด เพื่อให้เร็วขึ้นหกเท่า ผลที่ได้จริงคือ</span>
+          <span data-lang-en>One team proposes raising the line to 115 200 baud for a sixfold gain. The actual result is</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ t_{\text{cycle}} = 12\left[ 0.00315 + 0.010 \right] = 0.158\ \text{s} $$</div>
+          <div class="eq__num">(11.4)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>เร็วขึ้นเพียง 2.2 เท่า ไม่ใช่หกเท่า เพราะช่วงพัก 10 ms ไม่ได้ลดลงเลยและกลายมาเป็นตัวครองเวลาแทน บทเรียนคือเมื่อเพิ่มความเร็วไปถึงจุดหนึ่งแล้ว สิ่งที่จำกัดอยู่คือจำนวนรายการ ไม่ใช่ความเร็วของสาย ทางแก้ที่ได้ผลกว่าคือรวมรีจิสเตอร์ให้อ่านได้ในรายการเดียวหรือแยกเป็นสองสาย ที่สำคัญคือรอบ 0.35 s เพียงพอสำหรับอุณหภูมิในโรงเรือนซึ่งเปลี่ยนในหน่วยนาที แต่ใช้กับวงรอบ PID ที่ต้องการ 10 Hz ไม่ได้ ซึ่งยืนยันกฎในหัวข้อ 11.1 ว่าวงรอบต้องอยู่ใน PLC ไม่ใช่บนเครือข่าย</span>
+          <span data-lang-en>A gain of 2.2, not 6, because the 10 ms gap has not shrunk at all and now dominates. The lesson is that past a certain speed the limit is the number of transactions rather than the speed of the wire, and the better remedies are grouping registers into one transaction or splitting the line in two. More importantly, a 0.35 s cycle is ample for a greenhouse temperature that changes over minutes but useless for a PID loop wanting 10 Hz — which confirms the rule of §11.1 that the loop belongs in the PLC and not on the network.</span>
+        </p>
+      </div>
+
+      <p>
+        <span data-lang-th>เครือข่ายไร้สายระยะไกลมีข้อจำกัดคนละชนิด คือกฎหมายกำหนด <strong>รอบหน้าที่</strong> ไว้ว่าอุปกรณ์หนึ่งตัวส่งสัญญาณออกอากาศได้ไม่เกินสัดส่วน \( D \) ของเวลาทั้งหมด ซึ่งแปลงเป็นช่วงเวลาที่สั้นที่สุดระหว่างการส่งสองครั้งได้โดยตรง</span>
+        <span data-lang-en>Long-range wireless carries a different kind of limit: regulation sets a <strong>duty cycle</strong>, so one device may be on air for no more than a fraction \( D \) of the time. That converts directly into a shortest permissible interval between two transmissions.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \Delta t_{\min} \;=\; \frac{t_{\text{air}}}{D} $$</div>
+        <div class="eq__num">(11.5)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 11.2 — เซนเซอร์ความชื้นดินบน LoRaWAN</span><span data-lang-en>Worked example 11.2 — A soil moisture node on LoRaWAN</span></div>
+        <p>
+          <span data-lang-th>โหนดส่งข้อมูล 12 ไบต์ ซึ่งที่ค่าการกระจายสัญญาณ SF10 ใช้เวลาออกอากาศ \( t_{\text{air}} = 0.37 \) s และรอบหน้าที่ที่อนุญาตคือ 1% โหนดนี้ส่งข้อมูลได้ถี่ที่สุดเท่าใด</span>
+          <span data-lang-en>A node sends 12 bytes, which at spreading factor SF10 takes \( t_{\text{air}} = 0.37 \) s on air, with a permitted duty cycle of 1%. How often may it report?</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ \Delta t_{\min} = \frac{0.37}{0.01} = 37\ \text{s} \qquad \Rightarrow \qquad \text{97 } \text{ครั้ง/ชม. / messages per hour} $$</div>
+          <div class="eq__num">(11.6)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ส่งได้ทุก 37 วินาทีเป็นอย่างเร็วที่สุด ซึ่งเหลือเฟือสำหรับความชื้นดินที่เปลี่ยนในหน่วยชั่วโมง แต่เป็นไปไม่ได้เลยสำหรับงานควบคุม และต้องระวังอีกข้อคือถ้าเพิ่ม SF ขึ้นเพื่อให้ส่งได้ไกลขึ้น เวลาออกอากาศจะโตขึ้นเกือบเท่าตัวทุกขั้น ที่ SF12 เวลาออกอากาศราว 1.4 s ทำให้ส่งได้เพียงทุกสองนาทีกว่า ระยะทางกับความถี่ในการรายงานจึงแลกกันโดยตรง ซึ่งเป็นการตัดสินใจที่ต้องทำตั้งแต่ตอนออกแบบ ไม่ใช่ตอนติดตั้ง</span>
+          <span data-lang-en>Every 37 seconds at the fastest, which is ample for a soil moisture that changes over hours and impossible for anything controlling. One further caution: raising the spreading factor to reach further nearly doubles the airtime at each step, and at SF12 roughly 1.4 s on air permits a message only every two minutes or so. Range and reporting rate therefore trade against each other directly, and that is a decision to take while designing rather than while installing.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 11.2 ===================== -->
+      <figure class="anim" data-anim="ch11-net">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 11.2 — เครือข่ายนี้รับไหวหรือไม่</span>
+          <span data-lang-en>Animation 11.2 — Will this network carry it?</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 340" role="img" aria-label="A network load calculator showing utilisation against the limit for Modbus, Wi-Fi and LoRaWAN">
+            <g id="a112-nodes"></g>
+            <text class="dg-text-sm" x="40" y="40" data-lang-th>อุปกรณ์ที่ต่ออยู่</text>
+            <text class="dg-text-sm" x="40" y="40" data-lang-en>devices on the network</text>
+
+            <!-- the utilisation bar -->
+            <rect x="40" y="168" width="480" height="40" rx="6" class="dg-fill-soft dg-stroke" stroke-width="1.6"/>
+            <rect id="a112-bar" x="42" y="170" width="0" height="36" rx="5" class="dg-fill-green"/>
+            <line x1="520" y1="156" x2="520" y2="220" class="dg-stroke-gold" stroke-width="2.4"/>
+            <text class="dg-text-sm" x="520" y="236" text-anchor="middle" data-lang-th>ขีดจำกัด 100%</text>
+            <text class="dg-text-sm" x="520" y="236" text-anchor="middle" data-lang-en>the 100% limit</text>
+            <text id="a112-pct" class="dg-text-b" x="40" y="156">—</text>
+
+            <text class="dg-text-sm" x="40" y="274" data-lang-th>ข้อจำกัดที่เป็นตัวบีบอยู่</text>
+            <text class="dg-text-sm" x="40" y="274" data-lang-en>the constraint that binds</text>
+            <text id="a112-bind" class="dg-text-b" x="40" y="298">—</text>
+            <text id="a112-verdict" class="dg-text-b" x="40" y="324">—</text>
+
+            <rect x="560" y="40" width="276" height="284" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4"/>
+            <text class="dg-text-sm" x="584" y="68" data-lang-th>เครือข่ายที่เลือก</text>
+            <text class="dg-text-sm" x="584" y="68" data-lang-en>network selected</text>
+            <text id="a112-net" class="dg-text-b" x="584" y="92">—</text>
+            <text class="dg-text-sm" x="584" y="128" data-lang-th>เวลาต่อหนึ่งข้อความ</text>
+            <text class="dg-text-sm" x="584" y="128" data-lang-en>time per message</text>
+            <text id="a112-tmsg" class="dg-text-b" x="584" y="152">—</text>
+            <text class="dg-text-sm" x="584" y="188" data-lang-th>ภาระที่เกิดขึ้นจริง</text>
+            <text class="dg-text-sm" x="584" y="188" data-lang-en>load actually generated</text>
+            <text id="a112-load" class="dg-text-b" x="584" y="212">—</text>
+            <text class="dg-text-sm" x="584" y="248" data-lang-th>ความถี่สูงสุดที่ทำได้</text>
+            <text class="dg-text-sm" x="584" y="248" data-lang-en>fastest rate achievable</text>
+            <text id="a112-max" class="dg-text-b" x="584" y="272">—</text>
+            <text class="dg-text-sm" x="584" y="300" data-lang-th>เหมาะกับชั้นใด</text>
+            <text class="dg-text-sm" x="584" y="300" data-lang-en>suitable for which layer</text>
+            <text id="a112-layer" class="dg-text-b" x="584" y="320">—</text>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>ยังมีที่เหลือ</span><span data-lang-en>headroom remaining</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>ขีดจำกัดของเครือข่าย</span><span data-lang-en>the network&rsquo;s limit</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn is-on" type="button" data-anim-toggle="modbus" aria-pressed="true">Modbus RTU</button>
+          <button class="anim__btn" type="button" data-anim-toggle="wifi" aria-pressed="false">Wi-Fi</button>
+          <button class="anim__btn" type="button" data-anim-toggle="lora" aria-pressed="false">LoRaWAN</button>
+          <label class="anim__param">
+            <span data-lang-th>จำนวนอุปกรณ์</span><span data-lang-en>Devices</span>
+            <input type="range" data-anim-param="nodes" data-unit="" min="2" max="40" step="1" value="12">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ความถี่ที่ต้องการ</span><span data-lang-en>Rate wanted</span>
+            <input type="range" data-anim-param="rate" data-unit="/min" min="0.5" max="60" step="0.5" value="6">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ขนาดข้อมูล</span><span data-lang-en>Payload</span>
+            <input type="range" data-anim-param="bytes" data-unit="B" min="2" max="64" step="2" value="20">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 11.2</span><span data-lang-en>Animation 11.2</span></b>
+          <span data-lang-th> เริ่มที่ Modbus RTU กับอุปกรณ์ 12 ตัว แถบแทบไม่ขยับเลยแม้เลื่อนความถี่ไปจนสุดสไลเดอร์ เพราะรอบการสำรวจ 0.347 s ตามสมการ (11.2) รองรับได้ถึง 173 ครั้งต่อนาที ลองดันไปที่ 40 อุปกรณ์กับข้อมูล 64 ไบต์ จะเห็นแถบเต็มที่ราว 28 ครั้งต่อนาที ซึ่งคือจุดที่สายเส้นเดียวเริ่มไม่พอ จากนั้นสลับไป Wi-Fi แถบจะต่ำกว่า 1% เพราะอัตราข้อมูลเหลือเฟือ แต่สังเกตบรรทัดที่บอกว่าเหมาะกับชั้นใด ซึ่งยังเตือนว่าจังหวะเวลาไม่แน่นอน สุดท้ายสลับไป LoRaWAN จะเห็นว่าเกินขีดจำกัดทันทีแม้ที่ความถี่ต่ำ เพราะรอบหน้าที่ 1% ตามสมการ (11.5) เป็นตัวบีบ ไม่ใช่แบนด์วิดท์</span>
+          <span data-lang-en> Start on Modbus RTU with 12 devices: the bar barely moves however far the rate slider is pushed, because the 0.347 s poll cycle of equation (11.2) supports 173 updates a minute. Force it to 40 devices with a 64-byte payload and the bar fills at about 28 a minute — the point at which one line stops being enough. Switch to Wi-Fi and utilisation drops below 1%, the data rate being ample — but read the line saying which layer it suits, which still warns that its timing is not predictable. Finally switch to LoRaWAN and the limit is exceeded at once even at a low rate, because the binding constraint is the 1% duty cycle of equation (11.5) rather than bandwidth.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 11.3 -------- -->
+    <section id="greenhouse">
+      <h2><span data-lang-th>11.3 กรณีศึกษา: โรงเรือนเมล่อนควบคุมอัตโนมัติ</span><span data-lang-en>11.3 Case study: an automated melon greenhouse</span></h2>
+
+      <p>
+        <span data-lang-th>ถึงเวลาประกอบทุกบทเข้าด้วยกัน โจทย์คือโรงเรือนเมล่อนขนาด 1 ไร่ ปลูกแบบใช้สารละลายธาตุอาหาร ต้องควบคุมอุณหภูมิ ความชื้นสัมพัทธ์ และการให้น้ำ พร้อมบันทึกข้อมูลเพื่อเปรียบเทียบระหว่างฤดู ระบบทั้งหมดอยู่ในรูปที่ 11.2 และทุกชิ้นส่วนในนั้นมาจากบทใดบทหนึ่งที่เรียนมาแล้ว</span>
+        <span data-lang-en>Now to put every chapter together. The task is a one-rai melon greenhouse grown in nutrient solution, controlling temperature, humidity and irrigation while logging data for comparison between seasons. The whole system is in Figure 11.2, and every piece of it comes from a chapter already studied.</span>
+      </p>
+
+      <!-- ===================== Figure 11.2 ===================== -->
+      <figure class="figure">
+        <svg viewBox="0 0 860 420" role="img" aria-label="Schematic of an automated melon greenhouse showing sensors, actuators, the PLC, the supervisory computer and the gateway">
+          <!-- greenhouse outline -->
+          <path d="M40 150 L 230 70 L 420 150 V 330 H 40 Z" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+          <line x1="40" y1="330" x2="420" y2="330" class="dg-stroke" stroke-width="2.4"/>
+
+          <!-- crop rows -->
+          <path d="M72 330 q 8 -40 16 0" class="dg-stroke-green" stroke-width="2.4"/>
+          <path d="M136 330 q 8 -40 16 0" class="dg-stroke-green" stroke-width="2.4"/>
+          <path d="M200 330 q 8 -40 16 0" class="dg-stroke-green" stroke-width="2.4"/>
+          <path d="M264 330 q 8 -40 16 0" class="dg-stroke-green" stroke-width="2.4"/>
+          <path d="M328 330 q 8 -40 16 0" class="dg-stroke-green" stroke-width="2.4"/>
+
+          <!-- sensors inside -->
+          <rect x="96" y="176" width="52" height="24" rx="4" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <text class="dg-text-sm" x="122" y="193" text-anchor="middle">T / RH</text>
+          <rect x="214" y="150" width="52" height="24" rx="4" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <text class="dg-text-sm" x="240" y="167" text-anchor="middle">PAR</text>
+          <rect x="300" y="282" width="62" height="24" rx="4" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <text class="dg-text-sm" x="331" y="299" text-anchor="middle">EC / pH</text>
+
+          <!-- actuators -->
+          <rect x="54" y="286" width="48" height="24" rx="4" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <text class="dg-text-sm" x="78" y="303" text-anchor="middle" data-lang-th>ฮีตเตอร์</text>
+          <text class="dg-text-sm" x="78" y="303" text-anchor="middle" data-lang-en>heater</text>
+          <circle cx="396" cy="196" r="20" class="dg-fill-green dg-stroke" stroke-width="1.8"/>
+          <line x1="382" y1="182" x2="410" y2="210" class="dg-stroke" stroke-width="2.4"/>
+          <line x1="410" y1="182" x2="382" y2="210" class="dg-stroke" stroke-width="2.4"/>
+          <text class="dg-text-sm" x="396" y="234" text-anchor="middle" data-lang-th>พัดลม</text>
+          <text class="dg-text-sm" x="396" y="234" text-anchor="middle" data-lang-en>fan</text>
+          <rect x="166" y="286" width="52" height="24" rx="4" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+          <text class="dg-text-sm" x="192" y="303" text-anchor="middle" data-lang-th>ปั๊มน้ำ</text>
+          <text class="dg-text-sm" x="192" y="303" text-anchor="middle" data-lang-en>pump</text>
+
+          <!-- control cabinet -->
+          <rect x="470" y="150" width="130" height="150" rx="8" class="dg-fill-steel dg-stroke" stroke-width="2.4"/>
+          <rect x="486" y="168" width="98" height="40" rx="5" class="dg-fill-green dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="535" y="193" text-anchor="middle">PLC</text>
+          <rect x="486" y="218" width="98" height="30" rx="5" class="dg-fill-surface dg-stroke" stroke-width="1.6"/>
+          <text class="dg-text-sm" x="535" y="238" text-anchor="middle" data-lang-th>ไดรฟ์และรีเลย์</text>
+          <text class="dg-text-sm" x="535" y="238" text-anchor="middle" data-lang-en>drives, relays</text>
+          <rect x="486" y="256" width="98" height="30" rx="5" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <text class="dg-text-sm" x="535" y="276" text-anchor="middle" data-lang-th>วงจรความปลอดภัย</text>
+          <text class="dg-text-sm" x="535" y="276" text-anchor="middle" data-lang-en>safety circuit</text>
+          <text class="dg-text-sm" x="535" y="322" text-anchor="middle" data-lang-th>ตู้ควบคุม · ชั้น 2–3</text>
+          <text class="dg-text-sm" x="535" y="322" text-anchor="middle" data-lang-en>control cabinet · layers 2–3</text>
+
+          <!-- field wiring -->
+          <line x1="420" y1="200" x2="470" y2="200" class="dg-stroke" stroke-width="2.4"/>
+          <text class="dg-text-sm" x="445" y="188" text-anchor="middle">4–20 mA</text>
+          <line x1="420" y1="250" x2="470" y2="250" class="dg-stroke" stroke-width="2.4" stroke-dasharray="6 4"/>
+          <text class="dg-text-sm" x="445" y="268" text-anchor="middle">RS-485</text>
+
+          <!-- supervisory PC and gateway -->
+          <rect x="660" y="150" width="150" height="56" rx="8" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+          <text class="dg-text-sm" x="735" y="174" text-anchor="middle" data-lang-th>คอมพิวเตอร์เฝ้าระวัง</text>
+          <text class="dg-text-sm" x="735" y="174" text-anchor="middle" data-lang-en>supervisory PC</text>
+          <text class="dg-text-sm" x="735" y="194" text-anchor="middle" data-lang-th>หน้าจอ · บันทึกข้อมูล · ชั้น 4</text>
+          <text class="dg-text-sm" x="735" y="194" text-anchor="middle" data-lang-en>dashboard · historian · layer 4</text>
+          <line x1="600" y1="178" x2="660" y2="178" class="dg-stroke" stroke-width="2.4"/>
+          <text class="dg-text-sm" x="630" y="166" text-anchor="middle">Ethernet</text>
+
+          <rect x="660" y="248" width="150" height="52" rx="8" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+          <text class="dg-text-sm" x="735" y="270" text-anchor="middle" data-lang-th>เกตเวย์ออกนอกฟาร์ม</text>
+          <text class="dg-text-sm" x="735" y="270" text-anchor="middle" data-lang-en>gateway off the farm</text>
+          <text class="dg-text-sm" x="735" y="290" text-anchor="middle" data-lang-th>NB-IoT · ชั้น 5</text>
+          <text class="dg-text-sm" x="735" y="290" text-anchor="middle" data-lang-en>NB-IoT · layer 5</text>
+          <line x1="735" y1="206" x2="735" y2="248" class="dg-stroke" stroke-width="2.4"/>
+
+          <!-- the critical note -->
+          <rect x="40" y="356" width="770" height="46" rx="8" class="dg-fill-surface dg-stroke" stroke-width="1.6" stroke-dasharray="5 4"/>
+          <text class="dg-text-sm" x="60" y="384" data-lang-th>วงรอบควบคุมอุณหภูมิทั้งหมดอยู่ใน PLC · ถ้าตัดทุกอย่างทางขวาของตู้ควบคุมออก พืชยังปลอดภัย</text>
+          <text class="dg-text-sm" x="60" y="384" data-lang-en>every control loop lives in the PLC · cut everything to the right of the cabinet and the crop is still safe</text>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 11.2</span><span data-lang-en>Figure 11.2</span></b>
+          <span data-lang-th> ระบบโรงเรือนเมล่อนทั้งหมดในหน้าเดียว สิ่งที่ควรสังเกตมากที่สุดคือเส้นแบ่งที่ตู้ควบคุม ทุกอย่างทางซ้ายของตู้คือสิ่งที่พืชต้องพึ่งพาเพื่อให้รอด ส่วนทุกอย่างทางขวาคือสิ่งที่ทำให้เราทำงานได้สะดวกขึ้นและตัดสินใจได้ดีขึ้น แต่พืชอยู่ได้โดยไม่มีมันหลายวัน การออกแบบที่ดีทำให้เส้นนี้ชัดเจนตั้งแต่ต้น และทดสอบด้วยการถอดปลั๊กจริง ๆ ก่อนส่งมอบ</span>
+          <span data-lang-en> The entire melon greenhouse on one page. The thing most worth noticing is the dividing line at the cabinet: everything to its left is what the crop depends on to survive, while everything to its right makes the work convenient and the decisions better — but the crop can go days without it. A good design makes that line explicit from the start, and tests it by actually pulling the plug before handover.</span>
+        </figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 11.2 — ชิ้นส่วนทุกชิ้นในรูปที่ 11.2 มาจากบทใด</span><span data-lang-en>Table 11.2 — Where every piece of Figure 11.2 came from</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ชิ้นส่วน</span><span data-lang-en>Component</span></th>
+              <th><span data-lang-th>ชั้น</span><span data-lang-en>Layer</span></th>
+              <th><span data-lang-th>บท</span><span data-lang-en>Chapter</span></th>
+              <th><span data-lang-th>เกณฑ์การเลือกที่ชี้ขาด</span><span data-lang-en>The criterion that decided it</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>เซนเซอร์อุณหภูมิและความชื้น</span><span data-lang-en>Temperature and humidity probe</span></td>
+              <td>2</td><td>3</td>
+              <td><span data-lang-th>ความแม่นยำ ±0.3 °C และมาตรฐานกันน้ำ IP65 เพราะมีการพ่นหมอก</span><span data-lang-en>±0.3 °C accuracy and IP65, because the house is fogged</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>สัญญาณ 4–20 mA</span><span data-lang-en>The 4–20 mA signal</span></td>
+              <td>2</td><td>5</td>
+              <td><span data-lang-th>ทนสัญญาณรบกวนและตรวจสายขาดได้ เพราะสายยาวกว่า 40 m</span><span data-lang-en>noise immunity and broken-wire detection over a 40 m run</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>แบบจำลองของโรงเรือน</span><span data-lang-en>The model of the house</span></td>
+              <td>3</td><td>6</td>
+              <td><span data-lang-th>อันดับหนึ่งพร้อมความหน่วง วัดได้จากการทดสอบขั้นบันไดตอนกลางคืน</span><span data-lang-en>first order plus dead time, from a step test run at night</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>วงรอบ PI ของอุณหภูมิ</span><span data-lang-en>The temperature PI loop</span></td>
+              <td>3</td><td>7</td>
+              <td><span data-lang-th>ไม่ใช้เทอม D เพราะสัญญาณมีสัญญาณรบกวนและระบบช้าอยู่แล้ว</span><span data-lang-en>no derivative: the signal is noisy and the system already slow</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ลำดับการให้น้ำและการสลับโซน</span><span data-lang-en>Irrigation sequencing and zone switching</span></td>
+              <td>3</td><td>4</td>
+              <td><span data-lang-th>เขียนเป็น SFC เพราะเป็นงานที่มีสถานะชัดเจนและมีเงื่อนไขเปลี่ยนสถานะ</span><span data-lang-en>written as an SFC: the task has clear states with transition conditions</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>การต่อสาย I/O และการเลือกแบบซิงก์หรือซอร์ส</span><span data-lang-en>I/O wiring, sinking or sourcing</span></td>
+              <td>2</td><td>5</td>
+              <td><span data-lang-th>ให้ตรงกับขั้วร่วมของอุปกรณ์ที่มีอยู่เดิมในฟาร์ม</span><span data-lang-en>matching the common of the equipment already on the farm</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>วงจรความปลอดภัยและปุ่มหยุดฉุกเฉิน</span><span data-lang-en>Safety circuit and emergency stop</span></td>
+              <td>2</td><td>8</td>
+              <td><span data-lang-th>หน้าสัมผัสปกติปิดและเดินสายตรง ไม่ผ่าน PLC ตามมาตรฐาน</span><span data-lang-en>normally-closed and hardwired past the PLC, as the standards require</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>สาย RS-485 และรอบการสำรวจ</span><span data-lang-en>The RS-485 line and its poll cycle</span></td>
+              <td>3–4</td><td>11</td>
+              <td><span data-lang-th>0.35 s ตามสมการ (11.2) ซึ่งเร็วพอสำหรับการแสดงผล แต่ไม่ใช่สำหรับวงรอบ</span><span data-lang-en>0.35 s by equation (11.2): fast enough to display, not to control</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 11.4 -------- -->
+    <section id="packline">
+      <h2><span data-lang-th>11.4 กรณีศึกษา: สายคัดบรรจุเมล่อนด้วยหุ่นยนต์</span><span data-lang-en>11.4 Case study: a robotic melon packing line</span></h2>
+
+      <p>
+        <span data-lang-th>กรณีที่สองย้ายจากแปลงเข้าสู่โรงคัดบรรจุ โจทย์คือสายที่ต้องหยิบเมล่อนจากสายพานลงถาด 90 ผลต่อนาที คำถามแรกที่ต้องตอบไม่ใช่ว่าจะใช้หุ่นยนต์ยี่ห้อใด แต่เป็นว่า <em>ต้องใช้กี่ตัว</em> ซึ่งตอบได้ด้วยตัวเลขจากบทที่ 8 เพียงไม่กี่ตัว</span>
+        <span data-lang-en>The second case moves from the field into the packhouse. The task is a line picking melons off a belt into trays at 90 a minute, and the first question is not which brand of robot but <em>how many</em> — which a handful of figures from Chapter 8 answer.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>อัตราผลิตที่ใช้ได้จริงไม่ใช่อัตราตามแค็ตตาล็อก เพราะต้องคูณด้วยความพร้อมใช้งานของเครื่องและสัดส่วนที่หยิบติดจริง</span>
+        <span data-lang-en>The usable rate is not the catalogue rate: it must be multiplied by the machine&rsquo;s availability and by the fraction of attempts that actually pick.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ Q_{\text{eff}} \;=\; \frac{60}{t_{\text{cycle}}}\, A\, p $$</div>
+        <div class="eq__num">(11.7)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 11.3 — หุ่นยนต์หนึ่งตัวพอหรือไม่</span><span data-lang-en>Worked example 11.3 — Is one robot enough?</span></div>
+        <p>
+          <span data-lang-th>หุ่นยนต์เดลต้าทำรอบหยิบ–วางได้ \( t_{\text{cycle}} = 0.45 \) s ความพร้อมใช้งาน \( A = 0.85 \) และระบบมองเห็นหยิบติด \( p = 0.92 \) จงตรวจว่ารับ 90 ผลต่อนาทีได้หรือไม่</span>
+          <span data-lang-en>A delta robot achieves \( t_{\text{cycle}} = 0.45 \) s with availability \( A = 0.85 \) and a vision pick rate \( p = 0.92 \). Check whether it meets 90 a minute.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ Q_{\text{eff}} = \frac{60}{0.45}(0.85)(0.92) = (133.3)(0.782) = 104\ \text{ผล/นาที · per minute} $$</div>
+          <div class="eq__num">(11.8)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ผ่าน แต่เหลือเผื่อเพียง 16% และเผื่อนั้นหายไปทันทีถ้าระบบมองเห็นทำงานแย่ลง ลองสมมติว่าเมล่อนฤดูนี้ผิวมันกว่าเดิมจน \( p \) ลดเหลือ 0.80 จะได้ \( Q_{\text{eff}} = 90.6 \) ผลต่อนาที ซึ่งอยู่บนเส้นพอดีและสายจะเริ่มมีของตกค้าง บทเรียนคือตัวเลขที่เปราะที่สุดในสมการนี้ไม่ใช่ความเร็วของหุ่นยนต์ซึ่งคงที่ แต่คือ \( p \) ซึ่งเปลี่ยนไปตามผลผลิตที่เข้ามาแต่ละวัน จึงต้องวัดกับผลจริงหลายฤดู ไม่ใช่เชื่อตัวเลขจากการสาธิต</span>
+          <span data-lang-en>It passes, but with only 16% in hand, and that margin vanishes the moment the vision degrades. Suppose this season&rsquo;s melons have a glossier skin and \( p \) falls to 0.80: then \( Q_{\text{eff}} = 90.6 \) a minute, exactly on the line, and fruit begins to back up. The lesson is that the fragile number here is not the robot&rsquo;s speed, which is constant, but \( p \), which changes with the produce arriving each day — so it must be measured against real fruit across seasons rather than taken from a demonstration.</span>
+        </p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 11.3 — สายคัดบรรจุ และบทที่ตอบแต่ละคำถาม</span><span data-lang-en>Table 11.3 — The packing line, and the chapter answering each question</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>คำถามที่ต้องตอบ</span><span data-lang-en>The question to answer</span></th>
+              <th><span data-lang-th>บท</span><span data-lang-en>Chapter</span></th>
+              <th><span data-lang-th>สิ่งที่ชี้ขาด</span><span data-lang-en>What decides it</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>ใช้หุ่นยนต์โครงร่างใด</span><span data-lang-en>Which robot configuration</span></td><td>8</td>
+              <td><span data-lang-th>ระยะหยิบสั้นทำให้เวลารอบขึ้นกับความเร่ง เดลต้าจึงชนะ</span><span data-lang-en>short moves make the cycle depend on acceleration, so a delta wins</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>มือจับแบบใด</span><span data-lang-en>Which gripper</span></td><td>8</td>
+              <td><span data-lang-th>ผิวเมล่อนโค้งและมีไข ถ้วยดูดต้องเป็นแบบลูกฟูกและเผื่อจำนวนใบ</span><span data-lang-en>a curved waxy skin needs bellows cups, with spare cups allowed for</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>สอนตำแหน่งถาดอย่างไรให้ย้ายถาดได้</span><span data-lang-en>How to teach tray positions so the tray can move</span></td><td>8, 9</td>
+              <td><span data-lang-th>สอนในเฟรมชิ้นงาน แล้ววัดเฟรมใหม่ครั้งเดียวเมื่อย้าย</span><span data-lang-en>teach in a work-object frame and re-measure it once</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ตรวจเส้นทางก่อนเดินจริงอย่างไร</span><span data-lang-en>How to check the path before running</span></td><td>9</td>
+              <td><span data-lang-th>จำลองใน RoboDK ตรวจการเอื้อมถึง การชน และจุดเอกฐาน</span><span data-lang-en>simulate in RoboDK for reach, collisions and singularities</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ประสานจังหวะกับสายพานและเซนเซอร์อย่างไร</span><span data-lang-en>How to sequence with the belt and sensors</span></td><td>4, 5</td>
+              <td><span data-lang-th>PLC ทำลำดับงาน ส่วนเซนเซอร์ใกล้ชิดบอกว่าผลมาถึงแล้ว</span><span data-lang-en>a PLC sequences, and a proximity sensor says the fruit has arrived</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>คนทำงานข้างสายได้หรือไม่</span><span data-lang-en>May a person work beside the line</span></td><td>8</td>
+              <td><span data-lang-th>คำนวณระยะแยกและเลือกโหมดการทำงานร่วมที่ผ่านการประเมินความเสี่ยง</span><span data-lang-en>compute the separation distance and choose an assessed collaborative mode</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>คุ้มค่าหรือไม่</span><span data-lang-en>Is it worth doing</span></td><td>11</td>
+              <td><span data-lang-th>ระยะคืนทุนและมูลค่าปัจจุบันสุทธิตามหัวข้อ 11.6</span><span data-lang-en>payback and net present value, from §11.6</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 11.5 -------- -->
+    <section id="process">
+      <h2><span data-lang-th>11.5 กระบวนการออกแบบและการส่งมอบ</span><span data-lang-en>11.5 Designing the system, and handing it over</span></h2>
+
+      <p>
+        <span data-lang-th>โครงการอัตโนมัติที่ล้มเหลวส่วนใหญ่ไม่ได้ล้มเหลวเพราะเลือกอุปกรณ์ผิด แต่ล้มเหลวเพราะไม่มีใครเขียนไว้ตั้งแต่ต้นว่า “สำเร็จ” หมายถึงอะไร กระบวนการแบบ <strong>รูปตัววี</strong> แก้ปัญหานี้โดยบังคับให้ทุกข้อกำหนดที่เขียนไว้ตอนลงมา มีการทดสอบคู่กันรออยู่ตอนขึ้น</span>
+        <span data-lang-en>Most automation projects that fail do so not because the wrong equipment was chosen but because nobody wrote down at the start what &ldquo;finished&rdquo; would mean. The <strong>V-model</strong> addresses this by requiring that every requirement written on the way down has a matching test waiting on the way up.</span>
+      </p>
+
+      <!-- ===================== Figure 11.3 ===================== -->
+      <figure class="figure">
+        <svg viewBox="0 0 860 400" role="img" aria-label="The V-model of system design, with requirements descending on the left, build at the bottom and tests ascending on the right, each test paired with the requirement it verifies">
+          <!-- descending arm -->
+          <rect x="30" y="34" width="210" height="54" rx="8" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="46" y="56" data-lang-th>ความต้องการของผู้ใช้</text>
+          <text class="dg-text-b" x="46" y="56" data-lang-en>User needs</text>
+          <text class="dg-text-sm" x="46" y="76" data-lang-th>“ลดแรงงาน 1 คน และผลไม่ช้ำ”</text>
+          <text class="dg-text-sm" x="46" y="76" data-lang-en>“save one worker, bruise nothing”</text>
+
+          <rect x="96" y="124" width="210" height="54" rx="8" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="112" y="146" data-lang-th>ข้อกำหนดของระบบ</text>
+          <text class="dg-text-b" x="112" y="146" data-lang-en>System requirements</text>
+          <text class="dg-text-sm" x="112" y="166" data-lang-th>“90 ผล/นาที · ความดันสัมผัส &lt; 50 kPa”</text>
+          <text class="dg-text-sm" x="112" y="166" data-lang-en>“90/min · contact pressure &lt; 50 kPa”</text>
+
+          <rect x="162" y="214" width="210" height="54" rx="8" class="dg-fill-green dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="178" y="236" data-lang-th>ออกแบบรายละเอียด</text>
+          <text class="dg-text-b" x="178" y="236" data-lang-en>Detailed design</text>
+          <text class="dg-text-sm" x="178" y="256" data-lang-th>“ถ้วยดูด 4 ใบ · PI ที่ \( T_i = 6 \) s”</text>
+          <text class="dg-text-sm" x="178" y="256" data-lang-en>“four cups · PI with \( T_i = 6 \) s”</text>
+
+          <!-- bottom -->
+          <rect x="330" y="312" width="200" height="54" rx="8" class="dg-fill-steel dg-stroke" stroke-width="2.4"/>
+          <text class="dg-text-b" x="430" y="336" text-anchor="middle" data-lang-th>สร้างและประกอบ</text>
+          <text class="dg-text-b" x="430" y="336" text-anchor="middle" data-lang-en>Build and integrate</text>
+          <text class="dg-text-sm" x="430" y="356" text-anchor="middle" data-lang-th>ประกอบตู้ · เดินสาย · เขียนโปรแกรม</text>
+          <text class="dg-text-sm" x="430" y="356" text-anchor="middle" data-lang-en>wire the cabinet · write the program</text>
+
+          <!-- ascending arm -->
+          <rect x="488" y="214" width="210" height="54" rx="8" class="dg-fill-green dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="504" y="236" data-lang-th>ทดสอบหน่วยย่อย</text>
+          <text class="dg-text-b" x="504" y="236" data-lang-en>Unit tests</text>
+          <text class="dg-text-sm" x="504" y="256" data-lang-th>วัดแรงจับ · จูนวงรอบทีละวง</text>
+          <text class="dg-text-sm" x="504" y="256" data-lang-en>measure grip force · tune each loop</text>
+
+          <rect x="554" y="124" width="210" height="54" rx="8" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="570" y="146">FAT</text>
+          <text class="dg-text-sm" x="570" y="166" data-lang-th>ทดสอบทั้งระบบที่โรงประกอบ</text>
+          <text class="dg-text-sm" x="570" y="166" data-lang-en>whole system tested at the integrator</text>
+
+          <rect x="620" y="34" width="210" height="54" rx="8" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+          <text class="dg-text-b" x="636" y="56">SAT</text>
+          <text class="dg-text-sm" x="636" y="76" data-lang-th>ทดสอบที่ฟาร์มจริง แล้วส่งมอบ</text>
+          <text class="dg-text-sm" x="636" y="76" data-lang-en>tested on the real farm, then handed over</text>
+
+          <!-- the V itself -->
+          <line x1="135" y1="88" x2="201" y2="124" class="dg-stroke" stroke-width="2.4"/>
+          <line x1="201" y1="178" x2="267" y2="214" class="dg-stroke" stroke-width="2.4"/>
+          <line x1="267" y1="268" x2="360" y2="312" class="dg-stroke" stroke-width="2.4"/>
+          <line x1="500" y1="312" x2="593" y2="268" class="dg-stroke" stroke-width="2.4"/>
+          <polygon points="593,268 580,269 586,279" class="dg-arrow"/>
+          <line x1="593" y1="214" x2="659" y2="178" class="dg-stroke" stroke-width="2.4"/>
+          <polygon points="659,178 646,179 652,189" class="dg-arrow"/>
+          <line x1="659" y1="124" x2="725" y2="88" class="dg-stroke" stroke-width="2.4"/>
+          <polygon points="725,88 712,89 718,99" class="dg-arrow"/>
+
+          <!-- the pairings -->
+          <line x1="240" y1="61" x2="620" y2="61" class="dg-stroke-gold" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <line x1="306" y1="151" x2="554" y2="151" class="dg-stroke-gold" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <line x1="372" y1="241" x2="488" y2="241" class="dg-stroke-gold" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <text class="dg-text-sm" x="430" y="52" text-anchor="middle" data-lang-th>ทุกข้อกำหนดมีการทดสอบคู่กันเสมอ</text>
+          <text class="dg-text-sm" x="430" y="52" text-anchor="middle" data-lang-en>every requirement has a paired test</text>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 11.3</span><span data-lang-en>Figure 11.3</span></b>
+          <span data-lang-th> กระบวนการแบบรูปตัววี เส้นประสีทองคือหัวใจของทั้งแผนภาพ คือการทดสอบแต่ละขั้นทางขวาต้องพิสูจน์ข้อกำหนดที่เขียนไว้ในกล่องตรงข้ามทางซ้ายโดยตรง ถ้าข้อกำหนดใดเขียนไว้แล้วแต่นึกไม่ออกว่าจะทดสอบอย่างไร แสดงว่ามันยังเขียนไม่ชัดพอและต้องกลับไปแก้ตั้งแต่ตอนนั้น ไม่ใช่ตอนส่งมอบ</span>
+          <span data-lang-en> The V-model. The gold dashed lines are the heart of the diagram: each test on the right must prove the requirement written in the box opposite it on the left. If a requirement has been written but no one can say how it would be tested, it is not yet written clearly enough and must be fixed then — not at handover.</span>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>11.5.1 ความพร้อมใช้งานของระบบ</span><span data-lang-en>11.5.1 System availability</span></h3>
+
+      <p>
+        <span data-lang-th>เมื่อประกอบชิ้นส่วนหลายชิ้นเรียงกันจนระบบหยุดได้ถ้าชิ้นใดชิ้นหนึ่งเสีย ความพร้อมใช้งานของทั้งระบบคือผลคูณของแต่ละชิ้น ซึ่งต่ำกว่าชิ้นที่แย่ที่สุดเสมอ</span>
+        <span data-lang-en>When parts are arranged so that the failure of any one stops the system, the availability of the whole is the product of the parts — and is always worse than the worst of them.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ A_{\text{sys}} \;=\; \prod_{i} A_i, \qquad A_i \;=\; \frac{\text{MTBF}_i}{\text{MTBF}_i + \text{MTTR}_i} $$</div>
+        <div class="eq__num">(11.9)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 11.4 — สายหยุดกี่นาทีต่อกะ</span><span data-lang-en>Worked example 11.4 — How many minutes a shift is lost</span></div>
+        <p>
+          <span data-lang-th>สายคัดบรรจุประกอบด้วยสายพาน \( A = 0.99 \) หุ่นยนต์ 0.97 ระบบมองเห็น 0.95 PLC 0.999 และเครือข่าย 0.995 จงหาความพร้อมใช้งานของทั้งสาย และเวลาที่สูญไปในกะแปดชั่วโมง</span>
+          <span data-lang-en>A packing line has a conveyor at \( A = 0.99 \), the robot 0.97, the vision 0.95, the PLC 0.999 and the network 0.995. Find the line&rsquo;s availability and the time lost in an eight-hour shift.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ A_{\text{sys}} = (0.99)(0.97)(0.95)(0.999)(0.995) = 0.907 $$</div>
+          <div class="eq__num">(11.10)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ t_{\text{lost}} = (1 - 0.907)(8)(60) = 45\ \text{นาที/กะ · minutes per shift} $$</div>
+          <div class="eq__num">(11.11)</div>
+        </div>
+        <p>
+          <span data-lang-th>ระบบมองเห็นที่ 0.95 เป็นจุดอ่อนที่สุด ถ้ายกขึ้นเป็น 0.98 ทั้งสายจะได้ 0.935 คือลดเวลาสูญไป 14 นาทีต่อกะ ส่วนการยก PLC จาก 0.999 เป็น 0.9999 แทบไม่เปลี่ยนอะไรเลย ซึ่งเป็นกฎทั่วไปว่าให้ลงทุนที่จุดอ่อนที่สุดเสมอ ถ้าระบบมองเห็นมี \( \text{MTBF} = 190 \) ชม. และ \( \text{MTTR} = 10 \) ชม. การยกเป็น 0.98 ทำได้สองทาง</span>
+          <span data-lang-en>The vision at 0.95 is the weakest link. Raising it to 0.98 takes the line to 0.935, saving fourteen minutes a shift, while raising the PLC from 0.999 to 0.9999 changes almost nothing — the general rule being to spend at the weakest point. If the vision has \( \text{MTBF} = 190 \) h and \( \text{MTTR} = 10 \) h, reaching 0.98 can be done in either of two ways.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ \text{MTBF} \to 490\ \text{ชม. · h} \qquad \text{หรือ / or} \qquad \text{MTTR} \to 3.9\ \text{ชม. · h} $$</div>
+          <div class="eq__num">(11.12)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ทางแรกคือเปลี่ยนไปใช้อุปกรณ์ที่ทนกว่าสองเท่าครึ่ง ซึ่งแพงและอาจไม่มีขาย ส่วนทางที่สองคือลดเวลาซ่อมจากสิบชั่วโมงเหลือสี่ชั่วโมง ซึ่งทำได้ด้วยการมีอะไหล่สำรองอยู่ในตู้ มีคู่มือที่เขียนไว้ดี และฝึกคนในฟาร์มให้เปลี่ยนเองได้ ทั้งหมดนี้ราคาถูกกว่ามากและทำได้ทันที ในงานจริงการลด MTTR มักคุ้มกว่าการเพิ่ม MTBF เสมอ แต่เป็นสิ่งที่ข้อเสนอโครงการมักลืมเขียนถึง</span>
+          <span data-lang-en>The first means buying equipment two and a half times more durable, which is expensive and may not exist. The second means cutting the repair from ten hours to four, achieved with a spare on the shelf, a well-written manual and farm staff trained to swap it themselves. That is far cheaper and available at once. In real work, reducing MTTR almost always pays better than raising MTBF — and it is what project proposals most often forget to mention.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 11.6 -------- -->
+    <section id="economics">
+      <h2><span data-lang-th>11.6 ความคุ้มค่าทางเศรษฐศาสตร์</span><span data-lang-en>11.6 The economics</span></h2>
+
+      <p>
+        <span data-lang-th>ระบบที่ออกแบบมาดีแต่ไม่คุ้มค่าจะไม่ถูกสร้างขึ้นจริง วิศวกรจึงต้องคำนวณตัวเลขนี้ได้เองตั้งแต่ก่อนเริ่มออกแบบ ไม่ใช่รอให้ฝ่ายการเงินมาบอกทีหลัง ประโยชน์ต่อปีคือผลรวมของแรงงานที่ประหยัดได้และมูลค่าผลผลิตที่เพิ่มขึ้น หักด้วยค่าใช้จ่ายที่เพิ่มขึ้นจากระบบเอง</span>
+        <span data-lang-en>A well-designed system that does not pay will not be built, so the engineer must be able to compute this before the design starts rather than hear it from the finance office afterwards. The annual benefit is the labour saved plus the value of the extra produce, less the costs the system itself adds.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ B \;=\; C_{\text{labour}} + \Delta V_{\text{yield}} - C_{\text{operate}} $$</div>
+        <div class="eq__num">(11.13)</div>
+      </div>
+
+      <div class="eq">
+        <div class="eq__body">$$ T_{\text{payback}} \;=\; \frac{I}{B}, \qquad
+                               \text{NPV} \;=\; \sum_{t=1}^{n} \frac{B}{(1+r)^{t}} \;-\; I $$</div>
+        <div class="eq__num">(11.14)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 11.5 — ระบบโรงเรือนคุ้มหรือไม่</span><span data-lang-en>Worked example 11.5 — Does the greenhouse system pay?</span></div>
+        <p>
+          <span data-lang-th>ระบบในรูปที่ 11.2 ลงทุน 850 000 บาท ประหยัดแรงงาน 120 000 บาท/ปี เพิ่มมูลค่าผลผลิต 180 000 บาท/ปี และมีค่าใช้จ่ายเพิ่ม 60 000 บาท/ปี ที่อัตราคิดลด 8% อายุใช้งาน 8 ปี จงประเมินความคุ้มค่า</span>
+          <span data-lang-en>The system of Figure 11.2 costs 850 000 baht, saves 120 000 baht a year in labour, adds 180 000 baht a year in produce value and costs 60 000 baht a year to run. At an 8% discount rate over an eight-year life, assess it.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ B = 120\,000 + 180\,000 - 60\,000 = 240\,000\ \text{บาท/ปี · baht per year} $$</div>
+          <div class="eq__num">(11.15)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ T_{\text{payback}} = \frac{850\,000}{240\,000} = 3.5\ \text{ปี · years} $$</div>
+          <div class="eq__num">(11.16)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ \text{NPV} = 240\,000 \left( \frac{1 - 1.08^{-8}}{0.08} \right) - 850\,000 = 1\,379\,000 - 850\,000 = +529\,000\ \text{บาท · baht} $$</div>
+          <div class="eq__num">(11.17)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>NPV เป็นบวกจึงคุ้มค่าที่จะลงทุน แต่ให้สังเกตว่าระยะคืนทุนแบบง่าย 3.5 ปีนั้นมองโลกในแง่ดีเกินไป เพราะไม่ได้คิดลดค่าเงิน เมื่อคิดลดแล้วเงินจะคืนทุนจริงที่ราว 4.3 ปี ส่วนต่าง 0.8 ปีนี้สำคัญมากเมื่อนำไปเทียบกับอายุใช้งานของอุปกรณ์หรือกับระยะเวลาเช่าที่ดิน และเป็นตัวเลขที่ธนาคารจะถามถึงเสมอ</span>
+          <span data-lang-en>A positive NPV means the investment is worth making. But note that the simple payback of 3.5 years is optimistic, because it ignores the cost of money: discounted, the capital is genuinely returned at about 4.3 years. That 0.8-year difference matters a great deal when set against the equipment&rsquo;s life or the term of a land lease, and it is the figure a bank will always ask for.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 11.3 ===================== -->
+      <figure class="anim" data-anim="ch11-money">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 11.3 — เงินคืนทุนเมื่อไร และคุ้มจริงหรือไม่</span>
+          <span data-lang-en>Animation 11.3 — When the money comes back, and whether it was worth it</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 380" role="img" aria-label="Cumulative cash flow over ten years, nominal and discounted, with the break-even year and the net present value marked">
+            <line id="a113-zero" x1="64" y1="200" x2="548" y2="200" class="dg-stroke" stroke-width="2"/>
+            <g id="a113-bars"></g>
+            <polyline id="a113-nom" class="dg-stroke-gold" stroke-width="2.4" fill="none" points=""/>
+            <line id="a113-pb" x1="0" y1="40" x2="0" y2="330" class="dg-stroke-green" stroke-width="2" stroke-dasharray="6 4" opacity="0"/>
+            <text class="dg-text-sm" x="64" y="352" data-lang-th>ปีที่ 0</text>
+            <text class="dg-text-sm" x="64" y="352" data-lang-en>year 0</text>
+            <text class="dg-text-sm" x="548" y="352" text-anchor="end" data-lang-th>ปีที่ 10</text>
+            <text class="dg-text-sm" x="548" y="352" text-anchor="end" data-lang-en>year 10</text>
+
+            <rect x="576" y="40" width="260" height="290" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4"/>
+            <text class="dg-text-sm" x="600" y="68" data-lang-th>ประโยชน์สุทธิต่อปี</text>
+            <text class="dg-text-sm" x="600" y="68" data-lang-en>net benefit per year</text>
+            <text id="a113-b" class="dg-text-b" x="600" y="92">—</text>
+            <text class="dg-text-sm" x="600" y="126" data-lang-th>คืนทุนแบบง่าย</text>
+            <text class="dg-text-sm" x="600" y="126" data-lang-en>simple payback</text>
+            <text id="a113-sp" class="dg-text-b" x="600" y="150">—</text>
+            <text class="dg-text-sm" x="600" y="184" data-lang-th>คืนทุนเมื่อคิดลดแล้ว</text>
+            <text class="dg-text-sm" x="600" y="184" data-lang-en>discounted payback</text>
+            <text id="a113-dp" class="dg-text-b" x="600" y="208">—</text>
+            <text class="dg-text-sm" x="600" y="242" data-lang-th>NPV ที่สิบปี</text>
+            <text class="dg-text-sm" x="600" y="242" data-lang-en>NPV at ten years</text>
+            <text id="a113-npv" class="dg-text-b" x="600" y="266">—</text>
+            <text id="a113-verdict" class="dg-text-b" x="600" y="306">—</text>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>กระแสเงินสะสมเมื่อคิดลดแล้ว</span><span data-lang-en>cumulative cash flow, discounted</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>กระแสเงินสะสมแบบไม่คิดลด</span><span data-lang-en>cumulative cash flow, undiscounted</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>เงินลงทุน</span><span data-lang-en>Investment</span> \( I \)
+            <input type="range" data-anim-param="inv" data-unit="k฿" min="200" max="2000" step="50" value="850">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ประโยชน์สุทธิต่อปี</span><span data-lang-en>Net benefit</span> \( B \)
+            <input type="range" data-anim-param="ben" data-unit="k฿/y" min="40" max="500" step="10" value="240">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>อัตราคิดลด</span><span data-lang-en>Discount rate</span> \( r \)
+            <input type="range" data-anim-param="rate" data-unit="%" min="0" max="15" step="0.5" value="8">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 11.3</span><span data-lang-en>Animation 11.3</span></b>
+          <span data-lang-th> ตั้งอัตราคิดลดเป็นศูนย์ก่อน เส้นสีทองกับแท่งสีเขียวจะทับกันสนิทและคืนทุนที่ปีเดียวกัน จากนั้นค่อย ๆ เพิ่มอัตราคิดลดขึ้น จะเห็นสองเส้นแยกออกจากกันและจุดคืนทุนที่แท้จริงเลื่อนออกไป ที่อัตราสูงพอ NPV จะกลายเป็นลบทั้งที่ระยะคืนทุนแบบง่ายยังดูสั้นอยู่ ซึ่งเป็นกับดักที่พบบ่อยที่สุดในข้อเสนอโครงการ ลองลดประโยชน์ต่อปีลง 20% ดูด้วย เพราะเป็นระดับที่ประมาณการมักคลาดเคลื่อนจริง แล้วดูว่าข้อสรุปยังเหมือนเดิมหรือไม่</span>
+          <span data-lang-en> Set the discount rate to zero and the gold line lies exactly on the green bars, breaking even in the same year. Now raise the rate: the two separate and the true break-even moves outwards. At a high enough rate the NPV turns negative while the simple payback still looks short — the commonest trap in a project proposal. Try cutting the annual benefit by 20% as well, which is about how far such estimates really miss, and see whether the conclusion survives.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 11.7 -------- -->
+    <section id="failure">
+      <h2><span data-lang-th>11.7 สิ่งที่ทำให้โครงการเกษตรอัจฉริยะล้มเหลว</span><span data-lang-en>11.7 Why smart-farm projects fail</span></h2>
+
+      <p>
+        <span data-lang-th>หัวข้อนี้เป็นสิ่งที่ตำราส่วนใหญ่ไม่เขียนถึง แต่เป็นสิ่งที่ตัดสินว่าระบบที่ออกแบบไว้จะยังเดินอยู่ในปีที่สามหรือกลายเป็นเศษเหล็กในมุมโรงเรือน สาเหตุที่พบบ่อยที่สุดห้าข้อต่อไปนี้ไม่มีข้อใดเป็นเรื่องเทคนิคล้วน</span>
+        <span data-lang-en>Most textbooks leave this out, yet it decides whether a designed system is still running in its third year or sitting in a corner of the greenhouse as scrap. None of the five commonest causes below is purely technical.</span>
+      </p>
+
+      <ul>
+        <li><span data-lang-th><strong>วางหน้าที่ผิดชั้น</strong> — เอาวงรอบควบคุมหรือเงื่อนไขความปลอดภัยไปไว้บนเครือข่ายหรือคลาวด์ แล้วระบบพังทั้งหมดเมื่อการเชื่อมต่อขาด ตรวจด้วยคำถามในหัวข้อ 11.1 และพิสูจน์ด้วยการถอดสายจริงตอน SAT</span><span data-lang-en><strong>Functions in the wrong layer</strong> — a control loop or a safety condition placed on a network or in the cloud, so everything collapses when the link drops. Test it with the question in §11.1, and prove it by physically unplugging the link at SAT.</span></li>
+        <li><span data-lang-th><strong>ไม่มีใครในฟาร์มซ่อมเองได้</strong> — ระบบที่ต้องรอวิศวกรจากกรุงเทพฯ สามวันทุกครั้งที่มีปัญหาจะถูกเลิกใช้ภายในหนึ่งฤดู ค่า MTTR ในสมการ (11.9) ไม่ใช่ตัวเลขทางเทคนิค แต่เป็นเรื่องของการฝึกคนและอะไหล่ที่วางอยู่ในตู้</span><span data-lang-en><strong>Nobody on the farm can repair it</strong> — a system that waits three days for an engineer from Bangkok each time it stops is abandoned within a season. The MTTR of equation (11.9) is not a technical number but a matter of training people and keeping a spare in the cabinet.</span></li>
+        <li><span data-lang-th><strong>ประมาณการประโยชน์สูงเกินจริง</strong> — ตัวเลขผลผลิตที่เพิ่มขึ้นมักมาจากการสาธิตในสภาพที่ดีที่สุด เมื่อใช้จริงได้เพียงครึ่งเดียว NPV ที่เคยเป็นบวกก็กลายเป็นลบ ให้คำนวณซ้ำด้วยประโยชน์ที่ลดลง 20–30% เสมอ ก่อนเสนอ</span><span data-lang-en><strong>Benefits overstated</strong> — yield gains usually come from a demonstration under the best conditions, and when reality delivers half of that a positive NPV turns negative. Always recompute with the benefit cut by 20–30% before proposing anything.</span></li>
+        <li><span data-lang-th><strong>ไม่ได้ออกแบบเผื่อความแปรปรวนของผลผลิต</strong> — เมล่อนผิวมันกว่าปกติ ต้นกล้าที่สูงไม่เท่ากัน ดินที่เปียกกว่าที่คิด ตัวเลข \( p \) ในสมการ (11.7) และอัตราการลื่นไถลในบทที่ 10 ล้วนเปลี่ยนไปตามฤดู ระบบที่ทำงานได้เฉพาะกับผลผลิตมาตรฐานจะล้มเหลวในสัปดาห์ที่ผลผลิตไม่มาตรฐาน</span><span data-lang-en><strong>No allowance for how variable produce is</strong> — glossier melons, seedlings of uneven height, soil wetter than expected. Both the \( p \) of equation (11.7) and the slip ratios of Chapter 10 change with the season, and a system that works only on standard produce fails in the week the produce is not standard.</span></li>
+        <li><span data-lang-th><strong>ไม่มีเอกสารส่งมอบที่ใช้งานได้จริง</strong> — แผนผังการเดินสาย รายการ I/O ค่าจูนที่ใช้อยู่ และขั้นตอนการเริ่มระบบใหม่หลังไฟดับ ถ้าสิ่งเหล่านี้อยู่ในหัวของคนที่ติดตั้งเท่านั้น ระบบจะมีอายุเท่ากับระยะเวลาที่คนคนนั้นยังทำงานอยู่</span><span data-lang-en><strong>No usable handover documentation</strong> — wiring diagrams, the I/O list, the tuning values in use, and how to restart after a power cut. If these live only in the installer&rsquo;s head, the system&rsquo;s life equals that person&rsquo;s tenure.</span></li>
+      </ul>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>และสิ่งที่ไม่ใช่เพียงความล้มเหลว แต่เป็นอันตราย</span><span data-lang-en>And the one that is not merely failure but danger</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ระบบอัตโนมัติในฟาร์มทำงานในที่ที่มีคน สัตว์ และเด็กอยู่ด้วย ต่างจากโรงงานที่มีรั้วล้อมและมีเฉพาะผู้ได้รับอนุญาต ทุกการประเมินความเสี่ยงในบทที่ 8 จึงต้องรวมผู้ที่ไม่ได้รับการฝึกเข้าไปด้วย คนที่เดินเข้ามาในโรงเรือนตอนกลางคืนไม่รู้ว่าพัดลมจะเริ่มทำงานเองเมื่ออุณหภูมิถึงค่าที่ตั้งไว้ และไม่มีทางรู้ได้เลยถ้าไม่มีป้ายเตือนและสัญญาณก่อนเริ่มเดินเครื่อง สิ่งเหล่านี้ไม่ใช่รายละเอียดปลีกย่อยของโครงการ แต่เป็นข้อกำหนดที่ต้องอยู่ในกล่องบนซ้ายของรูปที่ 11.3 ตั้งแต่วันแรก</span>
+          <span data-lang-en>Farm automation runs where people, animals and children are present, unlike a factory with a fence and only authorised staff inside. Every risk assessment of Chapter 8 must therefore include the untrained. Someone walking into the greenhouse at night does not know the fan will start by itself when the temperature reaches its setpoint, and has no way of knowing without a warning sign and a pre-start signal. These are not project details but requirements that belong in the top-left box of Figure 11.3 from the first day.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 11.8 -------- -->
+    <section id="activity">
+      <h2><span data-lang-th>11.8 กิจกรรมในชั้นเรียน</span><span data-lang-en>11.8 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 11.1 — ตรวจข้อเสนอโครงการที่มีข้อบกพร่อง</span><span data-lang-en>Activity 11.1 — Audit a flawed project proposal</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 45 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Groups of 3–4 &middot; 45 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>โจทย์</span><span data-lang-en>The brief</span></h4>
+          <p>
+            <span data-lang-th>ด้านล่างคือข้อเสนอโครงการที่ผู้ขายรายหนึ่งยื่นให้เจ้าของสวนทุเรียน ข้อเสนอนี้มีข้อบกพร่องซ่อนอยู่เจ็ดข้อ ทุกข้อตรวจพบได้ด้วยสมการหรือหลักการที่เรียนมาแล้ว ให้แต่ละกลุ่มหาให้ครบ อ้างสมการหรือหัวข้อที่ใช้ตัดสิน และเสนอวิธีแก้ที่ทำได้จริง</span>
+            <span data-lang-en>Below is a proposal a vendor has put to the owner of a durian orchard. Seven faults are hidden in it, every one detectable with an equation or a principle already studied. Find them all, cite what settles each, and propose a remedy that could actually be carried out.</span>
+          </p>
+
+          <div class="callout callout--info" style="margin-bottom:1.2rem">
+            <div class="callout__title"><i class="fa-solid fa-file-lines"></i> <span data-lang-th>ข้อเสนอ: ระบบให้น้ำอัตโนมัติสำหรับสวนทุเรียน 20 ไร่</span><span data-lang-en>Proposal: an automated irrigation system for a 20-rai durian orchard</span></div>
+            <ol class="mb-0">
+              <li><span data-lang-th>ติดตั้งเซนเซอร์ความชื้นดิน 24 จุด ส่งค่าผ่าน LoRaWAN ทุก 10 วินาที เพื่อให้ควบคุมได้อย่างแม่นยำ</span><span data-lang-en>Twenty-four soil moisture nodes reporting over LoRaWAN every 10 seconds, for precise control.</span></li>
+              <li><span data-lang-th>วงรอบควบคุมการเปิดปิดวาล์วแต่ละโซนทำงานบนเซิร์ฟเวอร์คลาวด์ ซึ่งมีอัลกอริทึมที่ฉลาดกว่าอุปกรณ์หน้างาน</span><span data-lang-en>The valve control loop for each zone runs on a cloud server, whose algorithms are cleverer than any field device.</span></li>
+              <li><span data-lang-th>ปุ่มหยุดฉุกเฉินต่อเป็นอินพุตเข้า PLC แล้ว PLC จะสั่งตัดปั๊มเมื่ออ่านค่าได้ ซึ่งยืดหยุ่นกว่าการเดินสายตรง</span><span data-lang-en>The emergency stop is an input to the PLC, which switches the pump off when it reads it — more flexible than hardwiring.</span></li>
+              <li><span data-lang-th>เงินลงทุน 1 200 000 บาท ประหยัดแรงงาน 2 คน คิดเป็น 240 000 บาท/ปี และเพิ่มผลผลิต 300 000 บาท/ปี</span><span data-lang-en>An investment of 1 200 000 baht, saving two workers worth 240 000 baht a year and adding 300 000 baht a year in produce.</span></li>
+              <li><span data-lang-th>ระยะเวลาคืนทุน 2.2 ปี จึงเป็นการลงทุนที่คุ้มค่าอย่างยิ่ง</span><span data-lang-en>A payback period of 2.2 years makes this an outstanding investment.</span></li>
+              <li><span data-lang-th>อุปกรณ์ทุกชิ้นมีความพร้อมใช้งานเกิน 0.98 จึงมั่นใจได้ว่าทั้งระบบจะพร้อมใช้งานเกิน 98%</span><span data-lang-en>Every component has an availability above 0.98, so the system as a whole will certainly exceed 98%.</span></li>
+              <li><span data-lang-th>เมื่อเกิดปัญหา ทีมช่างของผู้ขายจะเข้าซ่อมภายใน 5 วันทำการ</span><span data-lang-en>Should anything go wrong, the vendor&rsquo;s technicians will attend within five working days.</span></li>
+            </ol>
+          </div>
+
+          <h4><span data-lang-th>ขั้นตอน</span><span data-lang-en>Steps</span></h4>
+          <ol>
+            <li><span data-lang-th>ตรวจข้อ 1 ด้วยสมการ (11.5) โดยสมมติเวลาออกอากาศ 0.37 s และรอบหน้าที่ 1% แล้วระบุความถี่ที่ทำได้จริง</span><span data-lang-en>Check item 1 with equation (11.5), taking 0.37 s airtime at a 1% duty cycle, and state the rate actually permitted.</span></li>
+            <li><span data-lang-th>ตรวจข้อ 2 และ 3 ด้วยคำถามในหัวข้อ 11.1 แล้วระบุว่าชั้นใดควรรับหน้าที่นั้นแทน พร้อมเหตุผลเรื่องความปลอดภัย</span><span data-lang-en>Check items 2 and 3 with the question of §11.1, saying which layer should hold each duty and why safety demands it.</span></li>
+            <li><span data-lang-th>คำนวณ \( B \) ใหม่ด้วยสมการ (11.13) โดยสมมติค่าใช้จ่ายเพิ่ม 90 000 บาท/ปี แล้วหาคืนทุนทั้งแบบง่ายและแบบคิดลดที่ 8%</span><span data-lang-en>Recompute \( B \) with equation (11.13), assuming 90 000 baht a year of running cost, and find both the simple and the discounted payback at 8%.</span></li>
+            <li><span data-lang-th>ตรวจข้อ 6 ด้วยสมการ (11.9) โดยสมมติว่ามีชิ้นส่วนเรียงกัน 6 ชิ้นที่ 0.98 แล้วหาความพร้อมใช้งานจริงของทั้งระบบ</span><span data-lang-en>Check item 6 with equation (11.9) for six components in series at 0.98, and find the system&rsquo;s real availability.</span></li>
+            <li><span data-lang-th>ประเมินข้อ 7 โดยคิดว่าเกิดปัญหาในช่วงที่ทุเรียนกำลังติดผล แล้วเสนอวิธีลด MTTR ที่ไม่ต้องเปลี่ยนอุปกรณ์เลย</span><span data-lang-en>Assess item 7 supposing the fault occurs while the durian is setting fruit, and propose ways to cut the MTTR without changing any equipment.</span></li>
+            <li><span data-lang-th>เขียนข้อเสนอแก้ไขหนึ่งหน้า ที่ยังทำงานได้ตามวัตถุประสงค์เดิมแต่แก้ข้อบกพร่องครบทั้งเจ็ดข้อ</span><span data-lang-en>Write a one-page revised proposal that still meets the original purpose while curing all seven faults.</span></li>
+          </ol>
+
+          <div class="callout callout--info" style="margin-bottom:1rem">
+            <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>คำใบ้</span><span data-lang-en>A hint</span></div>
+            <p class="mb-0">
+              <span data-lang-th>ข้อบกพร่องสองข้อเป็นเรื่องของตัวเลขที่คำนวณผิด อีกสามข้อเป็นเรื่องของการวางหน้าที่ผิดชั้น และสองข้อสุดท้ายเป็นเรื่องที่ไม่มีสมการใดจับได้ แต่จะทำให้ระบบถูกเลิกใช้ภายในฤดูเดียว ข้อที่อันตรายที่สุดในเจ็ดข้อนี้ไม่ใช่ข้อที่ทำให้เสียเงิน</span>
+              <span data-lang-en>Two faults are arithmetic, three are functions placed in the wrong layer, and the last two are things no equation catches but which would see the system abandoned within one season. The most dangerous of the seven is not the one that costs money.</span>
+            </p>
+          </div>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ตารางข้อบกพร่องทั้งเจ็ด พร้อมสมการหรือหัวข้อที่ใช้ตัดสินและวิธีแก้ของแต่ละข้อ</span><span data-lang-en>A table of all seven faults, with what settles each and the remedy proposed.</span></li>
+            <li><span data-lang-th>ตัวเลขที่คำนวณใหม่ ได้แก่ ความถี่ที่ LoRaWAN ทำได้ คืนทุนที่แท้จริง และความพร้อมใช้งานของระบบ</span><span data-lang-en>The recomputed figures: the rate LoRaWAN permits, the true payback and the system availability.</span></li>
+            <li><span data-lang-th>ข้อเสนอแก้ไขหนึ่งหน้า พร้อมระบุว่าข้อใดเป็นข้อที่อันตรายที่สุดและเพราะเหตุใด</span><span data-lang-en>The one-page revision, naming which fault was the most dangerous and why.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 11.9 -------- -->
+    <section id="project">
+      <h2><span data-lang-th>11.9 โครงงานบูรณาการ</span><span data-lang-en>11.9 The integrated project</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-diagram-project"></i></div>
+          <div>
+            <h3><span data-lang-th>โครงงานบูรณาการ — ออกแบบระบบอัตโนมัติสำหรับงานเกษตรหนึ่งงาน</span><span data-lang-en>Integrated project — Design an automated system for one agricultural task</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; ทำตลอดภาคการศึกษา &middot; นำเสนอสัปดาห์ที่ 16</span><span data-lang-en>Groups of 3–4 &middot; running all semester &middot; presented in Week 16</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ทุกข้อของรายวิชา</span><span data-lang-en>Maps to every objective of the course</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 15% ของคะแนนรวม</span><span data-lang-en>15% of the course total</span></span>
+            <span class="badge badge--gold"><i class="fa-solid fa-link"></i> <span data-lang-th>ใช้ผลจากปฏิบัติการที่ 6 ถึง 10 ได้โดยตรง</span><span data-lang-en>Laboratories 6 to 10 feed straight into it</span></span>
+          </div>
+
+          <h4><span data-lang-th>ขอบเขต</span><span data-lang-en>Scope</span></h4>
+          <p>
+            <span data-lang-th>เลือกงานเกษตรหนึ่งงานที่ทำซ้ำและใช้แรงงานมาก แล้วออกแบบระบบอัตโนมัติสำหรับงานนั้นให้ครบทั้งระบบ ไม่ใช่เฉพาะชิ้นส่วนใดชิ้นส่วนหนึ่ง เงื่อนไขเดียวคือต้องสร้างได้จริงด้วยอุปกรณ์ที่หาซื้อได้ในประเทศ ภายในงบที่ระบุไว้ในข้อเสนอของกลุ่มเอง ไม่ต้องสร้างจริงแต่ต้องพิสูจน์ได้ว่าสร้างได้</span>
+            <span data-lang-en>Choose one repetitive, labour-intensive agricultural task and design a complete system for it — not one component of it. The only condition is that it must be buildable with equipment available in this country within the budget your own proposal states. It need not be built, but it must be shown to be buildable.</span>
+          </p>
+
+          <h4><span data-lang-th>สิ่งที่รายงานต้องมีครบ</span><span data-lang-en>What the report must contain</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>ความต้องการและข้อกำหนด</span><span data-lang-en>Needs and requirements</span></b><br>
+              <span data-lang-th>แยกความต้องการของผู้ใช้ออกจากข้อกำหนดของระบบให้ชัด ตามแขนซ้ายของรูปที่ 11.3 ข้อกำหนดทุกข้อต้องเป็นตัวเลขที่วัดได้</span>
+              <span data-lang-en>Separate user needs from system requirements, as the left arm of Figure 11.3 does. Every requirement must be a number that can be measured.</span></li>
+            <li><b><span data-lang-th>แผนผังระบบห้าชั้น</span><span data-lang-en>The five-layer system diagram</span></b><br>
+              <span data-lang-th>วาดระบบทั้งหมดในหน้าเดียวแบบรูปที่ 11.2 ระบุชั้นของทุกกล่อง และขีดเส้นให้ชัดว่าอะไรที่ขาดไปแล้วยังปลอดภัยอยู่</span>
+              <span data-lang-en>Draw the whole system on one page as Figure 11.2 does, label the layer of every box, and mark the line beyond which things can be lost while remaining safe.</span></li>
+            <li><b><span data-lang-th>การเลือกเซนเซอร์และแอคชูเอเตอร์</span><span data-lang-en>Sensor and actuator selection</span></b><br>
+              <span data-lang-th>ตารางแบบตารางที่ 11.2 ที่ทุกแถวระบุเกณฑ์ที่ชี้ขาด ไม่ใช่เพียงยี่ห้อและรุ่น พร้อมคำนวณที่เกี่ยวข้องจากบทที่ 3 และ 8</span>
+              <span data-lang-en>A table like Table 11.2 in which every row names the deciding criterion rather than a brand, with the relevant calculations from Chapters 3 and 8.</span></li>
+            <li><b><span data-lang-th>กลยุทธ์การควบคุม</span><span data-lang-en>The control strategy</span></b><br>
+              <span data-lang-th>แยกให้ชัดว่าส่วนใดเป็นลำดับงานตามบทที่ 4 และส่วนใดเป็นวงรอบต่อเนื่องตามบทที่ 7 พร้อมระบุวิธีที่จะใช้จูนและค่าที่คาดว่าจะได้</span>
+              <span data-lang-en>State clearly which parts are sequencing from Chapter 4 and which are continuous loops from Chapter 7, with the tuning method to be used and the values expected.</span></li>
+            <li><b><span data-lang-th>เครือข่ายและการตรวจภาระ</span><span data-lang-en>Networks and the load check</span></b><br>
+              <span data-lang-th>เลือกเครือข่ายของแต่ละส่วนจากตารางที่ 11.1 แล้วพิสูจน์ด้วยสมการ (11.1) (11.2) หรือ (11.5) ว่ารับภาระที่ต้องการได้จริง</span>
+              <span data-lang-en>Choose a network for each part from Table 11.1 and prove with equation (11.1), (11.2) or (11.5) that it carries the load required.</span></li>
+            <li><b><span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></b><br>
+              <span data-lang-th>สรุปการประเมินความเสี่ยงตามบทที่ 8 ระบุว่าอะไรเดินสายตรงไม่ผ่านตัวควบคุม และคำนึงถึงผู้ที่ไม่ได้รับการฝึกที่อาจเข้ามาในพื้นที่</span>
+              <span data-lang-en>Summarise the risk assessment of Chapter 8, state what is hardwired past the controller, and account for untrained people who may enter the area.</span></li>
+            <li><b><span data-lang-th>ความพร้อมใช้งาน</span><span data-lang-en>Availability</span></b><br>
+              <span data-lang-th>ประมาณ \( A_{\text{sys}} \) ด้วยสมการ (11.9) ระบุจุดอ่อนที่สุด และเสนอวิธีแก้ที่ลด MTTR เป็นหลัก</span>
+              <span data-lang-en>Estimate \( A_{\text{sys}} \) with equation (11.9), name the weakest link, and propose a remedy that works mainly by cutting MTTR.</span></li>
+            <li><b><span data-lang-th>ความคุ้มค่า พร้อมการทดสอบความไว</span><span data-lang-en>The economics, with a sensitivity run</span></b><br>
+              <span data-lang-th>คำนวณ \( B \) ระยะคืนทุน และ NPV จากนั้นคำนวณซ้ำโดยลดประโยชน์ลง 25% แล้วระบุว่าข้อสรุปยังเหมือนเดิมหรือไม่</span>
+              <span data-lang-en>Compute \( B \), the payback and the NPV, then recompute with the benefit cut by 25% and say whether the conclusion still holds.</span></li>
+            <li><b><span data-lang-th>แผนการทดสอบ</span><span data-lang-en>The test plan</span></b><br>
+              <span data-lang-th>แขนขวาของรูปที่ 11.3 โดยทุกข้อกำหนดในข้อ 1 ต้องมีการทดสอบคู่กันหนึ่งรายการ ระบุเกณฑ์ผ่านเป็นตัวเลข</span>
+              <span data-lang-en>The right arm of Figure 11.3: every requirement in item 1 paired with one test, each with a numeric pass criterion.</span></li>
+            <li><b><span data-lang-th>เอกสารส่งมอบ</span><span data-lang-en>The handover pack</span></b><br>
+              <span data-lang-th>ระบุรายการเอกสารที่จะส่งมอบให้เจ้าของฟาร์ม และเขียนขั้นตอนการเริ่มระบบใหม่หลังไฟดับมาให้ดูหนึ่งหน้าจริง</span>
+              <span data-lang-en>List what will be handed to the farm owner, and write out one real page of it: how to restart the system after a power cut.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>รูปแบบการส่งและการนำเสนอ</span><span data-lang-en>Format and presentation</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานไม่เกิน 12 หน้า ไม่รวมภาคผนวก ส่งก่อนวันนำเสนอหนึ่งสัปดาห์</span><span data-lang-en>A report of at most twelve pages excluding appendices, submitted one week before presenting.</span></li>
+            <li><span data-lang-th>นำเสนอ 10 นาที และตอบคำถาม 5 นาที สมาชิกทุกคนต้องพูดและต้องตอบคำถามได้</span><span data-lang-en>A ten-minute presentation with five minutes of questions; every member speaks and must be able to answer.</span></li>
+            <li><span data-lang-th>แผนผังระบบหนึ่งหน้าที่พิมพ์ขนาด A3 ติดไว้หน้าห้องระหว่างการนำเสนอของทุกกลุ่ม</span><span data-lang-en>The one-page system diagram printed at A3 and displayed at the front throughout the session.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>ข้อกำหนดที่วัดได้ และแผนการทดสอบที่จับคู่กันครบทุกข้อ</span><span data-lang-en>Measurable requirements, each paired with a test</span></td><td>15</td></tr>
+                <tr><td><span data-lang-th>แผนผังระบบและการวางหน้าที่ให้ถูกชั้น</span><span data-lang-en>The system diagram and the discipline of placing functions in the right layer</span></td><td>15</td></tr>
+                <tr><td><span data-lang-th>การเลือกอุปกรณ์ที่มีเกณฑ์ชี้ขาดและการคำนวณรองรับ</span><span data-lang-en>Component choices with a deciding criterion and the arithmetic behind it</span></td><td>15</td></tr>
+                <tr><td><span data-lang-th>กลยุทธ์การควบคุมและวิธีการจูนที่ระบุไว้ชัดเจน</span><span data-lang-en>The control strategy and a clearly stated tuning method</span></td><td>15</td></tr>
+                <tr><td><span data-lang-th>การตรวจภาระเครือข่ายและการออกแบบด้านความปลอดภัย</span><span data-lang-en>The network load check and the safety design</span></td><td>15</td></tr>
+                <tr><td><span data-lang-th>ความคุ้มค่าพร้อมการทดสอบความไวที่ลดประโยชน์ลง 25%</span><span data-lang-en>The economics, with the sensitivity run at a 25% lower benefit</span></td><td>15</td></tr>
+                <tr><td><span data-lang-th>การนำเสนอและการตอบคำถามของสมาชิกทุกคน</span><span data-lang-en>The presentation and every member&rsquo;s answers to questions</span></td><td>10</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--tip" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-lightbulb"></i> <span data-lang-th>คำถามที่จะถูกถามแน่นอนในวันนำเสนอ</span><span data-lang-en>The questions that will certainly be asked</span></div>
+            <p class="mb-0">
+              <span data-lang-th>เตรียมคำตอบสามข้อนี้ไว้ให้ดี หนึ่ง ถ้าอินเทอร์เน็ตล่มสามวัน ระบบของคุณเกิดอะไรขึ้นและพืชเสียหายหรือไม่ สอง ถ้าประโยชน์ต่อปีที่ประมาณไว้ได้จริงเพียงสามในสี่ โครงการยังคุ้มอยู่หรือไม่ และสาม ถ้าชิ้นส่วนที่เป็นจุดอ่อนที่สุดเสียในคืนวันศุกร์ คนในฟาร์มทำอะไรได้บ้างโดยไม่ต้องรอคุณ กลุ่มที่ตอบสามข้อนี้ได้ด้วยตัวเลขของตัวเองคือกลุ่มที่เข้าใจรายวิชานี้แล้วจริง ๆ</span>
+              <span data-lang-en>Prepare three answers carefully. First: if the internet is down for three days, what happens to your system, and is the crop harmed? Second: if the annual benefit turns out to be three-quarters of your estimate, does the project still pay? Third: if your weakest component fails on a Friday night, what can the farm staff do without waiting for you? A group that answers all three with its own figures is one that has genuinely understood this course.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>ระบบเกษตรอัจฉริยะทุกระบบแบ่งเป็นห้าชั้น โดยจังหวะเวลาเร็วที่สุดอยู่ล่างสุดและช้าลงเมื่อขึ้นไป</span><span data-lang-en>Every smart-farm system divides into five layers, the fastest timescale at the bottom and slowing on the way up.</span></li>
+        <li><span data-lang-th>คำถามที่ใช้ตัดสินว่าหน้าที่ใดอยู่ชั้นใดคือ ถ้าชั้นนี้หายไป ระบบยังปลอดภัยและยังทำงานต่อได้หรือไม่</span><span data-lang-en>The question that places a function in a layer is: if this layer vanished, would the system still be safe and still run?</span></li>
+        <li><span data-lang-th>วงรอบควบคุมและเงื่อนไขความปลอดภัยต้องอยู่หน้างาน ส่วนเครือข่ายมีไว้ส่งค่าเป้าหมายลงไปเท่านั้น</span><span data-lang-en>Control loops and safety conditions belong in the field; the network exists to send a setpoint down to them.</span></li>
+        <li><span data-lang-th>ฟาร์มหนึ่งแห่งใช้หลายเครือข่ายเสมอ เพราะความเร็วกับระยะทางและพลังงานแลกกันโดยตรง</span><span data-lang-en>A farm always uses several networks, because speed trades directly against range and power.</span></li>
+        <li><span data-lang-th>ตรวจภาระของเครือข่ายด้วยการคำนวณก่อนซื้ออุปกรณ์ สำหรับสายแบบถาม–ตอบให้ดูรอบการสำรวจ ไม่ใช่อัตราข้อมูล</span><span data-lang-en>Check the network load by calculation before buying; on a polled line look at the poll cycle rather than the data rate.</span></li>
+        <li><span data-lang-th>เครือข่ายไร้สายระยะไกลถูกบีบด้วยรอบหน้าที่ตามกฎหมาย ไม่ใช่ด้วยแบนด์วิดท์ และระยะทางแลกกับความถี่ในการรายงาน</span><span data-lang-en>Long-range wireless is bound by a regulated duty cycle rather than bandwidth, and range trades against reporting rate.</span></li>
+        <li><span data-lang-th>อัตราผลิตที่ใช้ได้จริงคือค่าตามแค็ตตาล็อกคูณความพร้อมใช้งานและคูณสัดส่วนที่ทำสำเร็จจริง</span><span data-lang-en>The usable throughput is the catalogue figure multiplied by availability and by the fraction of attempts that succeed.</span></li>
+        <li><span data-lang-th>ความพร้อมใช้งานของระบบที่ต่อเรียงกันคือผลคูณของแต่ละชิ้น จึงต่ำกว่าชิ้นที่แย่ที่สุดเสมอ</span><span data-lang-en>The availability of parts in series is their product, and so is always worse than the worst of them.</span></li>
+        <li><span data-lang-th>การลด MTTR มักถูกกว่าการเพิ่ม MTBF มาก และทำได้ด้วยอะไหล่สำรอง คู่มือ และการฝึกคนในฟาร์ม</span><span data-lang-en>Cutting MTTR is usually far cheaper than raising MTBF, and is done with a spare, a manual and trained farm staff.</span></li>
+        <li><span data-lang-th>กระบวนการรูปตัววีบังคับให้ทุกข้อกำหนดมีการทดสอบคู่กัน ข้อกำหนดที่ทดสอบไม่ได้คือข้อกำหนดที่เขียนไม่ชัดพอ</span><span data-lang-en>The V-model pairs every requirement with a test; a requirement that cannot be tested is not yet written clearly.</span></li>
+        <li><span data-lang-th>ระยะคืนทุนแบบง่ายมองโลกในแง่ดีเสมอ เพราะไม่คิดลดค่าเงิน ให้รายงาน NPV ควบคู่กันทุกครั้ง</span><span data-lang-en>A simple payback is always optimistic, ignoring the cost of money; report the NPV alongside it every time.</span></li>
+        <li><span data-lang-th>โครงการล้มเหลวเพราะวางหน้าที่ผิดชั้น ซ่อมเองไม่ได้ ประมาณการสูงเกินจริง ไม่เผื่อความแปรปรวน และไม่มีเอกสารส่งมอบ</span><span data-lang-en>Projects fail from functions in the wrong layer, from nobody able to repair them, from overstated estimates, from no allowance for variability, and from no handover pack.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>สถาปัตยกรรมแบ่งชั้น</span><span data-lang-en>Layered architecture</span></div>
+          <div class="deflist__def"><span data-lang-th>การจัดหน้าที่ของระบบเป็นชั้นตามจังหวะเวลา เพื่อให้ชั้นล่างทำงานต่อได้เมื่อชั้นบนล้มเหลว</span><span data-lang-en>Arranging a system&rsquo;s functions into layers by timescale, so the lower ones keep working when the upper ones fail</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>รอบการสำรวจ</span><span data-lang-en>Poll cycle</span></div>
+          <div class="deflist__def"><span data-lang-th>เวลาที่ใช้ถามอุปกรณ์ทุกตัวบนสายครบหนึ่งรอบ ซึ่งเป็นขีดจำกัดจริงของเครือข่ายแบบถาม–ตอบ</span><span data-lang-en>The time to question every device on a line once, the real limit of a polled network</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>รอบหน้าที่</span><span data-lang-en>Duty cycle</span></div>
+          <div class="deflist__def"><span data-lang-th>สัดส่วนของเวลาที่อุปกรณ์ไร้สายได้รับอนุญาตให้ส่งสัญญาณออกอากาศ ซึ่งกำหนดความถี่สูงสุดในการรายงาน</span><span data-lang-en>The fraction of time a radio may transmit, which fixes the fastest permissible reporting rate</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ความพร้อมใช้งาน</span><span data-lang-en>Availability</span></div>
+          <div class="deflist__def"><span data-lang-th>สัดส่วนของเวลาที่ระบบใช้งานได้จริง คำนวณจาก MTBF และ MTTR ตามสมการ (11.9)</span><span data-lang-en>The fraction of time a system is actually usable, from MTBF and MTTR by equation (11.9)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">MTTR</div>
+          <div class="deflist__def"><span data-lang-th>เวลาเฉลี่ยที่ใช้ซ่อมจนกลับมาใช้งานได้ ซึ่งลดได้ด้วยอะไหล่สำรองและการฝึกคน ไม่ต้องเปลี่ยนอุปกรณ์</span><span data-lang-en>The mean time to restore service, reducible with a spare and with training rather than new equipment</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>กระบวนการรูปตัววี</span><span data-lang-en>The V-model</span></div>
+          <div class="deflist__def"><span data-lang-th>การออกแบบที่จับคู่ข้อกำหนดแต่ละระดับกับการทดสอบที่พิสูจน์ข้อกำหนดนั้นโดยตรง</span><span data-lang-en>A design process pairing each level of requirement with the test that proves it</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">FAT / SAT</div>
+          <div class="deflist__def"><span data-lang-th>การทดสอบทั้งระบบที่โรงประกอบก่อนขนย้าย และการทดสอบซ้ำที่ฟาร์มจริงก่อนส่งมอบ</span><span data-lang-en>Testing the whole system at the integrator before shipping, and again on the real farm before handover</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>มูลค่าปัจจุบันสุทธิ (NPV)</span><span data-lang-en>Net present value</span></div>
+          <div class="deflist__def"><span data-lang-th>ผลรวมของประโยชน์รายปีที่คิดลดค่าเงินแล้ว หักด้วยเงินลงทุน ค่าบวกหมายความว่าคุ้มค่าที่จะลงทุน</span><span data-lang-en>The discounted sum of the annual benefits less the investment; positive means the investment is worth making</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>สิบข้อ เน้นการวางหน้าที่ให้ถูกชั้น การตรวจภาระเครือข่าย ความพร้อมใช้งาน และการประเมินความคุ้มค่า เกณฑ์ผ่าน 70%</span>
+        <span data-lang-en>Ten items on placing functions in the right layer, checking a network load, availability and assessing an investment. Pass mark 70%.</span>
+      </p>
+      <div data-quiz="ch11-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press. <span data-lang-th>— ตำราหลักที่ครอบคลุมการบูรณาการระบบในงานเกษตร และใช้อ้างอิงมาตลอดรายวิชา</span><span data-lang-en>— the principal text on integrating systems for agriculture, cited throughout this course.</span></li>
+        <li>International Society of Automation. (2010). <em>ANSI/ISA-95: Enterprise-Control System Integration</em>. ISA. <span data-lang-th>— ที่มาของแบบจำลองแบ่งชั้นที่หัวข้อ 11.1 ย่อมาให้เหมาะกับงานฟาร์ม</span><span data-lang-en>— the source of the layer model that §11.1 condenses for farm use.</span></li>
+        <li>INCOSE. (2023). <em>Systems Engineering Handbook</em> (5th ed.). Wiley. <span data-lang-th>— กระบวนการรูปตัววี การจับคู่ข้อกำหนดกับการทดสอบ และการส่งมอบ</span><span data-lang-en>— the V-model, pairing requirements with tests, and handover.</span></li>
+        <li>Ebeling, C. E. (2019). <em>An Introduction to Reliability and Maintainability Engineering</em> (3rd ed.). Waveland Press. <span data-lang-th>— ที่มาของสมการ (11.9) และการวิเคราะห์ MTBF กับ MTTR</span><span data-lang-en>— the source of equation (11.9) and of the MTBF and MTTR analysis.</span></li>
+        <li>Blank, L., &amp; Tarquin, A. (2018). <em>Engineering Economy</em> (8th ed.). McGraw-Hill. <span data-lang-th>— ระยะคืนทุน มูลค่าปัจจุบันสุทธิ และการทดสอบความไวในหัวข้อ 11.6</span><span data-lang-en>— payback, net present value and the sensitivity analysis of §11.6.</span></li>
+        <li>Modbus Organization. (2012). <em>MODBUS Application Protocol Specification V1.1b3</em>. <span data-lang-th>— โครงสร้างเฟรมที่ใช้ในสมการ (11.2)</span><span data-lang-en>— the frame structure used in equation (11.2).</span></li>
+        <li>LoRa Alliance. (2020). <em>LoRaWAN L2 1.0.4 Specification</em>. <span data-lang-th>— ข้อกำหนดรอบหน้าที่และเวลาออกอากาศที่ใช้ในสมการ (11.5)</span><span data-lang-en>— the duty-cycle and airtime rules behind equation (11.5).</span></li>
+        <li>Wolfert, S., Ge, L., Verdouw, C., &amp; Bogaardt, M.-J. (2017). Big data in smart farming: A review. <em>Agricultural Systems, 153</em>, 69–80.</li>
+        <li>Villa-Henriksen, A., Edwards, G. T. C., Pesonen, L. A., Green, O., &amp; Sørensen, C. A. G. (2020). Internet of Things in arable farming: Implementation, applications, challenges and potential. <em>Biosystems Engineering, 191</em>, 60–84. <span data-lang-th>— ทบทวนสาเหตุที่โครงการจำนวนมากไม่ผ่านขั้นนำร่อง ซึ่งขยายหัวข้อ 11.7</span><span data-lang-en>— reviews why so many projects never pass the pilot stage, extending §11.7.</span></li>
+        <li>Bechar, A., &amp; Vigneault, C. (2016). Agricultural robots for field operations: Concepts and components. <em>Biosystems Engineering, 149</em>, 94–111.</li>
+        <li>Shamshiri, R. R., Kalantari, F., Ting, K. C., Thorp, K. R., Hameed, I. A., Weltzien, C., Ahmad, D., &amp; Shad, Z. M. (2018). Advances in greenhouse automation and controlled environment agriculture: A transition to plant factories and urban agriculture. <em>International Journal of Agricultural and Biological Engineering, 11</em>(1), 1–22.</li>
+        <li>International Electrotechnical Commission. (2018). <em>IEC 62443: Security for Industrial Automation and Control Systems</em>. IEC. <span data-lang-th>— ข้อกำหนดด้านความมั่นคงปลอดภัยเมื่อระบบในฟาร์มเชื่อมต่อออกสู่อินเทอร์เน็ต</span><span data-lang-en>— the security requirements that apply once a farm system reaches the internet.</span></li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="ch10.html">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>บทก่อนหน้า</span><span data-lang-en>Previous chapter</span></small>
+        <b><span data-lang-th>บทที่ 10 · ระบบหุ่นยนต์เคลื่อนที่</span><span data-lang-en>Chapter 10 · Mobile Robot Systems</span></b>
+      </a>
+      <a class="is-next" href="../index.html#chapters">
+        <small><span data-lang-th>จบบทเรียนทั้งหมด</span><span data-lang-en>End of the course</span> <i class="fa-solid fa-flag-checkered"></i></small>
+        <b><span data-lang-th>กลับไปยังรายการบทเรียนทั้ง 11 บท</span><span data-lang-en>Back to all eleven chapters</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#architecture"><span data-lang-th>สถาปัตยกรรมห้าชั้น</span><span data-lang-en>The five-layer architecture</span></a></li>
+          <li><a href="#economics"><span data-lang-th>ความคุ้มค่าทางเศรษฐศาสตร์</span><span data-lang-en>The economics</span></a></li>
+          <li><a href="#project"><span data-lang-th>โครงงานบูรณาการ</span><span data-lang-en>The integrated project</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script src="../js/ch11-quiz.js"></script>
+<script src="../js/ch11-anim.js"></script>
+</body>
+</html>

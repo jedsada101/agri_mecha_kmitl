@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 9 · จลนศาสตร์หุ่นยนต์และการจำลอง" data-title-en="Chapter 9 · Robot Kinematics and Simulation">Chapter 9 · Robot Kinematics and Simulation</title>
+<meta name="description" content="Chapter 9: rotation matrices, homogeneous transformations, Denavit-Hartenberg parameters, forward and inverse kinematics of Cartesian, SCARA, articulated and delta robots, singularities, trajectory interpolation and simulation in RoboDK.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="ch06.html"><span data-lang-th>บทที่ 6</span><span data-lang-en>Ch 6</span></a>
+      <a href="ch07.html"><span data-lang-th>บทที่ 7</span><span data-lang-en>Ch 7</span></a>
+      <a href="ch08.html"><span data-lang-th>บทที่ 8</span><span data-lang-en>Ch 8</span></a>
+      <a href="ch09.html" class="is-active"><span data-lang-th>บทที่ 9</span><span data-lang-en>Ch 9</span></a>
+      <a href="ch10.html"><span data-lang-th>บทที่ 10</span><span data-lang-en>Ch 10</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 9</span><span data-lang-en>Chapter 9</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 13–14</span><span data-lang-en>Weeks 13–14</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 4 ชม. + ปฏิบัติ 4 ชม.</span><span data-lang-en>4 h lecture + 4 h laboratory</span></span>
+      <span class="badge badge--sky"><i class="fa-solid fa-film"></i> <span data-lang-th>แอนิเมชัน 4 ชุด</span><span data-lang-en>4 animations</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 9 · จลนศาสตร์หุ่นยนต์และการจำลอง</span>
+      <span data-lang-en>Chapter 9 · Robot Kinematics and Simulation</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>บทที่ 8 จบลงด้วยคำเตือนว่าสมการ (8.15) ใช้ได้เฉพาะเมื่อเครื่องมือไม่หมุน บทนี้คือเครื่องมือทางคณิตศาสตร์ที่ยกข้อจำกัดนั้นออกไป เริ่มจากเมทริกซ์การหมุน ไปสู่เมทริกซ์การแปลงเอกพันธ์ที่จัดการการเลื่อนและการหมุนพร้อมกัน แล้วใช้มันสร้างจลนศาสตร์ไปข้างหน้าและย้อนกลับของหุ่นยนต์จริงทั้งสามแบบ ก่อนจะนำทุกอย่างไปตรวจสอบด้วยการจำลองใน RoboDK</span>
+      <span data-lang-en>Chapter 8 closed with a warning that equation (8.15) holds only while the tool does not rotate. This chapter supplies the mathematics that lifts that restriction: rotation matrices first, then the homogeneous transformation that carries translation and rotation together, and with it the forward and inverse kinematics of all three real robots — checked at the end against a simulation in RoboDK.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#rotation"><span data-lang-th>9.1 เมทริกซ์การหมุน</span><span data-lang-en>9.1 Rotation matrices</span></a></li>
+      <li><a href="#transform"><span data-lang-th>9.2 เมทริกซ์การแปลงเอกพันธ์</span><span data-lang-en>9.2 Homogeneous transformations</span></a></li>
+      <li><a href="#dh"><span data-lang-th>9.3 พารามิเตอร์ DH</span><span data-lang-en>9.3 Denavit&ndash;Hartenberg parameters</span></a></li>
+      <li><a href="#robots"><span data-lang-th>9.4 จลนศาสตร์ของหุ่นยนต์จริง</span><span data-lang-en>9.4 Kinematics of real robots</span></a></li>
+      <li><a href="#ik"><span data-lang-th>9.5 จลนศาสตร์ย้อนกลับ</span><span data-lang-en>9.5 Inverse kinematics</span></a></li>
+      <li><a href="#delta"><span data-lang-th>9.6 หุ่นยนต์ขนานแบบเดลต้า</span><span data-lang-en>9.6 The parallel delta robot</span></a></li>
+      <li><a href="#robodk"><span data-lang-th>9.7 การจำลองด้วย RoboDK</span><span data-lang-en>9.7 Simulation in RoboDK</span></a></li>
+      <li><a href="#activity"><span data-lang-th>9.8 กิจกรรมในชั้นเรียน</span><span data-lang-en>9.8 In-class activity</span></a></li>
+      <li><a href="#lab"><span data-lang-th>9.9 ปฏิบัติการที่ 9</span><span data-lang-en>9.9 Laboratory 9</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>เขียนเมทริกซ์การหมุนในระนาบและรอบแกนหลักทั้งสาม และใช้สมบัติของมันตรวจสอบความถูกต้อง</span><span data-lang-en>Write the planar and the three elementary rotation matrices, and use their properties as a check.</span></li>
+        <li><span data-lang-th>สร้างเมทริกซ์การแปลงเอกพันธ์ คูณต่อกันเป็นโซ่ และหาเมทริกซ์ผกผันได้โดยไม่ต้องกลับเมทริกซ์ทั้งก้อน</span><span data-lang-en>Build homogeneous transformations, chain them, and invert one without inverting the whole matrix.</span></li>
+        <li><span data-lang-th>กำหนดพารามิเตอร์ DH ของแขนกลที่กำหนดให้ และเขียนเป็นตารางที่ใช้คำนวณต่อได้</span><span data-lang-en>Assign Denavit&ndash;Hartenberg parameters to a given arm and tabulate them for computation.</span></li>
+        <li><span data-lang-th>คำนวณจลนศาสตร์ไปข้างหน้าของหุ่นยนต์คาร์ทีเซียน SCARA และอาร์ติคูเลตได้</span><span data-lang-en>Compute the forward kinematics of Cartesian, SCARA and articulated robots.</span></li>
+        <li><span data-lang-th>แก้จลนศาสตร์ย้อนกลับของแขนสองลิงก์ในรูปปิด และอธิบายที่มาของคำตอบหลายชุด</span><span data-lang-en>Solve the inverse kinematics of a two-link arm in closed form and explain why several solutions exist.</span></li>
+        <li><span data-lang-th>ใช้จาโคเบียนระบุจุดเอกฐาน และอธิบายว่าทำไมความเร็วข้อต่อจึงพุ่งสูงใกล้จุดนั้น</span><span data-lang-en>Use the Jacobian to locate singularities and explain why joint speeds blow up near one.</span></li>
+        <li><span data-lang-th>อธิบายหลักการของหุ่นยนต์ขนานแบบเดลต้า และบอกว่าเหตุใดจลนศาสตร์ย้อนกลับจึงง่ายกว่าไปข้างหน้า</span><span data-lang-en>Explain how a parallel delta robot works and why its inverse kinematics is easier than its forward.</span></li>
+        <li><span data-lang-th>สร้างสถานีจำลองใน RoboDK ตรวจการชนและจุดเอกฐาน แล้วส่งออกโปรแกรมไปยังหุ่นยนต์จริง</span><span data-lang-en>Build a RoboDK station, check for collisions and singularities, and post a program to a real robot.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ตอบก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิม ระบบเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer before reading. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch09-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 9.1 --------- -->
+    <section id="rotation">
+      <h2><span data-lang-th>9.1 เมทริกซ์การหมุน</span><span data-lang-en>9.1 Rotation matrices</span></h2>
+
+      <p>
+        <span data-lang-th>บทที่ 8 แนะนำเฟรมอ้างอิงไว้แล้วในฐานะแนวคิด บทนี้ต้องการตัวเลข คำถามพื้นฐานคือ ถ้ารู้พิกัดของจุดหนึ่งในเฟรม \( \{B\} \) จะหาพิกัดของจุดเดียวกันในเฟรม \( \{A\} \) ได้อย่างไร คำตอบแยกเป็นสองส่วนคือการหมุนกับการเลื่อน และเราเริ่มที่การหมุนก่อน</span>
+        <span data-lang-en>Chapter 8 introduced reference frames as an idea. This chapter wants numbers. The basic question is: given a point&rsquo;s coordinates in frame \( \{B\} \), what are the same point&rsquo;s coordinates in frame \( \{A\} \)? The answer separates into a rotation and a translation, and the rotation comes first.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>ให้เฟรม \( \{B\} \) หมุนไปจากเฟรม \( \{A\} \) เป็นมุม \( \theta \) รอบแกนที่ตั้งฉากกับระนาบ เวกเตอร์หนึ่งหน่วยของ \( \{B\} \) เมื่อมองในพิกัดของ \( \{A\} \) คือ \( (\cos\theta,\ \sin\theta) \) และ \( (-\sin\theta,\ \cos\theta) \) การนำสองเวกเตอร์นี้มาวางเป็นหลักของเมทริกซ์จะได้</span>
+        <span data-lang-en>Let \( \{B\} \) be rotated from \( \{A\} \) by an angle \( \theta \) about the axis normal to the plane. The unit vectors of \( \{B\} \), expressed in \( \{A\} \)&rsquo;s coordinates, are \( (\cos\theta,\ \sin\theta) \) and \( (-\sin\theta,\ \cos\theta) \). Writing those two as the columns of a matrix gives</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ {}^{A}\mathbf{R}_{B} \;=\; \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix} $$</div>
+        <div class="eq__num">(9.1)</div>
+      </div>
+
+      <!-- ===================== Figure 9.1 ===================== -->
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 340" role="img" aria-label="Frame B rotated by an angle from frame A, with the projections that give the columns of the rotation matrix">
+            <!-- frame A -->
+            <line x1="180" y1="260" x2="470" y2="260" class="dg-stroke" stroke-width="2.6"/>
+            <polygon points="470,260 457,254 457,266" class="dg-arrow"/>
+            <line x1="180" y1="260" x2="180" y2="40" class="dg-stroke" stroke-width="2.6"/>
+            <polygon points="180,40 174,53 186,53" class="dg-arrow"/>
+
+            <!-- frame B, rotated 35 degrees -->
+            <line x1="180" y1="260" x2="377" y2="122" class="dg-stroke-green" stroke-width="3"/>
+            <polygon points="377,122 364,122 371,133" class="dg-arrow"/>
+            <line x1="180" y1="260" x2="42" y2="63" class="dg-stroke-green" stroke-width="3"/>
+            <polygon points="42,63 43,76 54,70" class="dg-arrow"/>
+
+            <!-- the angle -->
+            <path d="M270 260 A 90 90 0 0 0 253.7 208.4" class="dg-stroke-gold" stroke-width="2.2"/>
+            <polygon points="253.7,208.4 258,219 266,213" class="dg-arrow"/>
+
+            <!-- projections of the x_B unit vector onto the axes of A -->
+            <circle cx="377" cy="122" r="6" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <line x1="377" y1="122" x2="377" y2="260" class="dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+            <line x1="377" y1="122" x2="180" y2="122" class="dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+            <line x1="180" y1="276" x2="377" y2="276" class="dg-stroke-gold" stroke-width="2"/>
+            <polygon points="180,276 191,271 191,281" class="dg-arrow"/>
+            <polygon points="377,276 366,271 366,281" class="dg-arrow"/>
+            <line x1="164" y1="260" x2="164" y2="122" class="dg-stroke-gold" stroke-width="2"/>
+            <polygon points="164,260 159,249 169,249" class="dg-arrow"/>
+            <polygon points="164,122 159,133 169,133" class="dg-arrow"/>
+
+            <!-- the matrix, as a reminder of where the columns come from -->
+            <rect x="556" y="78" width="276" height="162" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+            <text class="dg-text-sm" x="694" y="106" text-anchor="middle" data-lang-th>หลักที่หนึ่งคือแกน x ของ B</text>
+            <text class="dg-text-sm" x="694" y="106" text-anchor="middle" data-lang-en>column one is B&rsquo;s x axis</text>
+            <text class="dg-text-sm" x="694" y="224" text-anchor="middle" data-lang-th>หลักที่สองคือแกน y ของ B</text>
+            <text class="dg-text-sm" x="694" y="224" text-anchor="middle" data-lang-en>column two is B&rsquo;s y axis</text>
+          </svg>
+          <span class="fig-label" style="left:55.0%; top:73%">\( x_A \)</span>
+          <span class="fig-label" style="left:17.0%; top:4%">\( y_A \)</span>
+          <span class="fig-label" style="left:45.0%; top:28%">\( x_B \)</span>
+          <span class="fig-label" style="left:2.0%; top:12%">\( y_B \)</span>
+          <span class="fig-label" style="left:29.5%; top:66%">\( \theta \)</span>
+          <span class="fig-label" style="left:29.0%; top:85%">\( \cos\theta \)</span>
+          <span class="fig-label" style="left:10.5%; top:52%">\( \sin\theta \)</span>
+          <span class="fig-label fig-label--bare" style="left:66.0%; top:41%">\( \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix} \)</span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 9.1</span><span data-lang-en>Figure 9.1</span></b>
+          <span data-lang-th> ที่มาของสมการ (9.1) หลักแต่ละหลักของเมทริกซ์การหมุนคือเวกเตอร์หนึ่งหน่วยของเฟรม \( \{B\} \) เขียนในพิกัดของเฟรม \( \{A\} \) การจำข้อนี้ไว้ทำให้เขียนเมทริกซ์การหมุนได้โดยไม่ต้องท่องสูตร เพียงถามว่าแกนของเฟรมใหม่ชี้ไปทางไหนเมื่อมองจากเฟรมเดิม</span>
+          <span data-lang-en> Where equation (9.1) comes from. Each column of a rotation matrix is a unit vector of frame \( \{B\} \) written in the coordinates of frame \( \{A\} \). Remembering that makes the matrix writable without memorising a formula: simply ask where the new frame&rsquo;s axes point, as seen from the old one.</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        <span data-lang-th>เมทริกซ์การหมุนมีสมบัติที่ใช้ตรวจงานได้ทันที หลักทุกหลักมีความยาวหนึ่งหน่วยและตั้งฉากกันทุกคู่ เมทริกซ์จึงเป็นเมทริกซ์ตั้งฉาก ผลที่ตามมาคือ</span>
+        <span data-lang-en>A rotation matrix carries properties that serve as an immediate check. Every column is a unit vector and every pair is orthogonal, so the matrix is orthonormal. It follows that</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ {}^{A}\mathbf{R}_{B}^{-1} \;=\; {}^{A}\mathbf{R}_{B}^{\mathsf{T}} \;=\; {}^{B}\mathbf{R}_{A}, \qquad \det {}^{A}\mathbf{R}_{B} \;=\; +1 $$</div>
+        <div class="eq__num">(9.2)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-lightbulb"></i> <span data-lang-th>สมบัตินี้คือเครื่องมือตรวจงานที่ดีที่สุดในบทนี้</span><span data-lang-en>This property is the best checking tool in the chapter</span></div>
+        <p class="mb-0">
+          <span data-lang-th>เมื่อคำนวณเมทริกซ์การหมุนออกมาได้ ให้ตรวจสองอย่างเสมอ หนึ่งคือผลคูณของเมทริกซ์กับทรานสโพสของตัวเองต้องได้เมทริกซ์เอกลักษณ์ สองคือดีเทอร์มิแนนต์ต้องเป็น \( +1 \) พอดี ถ้าได้ \( -1 \) แสดงว่าสลับทิศแกนไปหนึ่งแกนจนกลายเป็นระบบมือซ้าย ซึ่งเป็นความผิดพลาดที่พบบ่อยและทำให้หุ่นยนต์เคลื่อนที่สะท้อนกลับด้าน</span>
+          <span data-lang-en>Whenever a rotation matrix has been computed, check two things. First, the matrix times its own transpose must give the identity. Second, the determinant must be exactly \( +1 \). A value of \( -1 \) means one axis has been flipped into a left-handed set — a common slip, and one that makes the robot move mirrored.</span>
+        </p>
+      </div>
+
+      <p>
+        <span data-lang-th>ในสามมิติ การหมุนรอบแกนหลักแต่ละแกนให้เมทริกซ์สามตัวต่อไปนี้ สังเกตว่าแกนที่หมุนรอบจะมีแถวและหลักที่เป็นเวกเตอร์หนึ่งหน่วยเดิมไม่เปลี่ยน</span>
+        <span data-lang-en>In three dimensions, rotating about each principal axis gives the three matrices below. Notice that the axis being rotated about keeps its own row and column unchanged.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \mathbf{R}_{z}(\theta) = \begin{bmatrix} c\theta & -s\theta & 0 \\ s\theta & c\theta & 0 \\ 0 & 0 & 1 \end{bmatrix}, \quad
+                               \mathbf{R}_{y}(\theta) = \begin{bmatrix} c\theta & 0 & s\theta \\ 0 & 1 & 0 \\ -s\theta & 0 & c\theta \end{bmatrix}, \quad
+                               \mathbf{R}_{x}(\theta) = \begin{bmatrix} 1 & 0 & 0 \\ 0 & c\theta & -s\theta \\ 0 & s\theta & c\theta \end{bmatrix} $$</div>
+        <div class="eq__num">(9.3)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>โดย \( c\theta \) และ \( s\theta \) ย่อมาจาก \( \cos\theta \) และ \( \sin\theta \) ซึ่งเป็นสัญกรณ์มาตรฐานที่ใช้ตลอดบทนี้เพื่อให้เมทริกซ์อ่านง่ายขึ้น</span>
+        <span data-lang-en>Here \( c\theta \) and \( s\theta \) abbreviate \( \cos\theta \) and \( \sin\theta \), the standard notation used throughout this chapter to keep the matrices readable.</span>
+      </p>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>การหมุนไม่สลับที่</span><span data-lang-en>Rotations do not commute</span></div>
+        <p class="mb-0">
+          <span data-lang-th>การหมุนรอบแกน \( z \) เก้าสิบองศาแล้วตามด้วยรอบแกน \( y \) เก้าสิบองศา ให้ผลต่างจากการสลับลำดับอย่างสิ้นเชิง เพราะ \( \mathbf{R}_z\mathbf{R}_y \ne \mathbf{R}_y\mathbf{R}_z \) ลองทำกับหนังสือหนึ่งเล่มจะเห็นทันที นี่คือเหตุผลที่ระบบหุ่นยนต์ทุกยี่ห้อต้องระบุ <em>ลำดับ</em> ของมุมออยเลอร์ไว้ในเอกสาร และเป็นเหตุผลที่การคัดลอกค่ามุมจากหุ่นยนต์ยี่ห้อหนึ่งไปใส่อีกยี่ห้อหนึ่งโดยตรงมักให้ท่าที่ผิด</span>
+          <span data-lang-en>Rotating ninety degrees about \( z \) and then ninety about \( y \) is not the same as doing them the other way round, because \( \mathbf{R}_z\mathbf{R}_y \ne \mathbf{R}_y\mathbf{R}_z \). Try it with a book and the difference is immediate. This is why every robot vendor documents the <em>order</em> of its Euler angles, and why copying angle values straight from one brand into another usually produces the wrong pose.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 9.2 --------- -->
+    <section id="transform">
+      <h2><span data-lang-th>9.2 เมทริกซ์การแปลงเอกพันธ์</span><span data-lang-en>9.2 The homogeneous transformation</span></h2>
+
+      <p>
+        <span data-lang-th>เมื่อเฟรม \( \{B\} \) ทั้งหมุนและเลื่อนไปจากเฟรม \( \{A\} \) พิกัดของจุดเดียวกันในสองเฟรมสัมพันธ์กันดังนี้</span>
+        <span data-lang-en>When frame \( \{B\} \) is both rotated and displaced from frame \( \{A\} \), the coordinates of one point in the two frames are related by</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ {}^{A}\vect{p} \;=\; {}^{A}\mathbf{R}_{B}\, {}^{B}\vect{p} \;+\; {}^{A}\vect{d}_{B} $$</div>
+        <div class="eq__num">(9.4)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>สมการนี้ถูกต้องแต่ใช้งานลำบาก เพราะการต่อเฟรมหลายชั้นเข้าด้วยกันจะกลายเป็นการคูณสลับกับการบวกไปมา วิธีแก้คือเพิ่มมิติที่สี่ที่มีค่าเป็นหนึ่งเข้าไปในเวกเตอร์ตำแหน่ง แล้วรวมการหมุนกับการเลื่อนไว้ในเมทริกซ์ \( 4 \times 4 \) ก้อนเดียว เรียกว่า <strong>เมทริกซ์การแปลงเอกพันธ์</strong></span>
+        <span data-lang-en>That is correct but awkward, because chaining several frames turns into an alternating sequence of multiplications and additions. The remedy is to append a fourth coordinate equal to one and fold the rotation and the translation into a single \( 4 \times 4 \) matrix, the <strong>homogeneous transformation</strong>.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \T{A}{B} \;=\; \begin{bmatrix} {}^{A}\mathbf{R}_{B} & {}^{A}\vect{d}_{B} \\[2pt] \mathbf{0}^{\mathsf{T}} & 1 \end{bmatrix} \;=\; \begin{bmatrix} r_{11} & r_{12} & r_{13} & d_x \\ r_{21} & r_{22} & r_{23} & d_y \\ r_{31} & r_{32} & r_{33} & d_z \\ 0 & 0 & 0 & 1 \end{bmatrix} $$</div>
+        <div class="eq__num">(9.5)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ประโยชน์ที่แท้จริงปรากฏตอนต่อโซ่ การแปลงจากเฟรม \( \{A\} \) ไปเฟรม \( \{C\} \) ผ่าน \( \{B\} \) เป็นเพียงการคูณเมทริกซ์ และลำดับของการคูณอ่านได้จากดัชนีที่ติดกันตรงกลาง</span>
+        <span data-lang-en>The real benefit appears on chaining. Going from frame \( \{A\} \) to frame \( \{C\} \) by way of \( \{B\} \) is just a matrix product, and the order can be read off from the indices that meet in the middle.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \T{A}{C} \;=\; \T{A}{B}\; \T{B}{C} $$</div>
+        <div class="eq__num">(9.6)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ส่วนการกลับทิศไม่จำเป็นต้องหาเมทริกซ์ผกผันของเมทริกซ์ \( 4 \times 4 \) ซึ่งเสียเวลา เพราะโครงสร้างพิเศษของมันให้สูตรลัดที่ใช้เพียงทรานสโพสกับการคูณเวกเตอร์หนึ่งครั้ง</span>
+        <span data-lang-en>Reversing the direction needs no general \( 4 \times 4 \) inverse, which would be wasteful: the special structure gives a shortcut using one transpose and one matrix&ndash;vector product.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \T{B}{A} \;=\; \T{A}{B}^{-1} \;=\; \begin{bmatrix} {}^{A}\mathbf{R}_{B}^{\mathsf{T}} & -\,{}^{A}\mathbf{R}_{B}^{\mathsf{T}}\, {}^{A}\vect{d}_{B} \\[2pt] \mathbf{0}^{\mathsf{T}} & 1 \end{bmatrix} $$</div>
+        <div class="eq__num">(9.7)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 9.1 — สมการ (8.15) ที่เขียนใหม่ให้ถูกต้อง</span><span data-lang-en>Worked example 9.1 — Equation (8.15), now written correctly</span></div>
+        <p>
+          <span data-lang-th>หน้าแปลนข้อมืออยู่ที่ \( (400, 300, 250) \) mm ในเฟรมฐาน และหมุนไป \( 90\deg \) รอบแกน \( z \) เทียบกับเฟรมฐาน มือจับทำให้ TCP อยู่ห่างจากหน้าแปลน \( (0, 150, 0) \) mm <em>ในเฟรมเครื่องมือ</em> จงหาตำแหน่งของ TCP ในเฟรมฐาน</span>
+          <span data-lang-en>The wrist flange sits at \( (400, 300, 250) \) mm in the base frame, rotated \( 90\deg \) about \( z \) relative to it. The gripper puts the TCP \( (0, 150, 0) \) mm from the flange <em>in the tool frame</em>. Find the TCP in the base frame.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ {}^{0}\mathbf{R}_{F} = \mathbf{R}_{z}(90\deg) = \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix}, \qquad {}^{F}\vect{t} = \begin{bmatrix} 0 \\ 150 \\ 0 \end{bmatrix} $$</div>
+          <div class="eq__num">(9.8)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ {}^{0}\vect{p}_{\text{TCP}} = {}^{0}\mathbf{R}_{F}\,{}^{F}\vect{t} + {}^{0}\vect{d}_{F} = \begin{bmatrix} -150 \\ 0 \\ 0 \end{bmatrix} + \begin{bmatrix} 400 \\ 300 \\ 250 \end{bmatrix} = \begin{bmatrix} 250 \\ 300 \\ 250 \end{bmatrix}\ \text{mm} $$</div>
+          <div class="eq__num">(9.9)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ถ้าใช้สมการ (8.15) ซึ่งบวกเวกเตอร์ตรง ๆ จะได้ \( (400, 450, 250) \) ซึ่งผิดไป 212 mm ความผิดพลาดนี้ไม่ได้เล็กลงเมื่อมือจับสั้นลง แต่แปรตามความยาวมือจับโดยตรง และจะเปลี่ยนไปทุกครั้งที่ข้อมือหมุน นี่คือเหตุผลทั้งหมดที่ต้องมีเมทริกซ์การหมุนอยู่ในสมการ</span>
+          <span data-lang-en>Using equation (8.15), a plain vector sum, would give \( (400, 450, 250) \) — wrong by 212 mm. The error does not shrink with a shorter gripper; it scales directly with the gripper&rsquo;s length and changes every time the wrist turns. That is the whole reason the rotation matrix has to be in the equation.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 9.1 ===================== -->
+      <figure class="anim" data-anim="ch09-frames">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 9.1 — จุดเดียวกัน สองเฟรม สองชุดตัวเลข</span>
+          <span data-lang-en>Animation 9.1 — One point, two frames, two sets of numbers</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 380" role="img" aria-label="A point shown in a fixed frame A and a movable frame B, with the transformation matrix updating as frame B is moved and turned">
+            <!-- frame A at the lower left -->
+            <line x1="90" y1="320" x2="330" y2="320" class="dg-stroke" stroke-width="2.4"/>
+            <polygon points="330,320 318,315 318,325" class="dg-arrow"/>
+            <line x1="90" y1="320" x2="90" y2="100" class="dg-stroke" stroke-width="2.4"/>
+            <polygon points="90,100 85,112 95,112" class="dg-arrow"/>
+            <text class="dg-text-sm" x="340" y="325">x</text>
+            <text class="dg-text-sm" x="84" y="92">y</text>
+            <text class="dg-text-b" x="68" y="338">A</text>
+
+            <!-- frame B, driven by the sliders -->
+            <g id="a91-B">
+              <line x1="0" y1="0" x2="110" y2="0" class="dg-stroke-green" stroke-width="2.8"/>
+              <polygon points="110,0 98,-5 98,5" class="dg-fill-green"/>
+              <line x1="0" y1="0" x2="0" y2="-110" class="dg-stroke-green" stroke-width="2.8"/>
+              <polygon points="0,-110 -5,-98 5,-98" class="dg-fill-green"/>
+              <circle cx="0" cy="0" r="5" class="dg-fill-green dg-stroke" stroke-width="1.6"/>
+            </g>
+            <text id="a91-blabel" class="dg-text-b" x="0" y="0">B</text>
+
+            <!-- the point itself, fixed in space -->
+            <circle id="a91-pt" cx="300" cy="150" r="8" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <line id="a91-ray" x1="90" y1="320" x2="300" y2="150" class="dg-stroke-gold" stroke-width="1.6" stroke-dasharray="5 4"/>
+            <line id="a91-rayb" x1="0" y1="0" x2="300" y2="150" class="dg-stroke-green" stroke-width="1.6" stroke-dasharray="5 4"/>
+
+            <!-- panel for the numbers -->
+            <rect x="520" y="40" width="312" height="300" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4"/>
+            <text class="dg-text-sm" x="544" y="70" data-lang-th>พิกัดในเฟรม A</text>
+            <text class="dg-text-sm" x="544" y="70" data-lang-en>coordinates in frame A</text>
+            <text id="a91-pa" class="dg-text-b" x="544" y="96">—</text>
+            <text class="dg-text-sm" x="544" y="134" data-lang-th>พิกัดในเฟรม B</text>
+            <text class="dg-text-sm" x="544" y="134" data-lang-en>coordinates in frame B</text>
+            <text id="a91-pb" class="dg-text-b" x="544" y="160">—</text>
+            <text class="dg-text-sm" x="544" y="198" data-lang-th>เมทริกซ์การแปลง</text>
+            <text class="dg-text-sm" x="544" y="198" data-lang-en>the transformation</text>
+            <text id="a91-m1" class="dg-text" x="552" y="226" font-family="monospace">—</text>
+            <text id="a91-m2" class="dg-text" x="552" y="250" font-family="monospace">—</text>
+            <text id="a91-m3" class="dg-text" x="552" y="274" font-family="monospace">—</text>
+            <text class="dg-text-sm" x="544" y="312" data-lang-th>ตรวจ: ดีเทอร์มิแนนต์ของส่วนหมุน</text>
+            <text class="dg-text-sm" x="544" y="312" data-lang-en>check: determinant of the rotation</text>
+            <text id="a91-det" class="dg-text-b" x="544" y="332">—</text>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>เฟรม A อยู่กับที่</span><span data-lang-en>frame A, fixed</span></span>
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>เฟรม B เคลื่อนที่ได้</span><span data-lang-en>frame B, movable</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>จุดที่สนใจ อยู่นิ่งในปริภูมิ</span><span data-lang-en>the point, fixed in space</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="sweep" aria-pressed="false"><i class="fa-solid fa-repeat"></i><span data-lang-th>กวาดอัตโนมัติ</span><span data-lang-en>Auto sweep</span></button>
+          <label class="anim__param">
+            \( d_x \)
+            <input type="range" data-anim-param="dx" data-unit="mm" min="0" max="400" step="10" value="200">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            \( d_y \)
+            <input type="range" data-anim-param="dy" data-unit="mm" min="0" max="300" step="10" value="100">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            \( \theta \)
+            <input type="range" data-anim-param="th" data-unit="°" min="-180" max="180" step="5" value="30">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 9.1</span><span data-lang-en>Animation 9.1</span></b>
+          <span data-lang-th> จุดสีทองไม่เคยขยับเลย แต่ตัวเลขที่บรรยายมันเปลี่ยนตลอดเวลาเมื่อเฟรม \( \{B\} \) เลื่อนและหมุน นี่คือใจความสำคัญของทั้งบท คือพิกัดไม่ใช่สมบัติของจุด แต่เป็นสมบัติของคู่ระหว่างจุดกับเฟรม ลองตั้ง \( \theta = 0 \) แล้วเลื่อนเฟรมอย่างเดียว จะเห็นว่าพิกัดในเฟรม \( \{B\} \) เปลี่ยนแบบลบตรง ๆ ตามสมการ (8.15) แต่พอ \( \theta \ne 0 \) ความสัมพันธ์นั้นใช้ไม่ได้อีก ส่วนดีเทอร์มิแนนต์ที่มุมล่างควรเป็น \( +1 \) เสมอไม่ว่าจะหมุนไปเท่าใด</span>
+          <span data-lang-en> The gold point never moves, yet the numbers describing it change continuously as frame \( \{B\} \) is shifted and turned. That is the point of the whole chapter: coordinates are not a property of a point but of the pairing between a point and a frame. Set \( \theta = 0 \) and translate only, and the coordinates in \( \{B\} \) change by plain subtraction, exactly as equation (8.15) assumes; once \( \theta \ne 0 \) that relation fails. The determinant in the corner should read \( +1 \) at every angle.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 9.3 --------- -->
+    <section id="dh">
+      <h2><span data-lang-th>9.3 พารามิเตอร์ Denavit–Hartenberg</span><span data-lang-en>9.3 Denavit&ndash;Hartenberg parameters</span></h2>
+
+      <p>
+        <span data-lang-th>สมการ (9.6) บอกว่าการต่อเฟรมคือการคูณเมทริกซ์ แต่ยังเหลือคำถามว่าจะวางเฟรมที่ข้อต่อแต่ละตัวอย่างไรให้ไม่สับสน ถ้าแต่ละคนวางตามใจตัวเอง ตารางตัวเลขที่ได้จะเทียบกันไม่ได้เลย Denavit และ Hartenberg เสนอกติกาที่ทำให้การวางเฟรมเป็นมาตรฐาน และทำให้การแปลงจากเฟรมหนึ่งไปเฟรมถัดไปใช้ตัวเลขเพียง <strong>สี่ตัว</strong> แทนที่จะเป็นหกตัวตามปกติ</span>
+        <span data-lang-en>Equation (9.6) says that chaining frames is matrix multiplication, but it leaves open how to place a frame at each joint without confusion. If everyone chooses their own, the resulting tables of numbers cannot be compared at all. Denavit and Hartenberg proposed a convention that standardises the placement and reduces the transformation from one frame to the next to just <strong>four</strong> numbers instead of the usual six.</span>
+      </p>
+
+      <ul>
+        <li><span data-lang-th>\( a_i \) — <strong>ความยาวลิงก์</strong> คือระยะตามแนวตั้งฉากร่วมระหว่างแกนข้อต่อสองแกน วัดเป็นมิลลิเมตร</span><span data-lang-en>\( a_i \) — the <strong>link length</strong>, the distance along the common normal between two joint axes, in millimetres.</span></li>
+        <li><span data-lang-th>\( \alpha_i \) — <strong>มุมบิดลิงก์</strong> คือมุมระหว่างแกนข้อต่อสองแกน วัดรอบแนวตั้งฉากร่วม ค่าในหุ่นยนต์จริงมักเป็น \( 0 \) หรือ \( \pm 90\deg \) เท่านั้น</span><span data-lang-en>\( \alpha_i \) — the <strong>link twist</strong>, the angle between the two joint axes measured about that common normal. On real robots it is nearly always \( 0 \) or \( \pm 90\deg \).</span></li>
+        <li><span data-lang-th>\( d_i \) — <strong>ระยะเยื้องลิงก์</strong> คือระยะตามแกนข้อต่อจากแนวตั้งฉากร่วมอันก่อนไปอันถัดไป <em>ตัวแปรนี้คือตัวแปรข้อต่อถ้าข้อต่อเป็นแบบเลื่อน</em></span><span data-lang-en>\( d_i \) — the <strong>link offset</strong>, the distance along the joint axis from one common normal to the next. <em>This is the joint variable when the joint is prismatic.</em></span></li>
+        <li><span data-lang-th>\( \theta_i \) — <strong>มุมข้อต่อ</strong> คือมุมระหว่างแนวตั้งฉากร่วมสองอัน วัดรอบแกนข้อต่อ <em>ตัวแปรนี้คือตัวแปรข้อต่อถ้าข้อต่อเป็นแบบหมุน</em></span><span data-lang-en>\( \theta_i \) — the <strong>joint angle</strong>, between the two common normals, measured about the joint axis. <em>This is the joint variable when the joint is revolute.</em></span></li>
+      </ul>
+
+      <!-- ===================== Figure 9.2 ===================== -->
+      <figure class="figure">
+        <div class="fig-ext">
+          <img src="../img/fig-09-02-dh-parameters.svg" style="max-width:360px" loading="lazy"
+               alt="Two consecutive joint frames with the four Denavit-Hartenberg parameters marked between them">
+        </div>
+        <div class="fig-key">
+          <span><b>a₁</b> = \( a_i \) <span data-lang-th>ความยาวลิงก์</span><span data-lang-en>link length</span></span>
+          <span><b>α₁</b> = \( lpha_i \) <span data-lang-th>มุมบิดลิงก์</span><span data-lang-en>link twist</span></span>
+          <span><b>d₁</b> = \( d_i \) <span data-lang-th>ระยะเยื้องลิงก์</span><span data-lang-en>link offset</span></span>
+          <span><b>θ₁</b> = \( 	heta_i \) <span data-lang-th>มุมข้อต่อ</span><span data-lang-en>joint angle</span></span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 9.2</span><span data-lang-en>Figure 9.2</span></b>
+          <span data-lang-th> เฟรมพิกัดของข้อต่อสองตัวที่ติดกัน พร้อมพารามิเตอร์ทั้งสี่ที่เชื่อมสองเฟรมนี้เข้าด้วยกัน รูปนี้ใช้ \( i = 1 \) เป็นตัวอย่างรูปธรรม สังเกตว่า \( d_1 \) วัดไปตามแกน \( Z_0 \) ส่วน \( a_1 \) วัดไปตามแกน \( X_1 \) ซึ่งก็คือแนวตั้งฉากร่วมของแกนข้อต่อทั้งสอง ในสองตัวแปร \( 	heta_1 \) กับ \( d_1 \) มีเพียงตัวเดียวที่เป็นตัวแปรข้อต่อ อีกตัวเป็นค่าคงที่ของโครงสร้าง ข้อต่อหมุนทำให้ \( 	heta_1 \) แปรค่า ส่วนข้อต่อเลื่อนทำให้ \( d_1 \) แปรค่า</span>
+          <span data-lang-en> The coordinate frames of two consecutive joints, with the four parameters that join them. The figure takes \( i = 1 \) as a concrete instance. Note that \( d_1 \) is measured along \( Z_0 \) while \( a_1 \) is measured along \( X_1 \), which is the common normal of the two joint axes. Of the pair \( 	heta_1 \) and \( d_1 \), exactly one is the joint variable and the other is a structural constant: a revolute joint varies \( 	heta_1 \), a prismatic joint varies \( d_1 \).</span>
+          <small class="fig-credit">
+            <span data-lang-th>ภาพ: Jahobr, “Denavit-Hartenberg-Transformation.svg”, วิกิมีเดียคอมมอนส์ — สาธารณสมบัติ ใช้โดยไม่ดัดแปลง</span>
+            <span data-lang-en>Image: Jahobr, “Denavit-Hartenberg-Transformation.svg”, Wikimedia Commons — public domain, used unmodified</span>
+            &middot; <a href="https://commons.wikimedia.org/wiki/File:Denavit-Hartenberg-Transformation.svg">commons.wikimedia.org</a>
+          </small>
+        </figcaption>
+      </figure>
+
+      <p>
+        <span data-lang-th>เมื่อวางเฟรมตามกติกานี้แล้ว การแปลงจากเฟรม \( i-1 \) ไปเฟรม \( i \) เขียนได้เป็นผลคูณของการหมุนและการเลื่อนสี่ครั้งตามลำดับ คือหมุนรอบ \( z \) ด้วย \( \theta_i \) เลื่อนตาม \( z \) ด้วย \( d_i \) เลื่อนตาม \( x \) ด้วย \( a_i \) และหมุนรอบ \( x \) ด้วย \( \alpha_i \) ซึ่งคูณออกมาได้เมทริกซ์เดียว</span>
+        <span data-lang-en>With the frames placed by that convention, the transformation from frame \( i-1 \) to frame \( i \) is a product of four motions in order — rotate about \( z \) by \( \theta_i \), translate along \( z \) by \( d_i \), translate along \( x \) by \( a_i \), rotate about \( x \) by \( \alpha_i \) — which multiplies out to a single matrix.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \mathbf{A}_i \;=\; \begin{bmatrix}
+          c\theta_i & -s\theta_i\,c\alpha_i & s\theta_i\,s\alpha_i & a_i\,c\theta_i \\
+          s\theta_i & c\theta_i\,c\alpha_i & -c\theta_i\,s\alpha_i & a_i\,s\theta_i \\
+          0 & s\alpha_i & c\alpha_i & d_i \\
+          0 & 0 & 0 & 1 \end{bmatrix} $$</div>
+        <div class="eq__num">(9.10)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>จลนศาสตร์ไปข้างหน้าของแขนกลที่มี \( n \) ข้อต่อ จึงเป็นเพียงผลคูณต่อเนื่องของเมทริกซ์เหล่านี้ และนี่คือสมการที่ตัวควบคุมหุ่นยนต์คำนวณใหม่ทุกคาบการควบคุม</span>
+        <span data-lang-en>The forward kinematics of an \( n \)-joint arm is therefore nothing but the running product of these matrices — the equation a robot controller recomputes every control cycle.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \T{0}{n} \;=\; \mathbf{A}_1 \mathbf{A}_2 \cdots \mathbf{A}_n \;=\; \prod_{i=1}^{n} \mathbf{A}_i $$</div>
+        <div class="eq__num">(9.11)</div>
+      </div>
+
+      <div class="callout callout--info">
+        <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>มีสองธรรมเนียม และเอกสารมักไม่บอกว่าใช้ตัวไหน</span><span data-lang-en>There are two conventions, and documents often omit which</span></div>
+        <p class="mb-0">
+          <span data-lang-th>สมการ (9.10) เป็นธรรมเนียมดั้งเดิมที่วางเฟรม \( i \) ไว้ที่ปลายลิงก์ ส่วนธรรมเนียมดัดแปลงของ Craig วางเฟรมไว้ที่ต้นลิงก์ และเรียงลำดับการแปลงต่างออกไป ผลคือ <em>ตารางพารามิเตอร์ของทั้งสองธรรมเนียมหน้าตาคล้ายกันมากแต่ให้ค่าต่างกัน</em> การหยิบตารางจากคู่มือหุ่นยนต์มาใช้โดยไม่ตรวจว่าเป็นธรรมเนียมใด เป็นสาเหตุของความผิดพลาดที่หาเจอยากที่สุดในงานจริง วิธีตรวจที่เร็วที่สุดคือแทนค่าท่าบ้านเข้าไปแล้วเทียบตำแหน่งปลายเครื่องมือกับที่หุ่นยนต์รายงานจริง</span>
+          <span data-lang-en>Equation (9.10) is the original convention, which puts frame \( i \) at the far end of link \( i \). Craig&rsquo;s modified convention puts it at the near end and orders the transformations differently. The consequence is that <em>parameter tables in the two conventions look very similar but hold different numbers</em>. Taking a table from a robot manual without checking which convention it uses causes the hardest errors to find in real work. The quickest check is to substitute the home pose and compare the computed tool position with what the robot itself reports.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 9.4 --------- -->
+    <section id="robots">
+      <h2><span data-lang-th>9.4 จลนศาสตร์ไปข้างหน้าของหุ่นยนต์จริง</span><span data-lang-en>9.4 Forward kinematics of real robots</span></h2>
+
+      <h3><span data-lang-th>9.4.1 หุ่นยนต์คาร์ทีเซียน</span><span data-lang-en>9.4.1 The Cartesian robot</span></h3>
+
+      <p>
+        <span data-lang-th>กรณีที่ง่ายที่สุดคือข้อต่อเลื่อนสามตัวที่ตั้งฉากกัน ทุกมุมบิดเป็น \( 90\deg \) และตัวแปรข้อต่อคือ \( d_1, d_2, d_3 \) ล้วน ผลคูณของเมทริกซ์ทั้งสามให้ผลที่ไม่น่าแปลกใจ</span>
+        <span data-lang-en>The simplest case is three mutually perpendicular prismatic joints: every twist is \( 90\deg \) and the joint variables are \( d_1, d_2, d_3 \) throughout. The product of the three matrices gives an unsurprising result.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \vect{p} = \begin{bmatrix} d_1 \\ d_2 \\ d_3 \end{bmatrix}, \qquad {}^{0}\mathbf{R}_{3} = \mathbf{I} $$</div>
+        <div class="eq__num">(9.12)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ปลายเครื่องมืออยู่ที่พิกัดเดียวกับค่าของข้อต่อโดยตรง และการวางตัวไม่เปลี่ยนไม่ว่าจะเคลื่อนไปที่ใด นี่คือเหตุผลที่ระบบรางเหนือแปลงปลูกในโรงเรือนเขียนโปรแกรมได้โดยแทบไม่ต้องรู้จลนศาสตร์เลย และเป็นเหตุผลที่จุดเอกฐานไม่มีทางเกิดขึ้นกับโครงร่างนี้</span>
+        <span data-lang-en>The tool sits at the joint values themselves and its orientation never changes, wherever it goes. That is why an over-bed gantry in a greenhouse can be programmed with almost no kinematics at all, and why this configuration can never reach a singularity.</span>
+      </p>
+
+      <h3><span data-lang-th>9.4.2 แขนกลสองลิงก์ในระนาบ</span><span data-lang-en>9.4.2 The planar two-link arm</span></h3>
+
+      <p>
+        <span data-lang-th>แขนสองลิงก์ที่ใช้ตลอดบทที่ 8 มีพารามิเตอร์ง่าย ๆ คือ \( a_1 = L_1 \), \( a_2 = L_2 \) และมุมบิดเป็นศูนย์ทั้งคู่ ผลคูณของ \( \mathbf{A}_1 \mathbf{A}_2 \) ให้หลักที่สี่ซึ่งเป็นตำแหน่งปลายแขน</span>
+        <span data-lang-en>The two-link arm used throughout Chapter 8 has simple parameters: \( a_1 = L_1 \), \( a_2 = L_2 \), both twists zero. The product \( \mathbf{A}_1 \mathbf{A}_2 \) has a fourth column that is the tool position.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ x = L_1 c_1 + L_2 c_{12}, \qquad y = L_1 s_1 + L_2 s_{12}, \qquad \phi = \theta_1 + \theta_2 $$</div>
+        <div class="eq__num">(9.13)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>โดย \( c_{12} \) ย่อมาจาก \( \cos(\theta_1 + \theta_2) \) สังเกตว่าการวางตัวของเครื่องมือ \( \phi \) เป็นเพียงผลบวกของมุมข้อต่อ ซึ่งเป็นสมบัติของแขนในระนาบเท่านั้น และไม่เป็นจริงในสามมิติ</span>
+        <span data-lang-en>Here \( c_{12} \) abbreviates \( \cos(\theta_1 + \theta_2) \). Note that the tool orientation \( \phi \) is simply the sum of the joint angles — a property of planar arms only, which does not carry over into three dimensions.</span>
+      </p>
+
+      <h3><span data-lang-th>9.4.3 หุ่นยนต์ SCARA</span><span data-lang-en>9.4.3 The SCARA</span></h3>
+
+      <p>
+        <span data-lang-th>SCARA คือแขนสองลิงก์ในระนาบ บวกกับข้อต่อเลื่อนแนวดิ่งและข้อต่อหมุนที่ปลายสำหรับหมุนชิ้นงาน ตารางพารามิเตอร์มีเพียงสี่แถว และเป็นตารางที่ควรเขียนเองให้ได้</span>
+        <span data-lang-en>A SCARA is the planar two-link arm plus a vertical prismatic joint and a final rotary joint for turning the part. Its parameter table has only four rows, and is one every student should be able to write unaided.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 9.1 — พารามิเตอร์ DH ของหุ่นยนต์ SCARA (เครื่องหมาย * คือตัวแปรข้อต่อ)</span><span data-lang-en>Table 9.1 — DH parameters of a SCARA (* marks the joint variable)</span></caption>
+          <thead>
+            <tr>
+              <th>\( i \)</th><th>\( a_i \)</th><th>\( \alpha_i \)</th><th>\( d_i \)</th><th>\( \theta_i \)</th>
+              <th><span data-lang-th>ชนิด</span><span data-lang-en>Type</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>\( L_1 \)</td><td>\( 0 \)</td><td>\( d_1 \)</td><td>\( \theta_1^{*} \)</td><td>R</td></tr>
+            <tr><td>2</td><td>\( L_2 \)</td><td>\( 180\deg \)</td><td>\( 0 \)</td><td>\( \theta_2^{*} \)</td><td>R</td></tr>
+            <tr><td>3</td><td>\( 0 \)</td><td>\( 0 \)</td><td>\( d_3^{*} \)</td><td>\( 0 \)</td><td>P</td></tr>
+            <tr><td>4</td><td>\( 0 \)</td><td>\( 0 \)</td><td>\( d_4 \)</td><td>\( \theta_4^{*} \)</td><td>R</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <span data-lang-th>มุมบิด \( 180\deg \) ในแถวที่สองเป็นสิ่งที่คนมักข้าม มันมีไว้เพื่อกลับทิศแกน \( z \) ให้ชี้ลง เพราะข้อต่อเลื่อนของ SCARA เคลื่อนที่ลงเข้าหาชิ้นงาน ไม่ใช่ขึ้น ผลคูณทั้งสี่แถวให้จลนศาสตร์ไปข้างหน้า</span>
+        <span data-lang-en>The \( 180\deg \) twist in the second row is the one people skip. It exists to flip the \( z \) axis downwards, because a SCARA&rsquo;s prismatic joint moves down towards the work rather than up. Multiplying out all four rows gives the forward kinematics.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ x = L_1 c_1 + L_2 c_{12}, \qquad y = L_1 s_1 + L_2 s_{12}, \qquad z = d_1 - d_3 - d_4, \qquad \phi = \theta_1 + \theta_2 - \theta_4 $$</div>
+        <div class="eq__num">(9.14)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 9.2 — ตำแหน่งหัวหยอดเมล็ดของ SCARA</span><span data-lang-en>Worked example 9.2 — Where the SCARA&rsquo;s seeder head is</span></div>
+        <p>
+          <span data-lang-th>หุ่นยนต์ SCARA ที่ใช้หยอดเมล็ดลงถาดเพาะมี \( L_1 = 400 \) mm, \( L_2 = 250 \) mm, \( d_1 = 400 \) mm และ \( d_4 = 0 \) ขณะหนึ่งอ่านค่าข้อต่อได้ \( \theta_1 = 30\deg \), \( \theta_2 = 45\deg \), \( d_3 = 120 \) mm จงหาตำแหน่งของหัวหยอดในเฟรมฐาน</span>
+          <span data-lang-en>A SCARA sowing seed into propagation trays has \( L_1 = 400 \) mm, \( L_2 = 250 \) mm, \( d_1 = 400 \) mm and \( d_4 = 0 \). At one instant the joints read \( \theta_1 = 30\deg \), \( \theta_2 = 45\deg \), \( d_3 = 120 \) mm. Find the head&rsquo;s position in the base frame.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ x = 400\cos 30\deg + 250\cos 75\deg = 346.4 + 64.7 = 411.1\ \text{mm} $$</div>
+          <div class="eq__num">(9.15)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ y = 400\sin 30\deg + 250\sin 75\deg = 200.0 + 241.5 = 441.5\ \text{mm} $$</div>
+          <div class="eq__num">(9.16)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ z = 400 - 120 - 0 = 280\ \text{mm} $$</div>
+          <div class="eq__num">(9.17)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ตรวจความสมเหตุสมผลก่อนเชื่อผลลัพธ์เสมอ รัศมีจากฐานคือ \( \sqrt{411.1^2 + 441.5^2} = 603 \) mm ซึ่งอยู่ระหว่าง \( R_{\min} = 150 \) mm และ \( R_{\max} = 650 \) mm ตามสมการ (8.2) จึงเป็นท่าที่เอื้อมถึงได้จริง ถ้าคำนวณแล้วได้รัศมีเกิน \( R_{\max} \) แสดงว่าแทนค่าผิดแน่นอน เพราะจลนศาสตร์ไปข้างหน้าไม่มีทางให้ท่าที่หุ่นยนต์ทำไม่ได้</span>
+          <span data-lang-en>Always sanity-check before believing a result. The radius from the base is \( \sqrt{411.1^2 + 441.5^2} = 603 \) mm, between the \( R_{\min} = 150 \) mm and \( R_{\max} = 650 \) mm of equation (8.2), so the pose is genuinely reachable. A computed radius beyond \( R_{\max} \) is proof of a substitution error, since forward kinematics cannot produce a pose the robot could not adopt.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>9.4.4 แขนกลอาร์ติคูเลตหกแกน</span><span data-lang-en>9.4.4 The six-axis articulated arm</span></h3>
+
+      <p>
+        <span data-lang-th>หุ่นยนต์หกแกนที่ใช้เก็บเกี่ยวและเรียงพาเลทมีตารางหกแถว โครงสร้างที่พบบ่อยที่สุดคือสามแกนแรกกำหนดตำแหน่ง และสามแกนหลังตัดกันที่จุดเดียวเพื่อกำหนดการวางตัว เรียกว่า <strong>ข้อมือทรงกลม</strong> ซึ่งเป็นสิ่งที่ทำให้แก้จลนศาสตร์ย้อนกลับในรูปปิดได้</span>
+        <span data-lang-en>The six-axis robots used for harvesting and palletising have six rows. The commonest structure has the first three axes fix the position and the last three intersect at a single point to fix the orientation — a <strong>spherical wrist</strong>, and it is what makes a closed-form inverse solution possible.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 9.2 — พารามิเตอร์ DH ของแขนกลอาร์ติคูเลตหกแกนที่มีข้อมือทรงกลม</span><span data-lang-en>Table 9.2 — DH parameters of a six-axis articulated arm with a spherical wrist</span></caption>
+          <thead>
+            <tr>
+              <th>\( i \)</th><th>\( a_i \) (mm)</th><th>\( \alpha_i \)</th><th>\( d_i \) (mm)</th><th>\( \theta_i \)</th>
+              <th><span data-lang-th>หน้าที่</span><span data-lang-en>Role</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>150</td><td>\( -90\deg \)</td><td>400</td><td>\( \theta_1^{*} \)</td><td rowspan="3"><span data-lang-th>กำหนดตำแหน่ง</span><span data-lang-en>sets the position</span></td></tr>
+            <tr><td>2</td><td>600</td><td>\( 0 \)</td><td>0</td><td>\( \theta_2^{*} \)</td></tr>
+            <tr><td>3</td><td>120</td><td>\( -90\deg \)</td><td>0</td><td>\( \theta_3^{*} \)</td></tr>
+            <tr><td>4</td><td>0</td><td>\( +90\deg \)</td><td>620</td><td>\( \theta_4^{*} \)</td><td rowspan="3"><span data-lang-th>กำหนดการวางตัว</span><span data-lang-en>sets the orientation</span></td></tr>
+            <tr><td>5</td><td>0</td><td>\( -90\deg \)</td><td>0</td><td>\( \theta_5^{*} \)</td></tr>
+            <tr><td>6</td><td>0</td><td>\( 0 \)</td><td>100</td><td>\( \theta_6^{*} \)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <span data-lang-th>สังเกตว่า \( a_4 = a_5 = 0 \) และ \( d_5 = 0 \) ซึ่งเป็นลายเซ็นของข้อมือทรงกลมในตาราง DH คือสามแกนหลังไม่มีระยะเยื้องออกจากกันเลย ตารางลักษณะนี้คำนวณด้วยมือได้ยาก แต่เขียนเป็นโปรแกรมสั้น ๆ ได้ง่ายมาก ซึ่งเป็นสิ่งที่ปฏิบัติการที่ 9 จะให้ทำ</span>
+        <span data-lang-en>Notice that \( a_4 = a_5 = 0 \) and \( d_5 = 0 \): that is the signature of a spherical wrist in a DH table, the last three axes having no offset between them. A table like this is laborious by hand but very short to program, which is what Laboratory 9 asks for.</span>
+      </p>
+
+      <!-- ===================== Animation 9.2 ===================== -->
+      <figure class="anim" data-anim="ch09-fk">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 9.2 — โซ่ของการแปลง จากฐานถึงปลายเครื่องมือ</span>
+          <span data-lang-en>Animation 9.2 — The chain of transformations, base to tool</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 380" role="img" aria-label="A three-link planar arm whose joint sliders drive the links, with the frame at each joint and the resulting tool pose shown">
+            <line x1="60" y1="330" x2="530" y2="330" class="dg-stroke" stroke-width="2"/>
+            <rect x="246" y="330" width="48" height="18" rx="4" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+
+            <polyline id="a92-trail" class="dg-stroke-gold" stroke-width="2" fill="none" points=""/>
+
+            <line id="a92-l1" x1="270" y1="330" x2="270" y2="330" class="dg-stroke-green" stroke-width="13" stroke-linecap="round"/>
+            <line id="a92-l2" x1="270" y1="330" x2="270" y2="330" class="dg-stroke-green" stroke-width="10" stroke-linecap="round"/>
+            <line id="a92-l3" x1="270" y1="330" x2="270" y2="330" class="dg-stroke-green" stroke-width="7" stroke-linecap="round"/>
+
+            <!-- a small axis cross at each joint frame -->
+            <g id="a92-f0"><line x1="0" y1="0" x2="30" y2="0" class="dg-stroke" stroke-width="2"/><line x1="0" y1="0" x2="0" y2="-30" class="dg-stroke" stroke-width="2"/></g>
+            <g id="a92-f1"><line x1="0" y1="0" x2="30" y2="0" class="dg-stroke-gold" stroke-width="2"/><line x1="0" y1="0" x2="0" y2="-30" class="dg-stroke-gold" stroke-width="2"/></g>
+            <g id="a92-f2"><line x1="0" y1="0" x2="30" y2="0" class="dg-stroke-gold" stroke-width="2"/><line x1="0" y1="0" x2="0" y2="-30" class="dg-stroke-gold" stroke-width="2"/></g>
+            <g id="a92-f3"><line x1="0" y1="0" x2="34" y2="0" class="dg-stroke-gold" stroke-width="2.6"/><line x1="0" y1="0" x2="0" y2="-34" class="dg-stroke-gold" stroke-width="2.6"/></g>
+
+            <circle id="a92-j1" cx="270" cy="330" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <circle id="a92-j2" cx="270" cy="330" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <circle id="a92-j3" cx="270" cy="330" r="6" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <circle id="a92-tool" cx="270" cy="330" r="7" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+
+            <!-- the numbers -->
+            <rect x="540" y="40" width="292" height="300" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4"/>
+            <text class="dg-text-sm" x="564" y="70" data-lang-th>ท่าของปลายเครื่องมือ</text>
+            <text class="dg-text-sm" x="564" y="70" data-lang-en>pose of the tool</text>
+            <text id="a92-pose" class="dg-text-b" x="564" y="96">—</text>
+            <text class="dg-text-sm" x="564" y="134" data-lang-th>เมทริกซ์ผลคูณ จากฐานถึงเครื่องมือ</text>
+            <text class="dg-text-sm" x="564" y="134" data-lang-en>the product, base to tool</text>
+            <text id="a92-m1" class="dg-text" x="572" y="164" font-family="monospace">—</text>
+            <text id="a92-m2" class="dg-text" x="572" y="190" font-family="monospace">—</text>
+            <text id="a92-m3" class="dg-text" x="572" y="216" font-family="monospace">—</text>
+            <text class="dg-text-sm" x="564" y="256" data-lang-th>รัศมีจากฐาน</text>
+            <text class="dg-text-sm" x="564" y="256" data-lang-en>radius from the base</text>
+            <text id="a92-r" class="dg-text-b" x="564" y="282">—</text>
+            <text class="dg-text-sm" x="564" y="316" data-lang-th>ผลบวกของมุมข้อต่อ</text>
+            <text class="dg-text-sm" x="564" y="316" data-lang-en>sum of the joint angles</text>
+            <text id="a92-phi" class="dg-text-b" x="564" y="336">—</text>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>ลิงก์ทั้งสาม</span><span data-lang-en>the three links</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>เฟรมที่ข้อต่อแต่ละตัว</span><span data-lang-en>the frame at each joint</span></span>
+          <span style="color:var(--sky-500)"><i></i><span data-lang-th>ปลายเครื่องมือ</span><span data-lang-en>the tool point</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="sweep" aria-pressed="false"><i class="fa-solid fa-repeat"></i><span data-lang-th>กวาดอัตโนมัติ</span><span data-lang-en>Auto sweep</span></button>
+          <label class="anim__param">
+            \( \theta_1 \)
+            <input type="range" data-anim-param="q1" data-unit="°" min="-30" max="170" step="5" value="70">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            \( \theta_2 \)
+            <input type="range" data-anim-param="q2" data-unit="°" min="-150" max="150" step="5" value="-60">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            \( \theta_3 \)
+            <input type="range" data-anim-param="q3" data-unit="°" min="-120" max="120" step="5" value="-30">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 9.2</span><span data-lang-en>Animation 9.2</span></b>
+          <span data-lang-th> เฟรมสีทองที่ข้อต่อแต่ละตัวคือผลสะสมของสมการ (9.11) ทีละขั้น และเมทริกซ์ในแผงด้านขวาคือผลคูณทั้งหมด สองหลักแรกคือส่วนหมุนและหลักสุดท้ายคือตำแหน่ง ตรงกับโครงสร้างของสมการ (9.5) พอดี ลองหมุนเฉพาะ \( \theta_1 \) จะเห็นว่าเฟรมทุกตัวที่อยู่ถัดไปหมุนตามหมด ซึ่งเป็นสาเหตุที่ความคลาดเคลื่อนของข้อต่อแรกถูกขยายมากที่สุด ส่วนผลบวกของมุมทั้งสามคือการวางตัวของเครื่องมือตามสมการ (9.13)</span>
+          <span data-lang-en> The gold frame at each joint is the running product of equation (9.11), one step at a time, and the matrix in the right-hand panel is the whole product: its first two columns are the rotation and its last column the position, exactly the structure of equation (9.5). Turn \( \theta_1 \) alone and every frame beyond it turns too, which is why an error in the first joint is magnified most. The sum of the three angles is the tool&rsquo;s orientation, as equation (9.13) says.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 9.5 --------- -->
+    <section id="ik">
+      <h2><span data-lang-th>9.5 จลนศาสตร์ย้อนกลับและจุดเอกฐาน</span><span data-lang-en>9.5 Inverse kinematics and singularities</span></h2>
+
+      <p>
+        <span data-lang-th>จลนศาสตร์ไปข้างหน้าตอบคำถามที่หุ่นยนต์ไม่ค่อยถาม เพราะเรารู้ค่าข้อต่ออยู่แล้วจากตัวเข้ารหัส คำถามที่ใช้งานจริงคือกลับกัน คือ <em>รู้ว่าอยากให้ปลายเครื่องมืออยู่ที่ไหน แล้วต้องตั้งข้อต่อเป็นเท่าใด</em> ปัญหานี้ยากกว่ามากด้วยเหตุผลสามข้อ</span>
+        <span data-lang-en>Forward kinematics answers a question the robot rarely asks, since the encoders already give the joint values. The useful question is the reverse: <em>given where the tool should be, what must the joints be set to?</em> That problem is far harder, for three reasons.</span>
+      </p>
+
+      <ul>
+        <li><span data-lang-th><strong>สมการไม่เป็นเชิงเส้น</strong> เพราะมีไซน์และโคไซน์ของผลบวกของตัวแปร จึงแก้ด้วยพีชคณิตเชิงเส้นตรง ๆ ไม่ได้</span><span data-lang-en><strong>The equations are nonlinear</strong>, containing sines and cosines of sums of the unknowns, so plain linear algebra will not solve them.</span></li>
+        <li><span data-lang-th><strong>คำตอบมีได้หลายชุด</strong> แขนสองลิงก์มีสองชุดเสมอ ส่วนหุ่นยนต์หกแกนมีได้ถึงแปดชุดสำหรับท่าเดียวกัน และตัวควบคุมต้องเลือกหนึ่งชุด</span><span data-lang-en><strong>Several solutions exist.</strong> A two-link arm always has two; a six-axis robot can have eight for the same pose, and the controller must choose one.</span></li>
+        <li><span data-lang-th><strong>คำตอบอาจไม่มีเลย</strong> ถ้าท่าที่ขอมานั้นอยู่นอกปริภูมิทำงาน ซึ่งโปรแกรมต้องตรวจจับและรายงาน ไม่ใช่คำนวณต่อไปเงียบ ๆ</span><span data-lang-en><strong>There may be no solution at all</strong>, if the requested pose lies outside the workspace — which the program must detect and report rather than quietly computing on.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>9.5.1 คำตอบในรูปปิดของแขนสองลิงก์</span><span data-lang-en>9.5.1 Closed-form solution for the two-link arm</span></h3>
+
+      <p>
+        <span data-lang-th>เริ่มจากการยกกำลังสองสมการ (9.13) ทั้งสองบรรทัดแล้วบวกกัน พจน์ของ \( \theta_1 \) จะหายไปหมด เหลือเพียงสมการเดียวที่มี \( \theta_2 \) เป็นตัวแปรเดียว</span>
+        <span data-lang-en>Square both lines of equation (9.13) and add them. Every term in \( \theta_1 \) cancels, leaving a single equation whose only unknown is \( \theta_2 \).</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ c_2 \;=\; \frac{x^2 + y^2 - L_1^2 - L_2^2}{2 L_1 L_2} $$</div>
+        <div class="eq__num">(9.18)</div>
+      </div>
+
+      <div class="eq">
+        <div class="eq__body">$$ \theta_2 \;=\; \pm \arccos\!\left(c_2\right), \qquad \lvert c_2 \rvert \le 1 \text{ จึงจะเอื้อมถึง / for the point to be reachable} $$</div>
+        <div class="eq__num">(9.19)</div>
+      </div>
+
+      <div class="eq">
+        <div class="eq__body">$$ \theta_1 \;=\; \operatorname{atan2}(y,\, x) \;-\; \operatorname{atan2}\!\left(L_2 s_2,\; L_1 + L_2 c_2\right) $$</div>
+        <div class="eq__num">(9.20)</div>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>ใช้ atan2 เสมอ อย่าใช้ arctan</span><span data-lang-en>Always use atan2, never arctan</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ฟังก์ชัน \( \arctan(y/x) \) ให้ผลในช่วง \( \pm 90\deg \) เท่านั้น จึงแยกไม่ออกระหว่างจุดที่อยู่ด้านหน้ากับด้านหลังของหุ่นยนต์ เพราะทั้งสองให้อัตราส่วน \( y/x \) เท่ากัน ส่วน \( \operatorname{atan2}(y, x) \) รับสองอาร์กิวเมนต์แยกกันจึงรู้จักจตุภาคทั้งสี่ และยังทำงานได้เมื่อ \( x = 0 \) ซึ่ง \( \arctan \) หารด้วยศูนย์ การใช้ \( \arctan \) ในโปรแกรมจลนศาสตร์ย้อนกลับทำให้หุ่นยนต์เหวี่ยงไปด้านตรงข้ามของฐานโดยไม่มีคำเตือน</span>
+          <span data-lang-en>The function \( \arctan(y/x) \) returns values only within \( \pm 90\deg \), so it cannot tell a point in front of the robot from one behind it: both give the same ratio \( y/x \). By taking two separate arguments, \( \operatorname{atan2}(y, x) \) knows all four quadrants, and it still works when \( x = 0 \), where \( \arctan \) divides by zero. Using \( \arctan \) in an inverse-kinematics routine sends the robot swinging to the opposite side of its base without warning.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 9.3 — สองท่าสำหรับจุดเดียวกัน</span><span data-lang-en>Worked example 9.3 — Two poses for one point</span></div>
+        <p>
+          <span data-lang-th>แขน SCARA ที่มี \( L_1 = 400 \) mm และ \( L_2 = 250 \) mm ต้องวางหัวหยอดลงที่ \( (450, 300) \) mm จงหามุมข้อต่อทุกชุดที่เป็นไปได้</span>
+          <span data-lang-en>A SCARA with \( L_1 = 400 \) mm and \( L_2 = 250 \) mm must place its head at \( (450, 300) \) mm. Find every possible set of joint angles.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ c_2 = \frac{450^2 + 300^2 - 400^2 - 250^2}{2(400)(250)} = \frac{70\,000}{200\,000} = 0.350 \;\Rightarrow\; \theta_2 = \pm 69.5\deg $$</div>
+          <div class="eq__num">(9.21)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ \operatorname{atan2}(300, 450) = 33.7\deg, \qquad \operatorname{atan2}\!\left(250(0.937),\, 400 + 250(0.350)\right) = 25.6\deg $$</div>
+          <div class="eq__num">(9.22)</div>
+        </div>
+        <p>
+          <span data-lang-th>จึงได้คำตอบสองชุด</span>
+          <span data-lang-en>So there are two solutions.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ \left(\theta_1, \theta_2\right) = \left(8.1\deg,\ +69.5\deg\right) \quad \text{หรือ / or} \quad \left(59.3\deg,\ -69.5\deg\right) $$</div>
+          <div class="eq__num">(9.23)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ทั้งสองชุดวางหัวหยอดลงที่จุดเดียวกันพอดี ตรวจได้โดยแทนกลับเข้าสมการ (9.13) สิ่งที่ต่างคือข้อศอกชี้ไปคนละทาง การเลือกชุดใดจึงเป็นเรื่องของสิ่งกีดขวางรอบตัวและระยะทางที่ข้อต่อต้องเดินจากท่าปัจจุบัน ไม่ใช่เรื่องของความถูกต้องทางคณิตศาสตร์ ตัวควบคุมส่วนใหญ่เลือกชุดที่ข้อต่อเดินน้อยที่สุด เว้นแต่ผู้เขียนโปรแกรมบังคับไว้เอง</span>
+          <span data-lang-en>Both place the head at exactly the same point, as substituting back into equation (9.13) confirms. What differs is which way the elbow points. Choosing between them is a question of what is in the way and how far the joints must travel from the present pose, not of mathematical correctness. Most controllers take whichever moves the joints least, unless the programmer forces the choice.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>9.5.2 จาโคเบียนและจุดเอกฐาน</span><span data-lang-en>9.5.2 The Jacobian and singularities</span></h3>
+
+      <p>
+        <span data-lang-th>บทที่ 8 กล่าวถึงจุดเอกฐานไว้แบบคร่าว ๆ ว่าเป็นท่าที่หุ่นยนต์เสียความสามารถเคลื่อนที่ในบางทิศ ตอนนี้เรานิยามมันด้วยตัวเลขได้แล้ว <strong>จาโคเบียน</strong> คือเมทริกซ์ที่เชื่อมความเร็วของข้อต่อเข้ากับความเร็วของปลายเครื่องมือ</span>
+        <span data-lang-en>Chapter 8 described a singularity loosely, as a pose in which the robot loses the ability to move in some direction. It can now be defined numerically. The <strong>Jacobian</strong> is the matrix linking joint velocities to tool velocity.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \dot{\vect{p}} \;=\; \mathbf{J}(\vect{q})\, \dot{\vect{q}}, \qquad
+           \mathbf{J} = \begin{bmatrix} -L_1 s_1 - L_2 s_{12} & -L_2 s_{12} \\ L_1 c_1 + L_2 c_{12} & L_2 c_{12} \end{bmatrix} $$</div>
+        <div class="eq__num">(9.24)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ดีเทอร์มิแนนต์ของจาโคเบียนของแขนสองลิงก์ย่อลงเหลือรูปที่สวยงามมาก และบอกทุกอย่างที่ต้องรู้</span>
+        <span data-lang-en>The determinant of this Jacobian collapses to a remarkably clean form, and it says everything one needs to know.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \det \mathbf{J} \;=\; L_1 L_2 \sin\theta_2 $$</div>
+        <div class="eq__num">(9.25)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ดีเทอร์มิแนนต์เป็นศูนย์เมื่อ \( \theta_2 = 0 \) คือแขนเหยียดตรงจนสุด หรือ \( \theta_2 = 180\deg \) คือแขนพับกลับทับตัวเอง ทั้งสองท่าคือจุดเอกฐาน และที่จุดนั้นสมการ \( \dot{\vect{q}} = \mathbf{J}^{-1}\dot{\vect{p}} \) ใช้ไม่ได้เพราะเมทริกซ์ผกผันไม่มีอยู่</span>
+        <span data-lang-en>The determinant vanishes when \( \theta_2 = 0 \), the arm fully extended, or \( \theta_2 = 180\deg \), the arm folded back on itself. Both are singularities, and at them \( \dot{\vect{q}} = \mathbf{J}^{-1}\dot{\vect{p}} \) fails because the inverse does not exist.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \dot{\vect{q}} \;=\; \mathbf{J}^{-1} \dot{\vect{p}} \qquad \Longrightarrow \qquad \lVert \dot{\vect{q}} \rVert \;\propto\; \frac{1}{\lvert \sin\theta_2 \rvert} $$</div>
+        <div class="eq__num">(9.26)</div>
+      </div>
+
+      <div class="callout callout--info">
+        <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>ทำไมหุ่นยนต์จึงหยุดกลางคันและขึ้นข้อความ “ใกล้จุดเอกฐาน”</span><span data-lang-en>Why a robot stops mid-move with a “near singularity” message</span></div>
+        <p class="mb-0">
+          <span data-lang-th>สมการ (9.26) บอกว่าเมื่อ \( \theta_2 \) เข้าใกล้ศูนย์ ความเร็วข้อต่อที่ต้องใช้เพื่อให้ปลายเครื่องมือเดินด้วยความเร็วคงที่จะพุ่งขึ้นโดยไม่มีขอบเขต ที่ \( \theta_2 = 5\deg \) ตัวคูณคือ 11 เท่า และที่ \( 1\deg \) คือ 57 เท่า มอเตอร์ทำไม่ได้ ตัวควบคุมจึงต้องเลือกระหว่างลดความเร็วปลายเครื่องมือลงหรือหยุดและแจ้งเตือน นี่คือเหตุผลเชิงตัวเลขของกฎในบทที่ 8 ที่บอกว่าอย่าออกแบบงานให้อยู่เลย 90% ของระยะเอื้อมสูงสุด</span>
+          <span data-lang-en>Equation (9.26) says that as \( \theta_2 \) approaches zero, the joint speed needed to keep the tool moving at constant velocity grows without bound: at \( \theta_2 = 5\deg \) the factor is 11, at \( 1\deg \) it is 57. No motor can deliver that, so the controller must either slow the tool or stop and raise an alarm. This is the arithmetic behind the rule in Chapter 8 against placing work beyond 90% of maximum reach.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 9.3 ===================== -->
+      <figure class="anim" data-anim="ch09-ik">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 9.3 — สองคำตอบ และสิ่งที่เกิดขึ้นใกล้จุดเอกฐาน</span>
+          <span data-lang-en>Animation 9.3 — Two solutions, and what happens near a singularity</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 380" role="img" aria-label="A two-link arm reaching one target in both elbow-up and elbow-down poses, with the Jacobian determinant and the required joint speed shown">
+            <line x1="40" y1="330" x2="520" y2="330" class="dg-stroke" stroke-width="2"/>
+            <circle id="a93-ws" cx="240" cy="330" r="0" class="dg-stroke-green" stroke-width="1.4" stroke-dasharray="5 4" fill="none"/>
+            <rect x="216" y="330" width="48" height="18" rx="4" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+
+            <!-- the alternative pose, drawn faintly behind -->
+            <g opacity="0.45">
+              <line id="a93-b1" x1="240" y1="330" x2="240" y2="330" class="dg-stroke" stroke-width="10" stroke-linecap="round"/>
+              <line id="a93-b2" x1="240" y1="330" x2="240" y2="330" class="dg-stroke" stroke-width="8" stroke-linecap="round"/>
+              <circle id="a93-bj" cx="240" cy="330" r="6" class="dg-fill-steel dg-stroke" stroke-width="1.6"/>
+            </g>
+
+            <line id="a93-l1" x1="240" y1="330" x2="240" y2="330" class="dg-stroke-green" stroke-width="12" stroke-linecap="round"/>
+            <line id="a93-l2" x1="240" y1="330" x2="240" y2="330" class="dg-stroke-green" stroke-width="9" stroke-linecap="round"/>
+            <circle id="a93-j1" cx="240" cy="330" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <circle id="a93-j2" cx="240" cy="330" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <circle id="a93-tgt" cx="240" cy="330" r="9" class="dg-fill-sky dg-stroke" stroke-width="2.4"/>
+
+            <!-- the numbers -->
+            <rect x="540" y="40" width="292" height="300" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4"/>
+            <text class="dg-text-sm" x="564" y="70" data-lang-th>เป้าหมาย</text>
+            <text class="dg-text-sm" x="564" y="70" data-lang-en>target</text>
+            <text id="a93-tx" class="dg-text-b" x="564" y="94">—</text>
+            <text class="dg-text-sm" x="564" y="128" data-lang-th>คำตอบที่ใช้อยู่</text>
+            <text class="dg-text-sm" x="564" y="128" data-lang-en>solution in use</text>
+            <text id="a93-sol" class="dg-text-b" x="564" y="152">—</text>
+            <text class="dg-text-sm" x="564" y="186" data-lang-th>คำตอบอีกชุด</text>
+            <text class="dg-text-sm" x="564" y="186" data-lang-en>the other solution</text>
+            <text id="a93-alt" class="dg-text-b" x="564" y="210">—</text>
+            <text class="dg-text-sm" x="564" y="244">det J</text>
+            <text id="a93-det" class="dg-text-b" x="564" y="268">—</text>
+            <text class="dg-text-sm" x="564" y="302" data-lang-th>ตัวคูณความเร็วข้อต่อ</text>
+            <text class="dg-text-sm" x="564" y="302" data-lang-en>joint-speed multiplier</text>
+            <text id="a93-amp" class="dg-text-b" x="564" y="326">—</text>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>ท่าที่ใช้อยู่</span><span data-lang-en>the pose in use</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>คำตอบอีกชุดสำหรับเป้าหมายเดียวกัน</span><span data-lang-en>the other solution for the same target</span></span>
+          <span style="color:var(--sky-500)"><i></i><span data-lang-th>เป้าหมาย</span><span data-lang-en>the target</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn is-on" type="button" data-anim-toggle="up" aria-pressed="true"><i class="fa-solid fa-arrows-up-down"></i><span data-lang-th>ข้อศอกขึ้น</span><span data-lang-en>Elbow up</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ระยะเป้าหมาย</span><span data-lang-en>Target radius</span>
+            <input type="range" data-anim-param="r" data-unit="mm" min="200" max="650" step="1" value="480">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ทิศของเป้าหมาย</span><span data-lang-en>Target bearing</span>
+            <input type="range" data-anim-param="ang" data-unit="°" min="5" max="175" step="5" value="55">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 9.3</span><span data-lang-en>Animation 9.3</span></b>
+          <span data-lang-th> ท่าสีจางคือคำตอบอีกชุดของสมการ (9.19) ซึ่งวางปลายเครื่องมือลงที่จุดเดียวกันเป๊ะ ลองกดสลับข้อศอกดู ตำแหน่งเป้าหมายไม่ขยับเลย ต่อมาค่อย ๆ เลื่อนระยะเป้าหมายออกไปจนใกล้ \( L_1 + L_2 = 650 \) mm จะเห็นว่าสองคำตอบค่อย ๆ รวมเป็นชุดเดียว ขณะที่ \( \det \mathbf{J} \) ลู่เข้าสู่ศูนย์และตัวคูณความเร็วข้อต่อพุ่งขึ้น นั่นคือจุดเอกฐานที่สมการ (9.25) ทำนายไว้ และเป็นเหตุผลว่าทำไมบริเวณขอบปริภูมิทำงานจึงใช้งานจริงไม่ได้</span>
+          <span data-lang-en> The faint pose is the other solution of equation (9.19), and it puts the tool at exactly the same point — press the elbow toggle and the target does not shift at all. Now walk the target radius out towards \( L_1 + L_2 = 650 \) mm: the two solutions merge into one while \( \det \mathbf{J} \) falls to zero and the joint-speed multiplier climbs. That is the singularity equation (9.25) predicts, and the reason the rim of the workspace is unusable in practice.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 9.6 --------- -->
+    <section id="delta">
+      <h2><span data-lang-th>9.6 หุ่นยนต์ขนานแบบเดลต้า</span><span data-lang-en>9.6 The parallel delta robot</span></h2>
+
+      <p>
+        <span data-lang-th>ทุกอย่างในหัวข้อที่ผ่านมาตั้งอยู่บนสมมติฐานว่าลิงก์ต่อกันเป็นโซ่เส้นเดียวจากฐานถึงปลาย หุ่นยนต์เดลต้าซึ่งเป็นตัวเลือกหลักของสายคัดบรรจุผลไม้ไม่ได้เป็นแบบนั้น แพลตฟอร์มของมันถูกยึดด้วยโซ่ปิดสามเส้นพร้อมกัน ทำให้สมบัติทางคณิตศาสตร์กลับด้านกับแขนกลแบบอนุกรมทุกข้อ</span>
+        <span data-lang-en>Everything so far assumed the links form one chain from base to tip. A delta robot — the default choice on a fruit-packing line — is not built that way. Its platform is held by three closed chains at once, and that reverses every mathematical property of a serial arm.</span>
+      </p>
+
+      <!-- ===================== Figure 9.3 ===================== -->
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 380" role="img" aria-label="Front elevation of a delta robot showing the fixed base, the three upper arms and the parallelogram lower arms holding the moving platform">
+            <!-- fixed base -->
+            <rect x="238" y="42" width="384" height="20" rx="5" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <line x1="200" y1="42" x2="660" y2="42" class="dg-stroke" stroke-width="2"/>
+            <line x1="430" y1="42" x2="430" y2="24" class="dg-stroke" stroke-width="1.4" stroke-dasharray="4 3"/>
+            <line x1="300" y1="42" x2="300" y2="24" class="dg-stroke" stroke-width="1.4" stroke-dasharray="4 3"/>
+            <line x1="300" y1="30" x2="430" y2="30" class="dg-stroke-gold" stroke-width="2"/>
+            <polygon points="300,30 311,25 311,35" class="dg-arrow"/>
+            <polygon points="430,30 419,25 419,35" class="dg-arrow"/>
+
+            <!-- third arm, behind -->
+            <g opacity="0.35">
+              <line x1="430" y1="62" x2="430" y2="166" class="dg-stroke-green" stroke-width="9" stroke-linecap="round"/>
+              <line x1="430" y1="166" x2="430" y2="288" class="dg-stroke" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="430" cy="62" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+            </g>
+
+            <!-- left arm -->
+            <line x1="300" y1="62" x2="226" y2="172" class="dg-stroke-green" stroke-width="11" stroke-linecap="round"/>
+            <circle cx="300" cy="62" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <circle cx="226" cy="172" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <line x1="222" y1="180" x2="386" y2="296" class="dg-stroke" stroke-width="4.5" stroke-linecap="round"/>
+            <line x1="234" y1="164" x2="398" y2="280" class="dg-stroke" stroke-width="4.5" stroke-linecap="round"/>
+            <path d="M340 62 A 40 40 0 0 0 314 76" class="dg-stroke-gold" stroke-width="2.2"/>
+            <polygon points="314,76 325,74 320,65" class="dg-arrow"/>
+            <line x1="300" y1="62" x2="372" y2="62" class="dg-stroke" stroke-width="1.4" stroke-dasharray="4 3"/>
+
+            <!-- right arm -->
+            <line x1="560" y1="62" x2="634" y2="172" class="dg-stroke-green" stroke-width="11" stroke-linecap="round"/>
+            <circle cx="560" cy="62" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <circle cx="634" cy="172" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <line x1="638" y1="180" x2="474" y2="296" class="dg-stroke" stroke-width="4.5" stroke-linecap="round"/>
+            <line x1="626" y1="164" x2="462" y2="280" class="dg-stroke" stroke-width="4.5" stroke-linecap="round"/>
+
+            <!-- moving platform -->
+            <rect x="382" y="282" width="96" height="18" rx="5" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <circle cx="430" cy="291" r="5" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+            <line x1="430" y1="300" x2="430" y2="328" class="dg-stroke" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="430" cy="340" r="13" class="dg-fill-green dg-stroke" stroke-width="1.8"/>
+            <line x1="382" y1="314" x2="430" y2="314" class="dg-stroke-gold" stroke-width="2"/>
+            <polygon points="382,314 393,309 393,319" class="dg-arrow"/>
+            <polygon points="430,314 419,309 419,319" class="dg-arrow"/>
+
+            <text class="dg-text-sm" x="188" y="250" data-lang-th>แขนล่างเป็นสี่เหลี่ยมด้านขนาน</text>
+            <text class="dg-text-sm" x="188" y="250" data-lang-en>the lower arm is a parallelogram</text>
+            <text class="dg-text-sm" x="672" y="250" text-anchor="end" data-lang-th>แพลตฟอร์มจึงขนานกับฐานเสมอ</text>
+            <text class="dg-text-sm" x="672" y="250" text-anchor="end" data-lang-en>so the platform stays parallel to the base</text>
+          </svg>
+          <span class="fig-label" style="left:40.5%; top:2%">\( f \)</span>
+          <span class="fig-label" style="left:46.5%; top:79%">\( e \)</span>
+          <span class="fig-label" style="left:38.0%; top:16%">\( \theta_1 \)</span>
+          <span class="fig-label" style="left:27.5%; top:28%">\( L \)</span>
+          <span class="fig-label" style="left:33.0%; top:58%">\( \ell \)</span>
+          <span class="fig-label" style="left:50.5%; top:92%">\( \vect{p} \)</span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 9.3</span><span data-lang-en>Figure 9.3</span></b>
+          <span data-lang-th> ภาพด้านหน้าของหุ่นยนต์เดลต้า มอเตอร์ทั้งสามตัวติดอยู่กับฐานที่อยู่นิ่ง ไม่ได้ติดไปกับแขน ซึ่งเป็นเหตุผลที่มวลเคลื่อนที่น้อยมากและเร่งได้แรงตามที่อธิบายไว้ในหัวข้อ 8.4 แขนล่างแต่ละชุดเป็นสี่เหลี่ยมด้านขนาน จึงบังคับให้แพลตฟอร์มขนานกับฐานตลอดเวลา ผลคือเดลต้าให้สามองศาอิสระที่เป็นการเลื่อนล้วน และต้องเพิ่มแกนที่สี่แยกต่างหากถ้าต้องการหมุนชิ้นงาน</span>
+          <span data-lang-en> Front elevation of a delta robot. All three motors sit on the fixed base rather than riding on the arms, which is why so little mass is in motion and the acceleration is as high as §8.4 described. Each lower arm is a parallelogram, which forces the platform to stay parallel to the base. A delta therefore offers three purely translational degrees of freedom, and a separate fourth axis must be added if the part is to be turned.</span>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>9.6.1 ทำไมจลนศาสตร์ย้อนกลับจึงง่ายกว่าไปข้างหน้า</span><span data-lang-en>9.6.1 Why the inverse is easier than the forward</span></h3>
+
+      <p>
+        <span data-lang-th>ถ้ารู้ตำแหน่งของแพลตฟอร์ม \( \vect{p} \) แล้ว จุดยึดของแขนล่างแต่ละเส้นที่แพลตฟอร์มก็รู้ทันที และจุดข้อศอกของแขนบนแต่ละตัวขึ้นกับมุม \( \theta_i \) ของมันเพียงตัวเดียว เงื่อนไขเดียวที่เหลือคือแขนล่างมีความยาวคงที่ \( \ell \) ซึ่งเขียนเป็นสมการเดียวที่มีตัวแปรเดียว</span>
+        <span data-lang-en>If the platform position \( \vect{p} \) is known, so is each lower arm&rsquo;s attachment point on it, while each upper arm&rsquo;s elbow depends on its own angle \( \theta_i \) and nothing else. The only remaining condition is that the lower arm has fixed length \( \ell \), which is one equation in one unknown.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \left\lVert \vect{p} + \vect{e}_i - \left( \vect{b}_i + L\,\hat{\vect{u}}_i(\theta_i) \right) \right\rVert^{2} \;=\; \ell^{2}, \qquad i = 1, 2, 3 $$</div>
+        <div class="eq__num">(9.27)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>เมื่อกระจายกำลังสองออก พจน์ที่มี \( \theta_i \) จะเหลือเพียงไซน์และโคไซน์เชิงเส้น ได้รูปมาตรฐานที่แก้ได้ในบรรทัดเดียว</span>
+        <span data-lang-en>Expanding the square leaves \( \theta_i \) appearing only linearly in sine and cosine, giving a standard form that solves in one line.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ A_i \cos\theta_i + B_i \sin\theta_i + C_i = 0 \;\Longrightarrow\;
+           \theta_i = \operatorname{atan2}(B_i, A_i) \pm \arccos\!\left( \frac{-C_i}{\sqrt{A_i^2 + B_i^2}} \right) $$</div>
+        <div class="eq__num">(9.28)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>จุดสำคัญคือสมการทั้งสามแยกจากกันโดยสิ้นเชิง แก้ทีละตัวได้เลย ส่วนจลนศาสตร์ไปข้างหน้ากลับยาก เพราะเมื่อรู้ \( \theta_1, \theta_2, \theta_3 \) แล้ว ต้องหาจุดที่อยู่ห่างจากข้อศอกทั้งสามเป็นระยะ \( \ell \) พร้อมกัน ซึ่งคือการหาจุดตัดของทรงกลมสามลูก และมีคำตอบสองจุด ต้องเลือกจุดที่อยู่ใต้ฐาน</span>
+        <span data-lang-en>The point is that the three equations are entirely independent and can be solved one at a time. The forward problem is the hard one: with \( \theta_1, \theta_2, \theta_3 \) known, one must find the point lying at distance \( \ell \) from all three elbows at once — the intersection of three spheres, which has two solutions, of which the one below the base is taken.</span>
+      </p>
+
+      <div class="callout callout--info">
+        <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>อนุกรมกับขนาน สมบัติกลับด้านกันทุกข้อ</span><span data-lang-en>Serial and parallel: every property reverses</span></div>
+        <div class="table-wrap" style="margin-bottom:0">
+          <table>
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><span data-lang-th>อนุกรม เช่น SCARA</span><span data-lang-en>Serial, e.g. SCARA</span></th>
+                <th><span data-lang-th>ขนาน เช่น เดลต้า</span><span data-lang-en>Parallel, e.g. delta</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span data-lang-th>จลนศาสตร์ไปข้างหน้า</span><span data-lang-en>Forward kinematics</span></td><td><span data-lang-th>ง่าย คูณเมทริกซ์ต่อกัน</span><span data-lang-en>easy, a product of matrices</span></td><td><span data-lang-th>ยาก ต้องหาจุดตัดของทรงกลม</span><span data-lang-en>hard, an intersection of spheres</span></td></tr>
+              <tr><td><span data-lang-th>จลนศาสตร์ย้อนกลับ</span><span data-lang-en>Inverse kinematics</span></td><td><span data-lang-th>ยาก ไม่เป็นเชิงเส้นและมีหลายคำตอบ</span><span data-lang-en>hard, nonlinear with several solutions</span></td><td><span data-lang-th>ง่าย แยกเป็นสามสมการอิสระ</span><span data-lang-en>easy, three independent equations</span></td></tr>
+              <tr><td><span data-lang-th>มวลที่ต้องเร่ง</span><span data-lang-en>Mass in motion</span></td><td><span data-lang-th>มาก เพราะมอเตอร์อยู่บนแขน</span><span data-lang-en>large, the motors ride on the arm</span></td><td><span data-lang-th>น้อย เพราะมอเตอร์อยู่ที่ฐาน</span><span data-lang-en>small, the motors stay on the base</span></td></tr>
+              <tr><td><span data-lang-th>ปริภูมิทำงาน</span><span data-lang-en>Workspace</span></td><td><span data-lang-th>กว้างเทียบกับขนาดตัว</span><span data-lang-en>large for its size</span></td><td><span data-lang-th>แคบ เป็นโดมใต้ฐาน</span><span data-lang-en>small, a dome beneath the base</span></td></tr>
+              <tr><td><span data-lang-th>ความแข็งเกร็ง</span><span data-lang-en>Stiffness</span></td><td><span data-lang-th>น้อยกว่า ความคลาดเคลื่อนสะสมตามโซ่</span><span data-lang-en>lower, errors accumulate along the chain</span></td><td><span data-lang-th>สูง ความคลาดเคลื่อนเฉลี่ยกันระหว่างสามเส้น</span><span data-lang-en>high, errors average over the three chains</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===================== Animation 9.4 ===================== -->
+      <figure class="anim" data-anim="ch09-delta">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 9.4 — เดลต้าเดินตามเส้นทางหยิบและวาง</span>
+          <span data-lang-en>Animation 9.4 — A delta following a pick-and-place path</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 380" role="img" aria-label="A delta robot in front elevation whose platform follows a pick and place path while the three motor angles are solved independently">
+            <rect x="238" y="42" width="384" height="20" rx="5" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <polyline id="a94-trail" class="dg-stroke-gold" stroke-width="2.2" fill="none" points=""/>
+
+            <line id="a94-u3" x1="430" y1="62" x2="430" y2="62" class="dg-stroke-green" stroke-width="8" stroke-linecap="round" opacity="0.35"/>
+            <line id="a94-d3" x1="430" y1="62" x2="430" y2="62" class="dg-stroke" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
+
+            <line id="a94-u1" x1="300" y1="62" x2="300" y2="62" class="dg-stroke-green" stroke-width="11" stroke-linecap="round"/>
+            <line id="a94-u2" x1="560" y1="62" x2="560" y2="62" class="dg-stroke-green" stroke-width="11" stroke-linecap="round"/>
+            <line id="a94-d1a" x1="300" y1="62" x2="300" y2="62" class="dg-stroke" stroke-width="4.5" stroke-linecap="round"/>
+            <line id="a94-d1b" x1="300" y1="62" x2="300" y2="62" class="dg-stroke" stroke-width="4.5" stroke-linecap="round"/>
+            <line id="a94-d2a" x1="560" y1="62" x2="560" y2="62" class="dg-stroke" stroke-width="4.5" stroke-linecap="round"/>
+            <line id="a94-d2b" x1="560" y1="62" x2="560" y2="62" class="dg-stroke" stroke-width="4.5" stroke-linecap="round"/>
+
+            <circle cx="300" cy="62" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <circle cx="560" cy="62" r="9" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <circle id="a94-e1" cx="300" cy="62" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <circle id="a94-e2" cx="560" cy="62" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.8"/>
+            <rect id="a94-plat" x="382" y="282" width="96" height="18" rx="5" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <circle id="a94-fruit" cx="430" cy="320" r="13" class="dg-fill-green dg-stroke" stroke-width="1.8" opacity="0"/>
+
+            <!-- belt and tray -->
+            <rect x="196" y="348" width="180" height="14" rx="4" class="dg-fill-soft dg-stroke" stroke-width="1.6"/>
+            <rect x="500" y="348" width="180" height="14" rx="4" class="dg-fill-soft dg-stroke" stroke-width="1.6"/>
+            <text class="dg-text-sm" x="286" y="376" text-anchor="middle" data-lang-th>สายพานเข้า</text>
+            <text class="dg-text-sm" x="286" y="376" text-anchor="middle" data-lang-en>infeed belt</text>
+            <text class="dg-text-sm" x="590" y="376" text-anchor="middle" data-lang-th>ถาดบรรจุ</text>
+            <text class="dg-text-sm" x="590" y="376" text-anchor="middle" data-lang-en>packing tray</text>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>แขนบน ขับด้วยมอเตอร์ที่ฐาน</span><span data-lang-en>upper arms, driven from the base</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>แขนล่างแบบสี่เหลี่ยมด้านขนาน</span><span data-lang-en>parallelogram lower arms</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>เส้นทางของแพลตฟอร์ม</span><span data-lang-en>the platform&rsquo;s path</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="gate" aria-pressed="false"><i class="fa-solid fa-route"></i><span data-lang-th>เส้นทางแบบประตู</span><span data-lang-en>Gate path</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ความเร็ว</span><span data-lang-en>Speed</span>
+            <input type="range" data-anim-param="speed" data-unit="&times;" min="0.2" max="2" step="0.1" value="0.8">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 9.4</span><span data-lang-en>Animation 9.4</span></b>
+          <span data-lang-th> มุมของมอเตอร์ทั้งสามในแถบตัวเลขถูกคำนวณแยกกันจากสมการ (9.28) ทีละตัว โดยไม่ต้องรู้ค่าของอีกสองตัวเลย นี่คือข้อได้เปรียบของโครงสร้างขนาน สังเกตว่าแพลตฟอร์มขนานกับฐานตลอดเส้นทาง ไม่ว่าแขนจะเอียงไปเท่าใด ซึ่งเป็นผลจากแขนล่างที่เป็นสี่เหลี่ยมด้านขนาน ลองเปิดเส้นทางแบบประตูเทียบกับเส้นทางตรง จะเห็นว่าแบบประตูยกผลขึ้นพ้นขอบถาดก่อนเคลื่อนตามแนวนอน ซึ่งเป็นรูปแบบมาตรฐานของสายคัดบรรจุจริง</span>
+          <span data-lang-en> The three motor angles in the readout are each computed on their own from equation (9.28), with no knowledge of the other two — the advantage of the parallel structure. Notice that the platform stays parallel to the base along the entire path however far the arms lean, a consequence of the parallelogram lower arms. Switch on the gate path and compare it with the direct one: the gate lifts the fruit clear of the tray rim before moving across, which is the standard pattern on a real packing line.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 9.7 --------- -->
+    <section id="robodk">
+      <h2><span data-lang-th>9.7 การจำลองด้วย RoboDK</span><span data-lang-en>9.7 Simulation in RoboDK</span></h2>
+
+      <p>
+        <span data-lang-th>ทุกสมการในบทนี้มีอยู่แล้วในซอฟต์แวร์จำลองหุ่นยนต์ คำถามจึงไม่ใช่ว่าจะคำนวณด้วยมือหรือด้วยโปรแกรม แต่เป็นว่า <em>จะอ่านผลที่โปรแกรมให้มาอย่างรู้เรื่องได้อย่างไร</em> และจะรู้ได้อย่างไรว่ามันผิด RoboDK เป็นเครื่องมือที่ใช้ในรายวิชานี้เพราะมีไลบรารีหุ่นยนต์มากกว่าหกร้อยรุ่น ทำงานข้ามยี่ห้อได้ และมี API ภาษา Python ที่เขียนตรวจสมการของเราเองได้</span>
+        <span data-lang-en>Every equation in this chapter already exists inside robot simulation software. The question is therefore not whether to compute by hand or by program, but <em>how to read what the program reports</em> — and how to know when it is wrong. RoboDK is the tool used in this course because it carries a library of over six hundred robot models, works across brands, and offers a Python API in which our own equations can be checked.</span>
+      </p>
+
+      <h3><span data-lang-th>9.7.1 สิ่งที่อยู่ในสถานีจำลอง</span><span data-lang-en>9.7.1 What a station contains</span></h3>
+
+      <p>
+        <span data-lang-th>สถานีจำลองหนึ่งสถานีคือต้นไม้ของวัตถุ และทุกชื่อในต้นไม้นั้นมีสมการรองรับอยู่ในบทนี้ทั้งหมด ตารางด้านล่างเป็นการแปลคำศัพท์สามภาษา คือภาษาคณิตศาสตร์ ภาษาของโปรแกรมจำลอง และภาษาที่ขึ้นบนกล่องสอนงานจริง</span>
+        <span data-lang-en>A station is a tree of objects, and every name in that tree has an equation behind it in this chapter. The table below translates between three vocabularies: the mathematics, the simulator, and what appears on a real teach pendant.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 9.3 — คำเดียวกัน สามภาษา</span><span data-lang-en>Table 9.3 — The same thing in three vocabularies</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ในบทนี้</span><span data-lang-en>In this chapter</span></th>
+              <th>RoboDK</th>
+              <th><span data-lang-th>บนกล่องสอนงาน</span><span data-lang-en>On the teach pendant</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>\( \T{0}{F} \) <span data-lang-th>จากสมการ (9.11)</span><span data-lang-en>from equation (9.11)</span></td><td>Robot pose</td><td><span data-lang-th>ตำแหน่งปัจจุบัน</span><span data-lang-en>current position</span></td></tr>
+            <tr><td>\( \T{F}{T} \) <span data-lang-th>จากสมการ (9.5)</span><span data-lang-en>from equation (9.5)</span></td><td>Tool frame (TCP)</td><td>TOOL / UTOOL</td></tr>
+            <tr><td>\( \T{0}{O} \)</td><td>Reference frame</td><td>BASE / UFRAME / WOBJ</td></tr>
+            <tr><td>\( \vect{q} = (\theta_1 \dots \theta_n) \)</td><td>Joint values</td><td><span data-lang-th>ค่ามุมข้อต่อ</span><span data-lang-en>joint values</span></td></tr>
+            <tr><td><span data-lang-th>คำตอบของสมการ (9.19)</span><span data-lang-en>solutions of equation (9.19)</span></td><td>Robot configuration</td><td><span data-lang-th>ท่าของแขน เช่น ข้อศอกขึ้น</span><span data-lang-en>arm configuration, e.g. elbow up</span></td></tr>
+            <tr><td>\( \det \mathbf{J} \to 0 \) <span data-lang-th>สมการ (9.25)</span><span data-lang-en>equation (9.25)</span></td><td>Singularity warning</td><td><span data-lang-th>แจ้งเตือนใกล้จุดเอกฐาน</span><span data-lang-en>near-singularity alarm</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3><span data-lang-th>9.7.2 ลำดับการทำงาน</span><span data-lang-en>9.7.2 The workflow</span></h3>
+
+      <ol class="steps">
+        <li><b><span data-lang-th>เลือกรุ่นหุ่นยนต์และวางเครื่องจักรรอบข้าง</span><span data-lang-en>Pick the robot model and place the surrounding machinery</span></b><br>
+          <span data-lang-th>รุ่นในไลบรารีมาพร้อมพารามิเตอร์ DH และขีดจำกัดข้อต่อที่ถูกต้องตามผู้ผลิต จึงไม่ต้องป้อนตารางเอง แต่ควรเปิดดูเพื่อเทียบกับตารางที่ 9.2</span>
+          <span data-lang-en>A library model arrives with the manufacturer&rsquo;s own DH parameters and joint limits, so no table need be typed — but it is worth opening to compare with Table 9.2.</span></li>
+        <li><b><span data-lang-th>ตั้งเฟรมเครื่องมือ</span><span data-lang-en>Define the tool frame</span></b><br>
+          <span data-lang-th>ใส่ค่า \( \vect{t}_{\text{tool}} \) ที่วัดได้จากปฏิบัติการที่ 8 ถ้าค่านี้ผิด ทุกอย่างที่ตามมาจะผิดตามโดยที่โปรแกรมไม่เตือนเลย</span>
+          <span data-lang-en>Enter the \( \vect{t}_{\text{tool}} \) measured in Laboratory 8. If this value is wrong, everything downstream is wrong and the program gives no warning at all.</span></li>
+        <li><b><span data-lang-th>ตั้งเฟรมชิ้นงาน</span><span data-lang-en>Define the work-object frame</span></b><br>
+          <span data-lang-th>สอนจุดทั้งหมดในเฟรมนี้ตามเหตุผลในหัวข้อ 8.5 เมื่อย้ายถาดในของจริง จะแก้ได้ด้วยการวัดเฟรมใหม่ครั้งเดียวทั้งในโปรแกรมจำลองและบนหุ่นยนต์</span>
+          <span data-lang-en>Teach every point in this frame, for the reason given in §8.5: when the tray moves in reality, one re-measurement fixes both the simulation and the robot.</span></li>
+        <li><b><span data-lang-th>สร้างเป้าหมายและโปรแกรม</span><span data-lang-en>Create targets and a program</span></b><br>
+          <span data-lang-th>เป้าหมายแบบข้อต่อเก็บค่า \( \vect{q} \) ส่วนเป้าหมายแบบคาร์ทีเซียนเก็บ \( \T{0}{T} \) และต้องแก้จลนศาสตร์ย้อนกลับใหม่ทุกครั้งที่ใช้ ความต่างนี้สำคัญเมื่อหุ่นยนต์อาจเลือกคำตอบคนละชุดกับที่ตั้งใจ</span>
+          <span data-lang-en>A joint target stores \( \vect{q} \); a Cartesian target stores \( \T{0}{T} \) and is re-solved by inverse kinematics every time it is used. The difference matters when the robot might pick a different solution from the one intended.</span></li>
+        <li><b><span data-lang-th>ตรวจสามอย่างก่อนออกจากโปรแกรมจำลอง</span><span data-lang-en>Run the three checks before leaving the simulator</span></b><br>
+          <span data-lang-th>เอื้อมถึงทุกจุดหรือไม่ ชนอะไรหรือไม่ และผ่านใกล้จุดเอกฐานตรงไหนบ้าง ทั้งสามอย่างนี้ตรวจในโปรแกรมได้ฟรี แต่ตรวจกับของจริงอาจเสียหุ่นยนต์หนึ่งตัว</span>
+          <span data-lang-en>Is every point reachable, does anything collide, and where does the path pass close to a singularity? All three are free to check in software and may cost a robot to check in hardware.</span></li>
+        <li><b><span data-lang-th>แปลงเป็นภาษาของหุ่นยนต์</span><span data-lang-en>Post-process into the robot&rsquo;s own language</span></b><br>
+          <span data-lang-th>โปรแกรมเดียวกันส่งออกเป็น KRL ของ KUKA, RAPID ของ ABB, LS ของ Fanuc หรือ URScript ของ Universal Robots ได้โดยเปลี่ยนเพียงตัวแปลง นี่คือหัวใจของการเขียนโปรแกรมนอกสายการผลิต</span>
+          <span data-lang-en>The same program exports as KUKA KRL, ABB RAPID, Fanuc LS or URScript simply by changing the post-processor. That is the heart of offline programming.</span></li>
+      </ol>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>การจำลองที่ผ่าน ไม่ได้แปลว่าของจริงจะผ่าน</span><span data-lang-en>A simulation that passes does not mean the real cell will</span></div>
+        <p class="mb-0">
+          <span data-lang-th>โปรแกรมจำลองคำนวณด้วยพารามิเตอร์ DH ที่เป็นค่าออกแบบ แต่หุ่นยนต์จริงมีความยาวลิงก์คลาดเคลื่อนจากค่าออกแบบ มีการเสียรูปใต้ภาระ และขยายตัวตามอุณหภูมิ ส่วนต่างนี้ก็คือ <em>ความแม่นยำ</em> ในหัวข้อ 8.4 ซึ่งมักอยู่ในระดับหนึ่งมิลลิเมตรหรือมากกว่า การเขียนโปรแกรมนอกสายการผลิตจึงต้องเผื่อการแตะจุดอ้างอิงจริงเพื่อปรับเฟรมชิ้นงานก่อนเดินงานเสมอ หรือไม่ก็ต้องสอบเทียบหุ่นยนต์ทั้งตัวซึ่งมีค่าใช้จ่ายสูง</span>
+          <span data-lang-en>A simulator computes with the design DH parameters, while a real robot has link lengths that differ from the design, deflects under load and expands with temperature. That gap is exactly the <em>accuracy</em> of §8.4, typically a millimetre or more. Offline programming must therefore always allow for touching up a real reference point to correct the work-object frame before production, or else pay for a full robot calibration.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 9.8 --------- -->
+    <section id="activity">
+      <h2><span data-lang-th>9.8 กิจกรรมในชั้นเรียน</span><span data-lang-en>9.8 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 9.1 — คำนวณด้วยมือ แล้วให้เครื่องตรวจ</span><span data-lang-en>Activity 9.1 — Work it by hand, then let the machine check</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3 คน &middot; 45 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Groups of 3 &middot; 45 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>โจทย์</span><span data-lang-en>The brief</span></h4>
+          <p>
+            <span data-lang-th>ใช้หุ่นยนต์ SCARA ของตัวอย่าง 9.2 คือ \( L_1 = 400 \) mm, \( L_2 = 250 \) mm แต่ละกลุ่มได้รับเป้าหมายห้าจุดด้านล่าง ให้แก้จลนศาสตร์ย้อนกลับด้วยมือทุกจุด แล้วตรวจคำตอบด้วย RoboDK หรือสคริปต์สั้น ๆ ที่เขียนเอง ในห้าจุดนี้มีจุดที่แก้ไม่ได้อยู่หนึ่งจุดและจุดที่อยู่บนจุดเอกฐานอยู่หนึ่งจุด ให้ระบุว่าเป็นจุดใดและอธิบายด้วยสมการ</span>
+            <span data-lang-en>Use the SCARA of worked example 9.2: \( L_1 = 400 \) mm, \( L_2 = 250 \) mm. Each group receives the five targets below. Solve the inverse kinematics of every one by hand, then check the answers in RoboDK or in a short script of your own. One of the five has no solution and one sits on a singularity; identify which, and justify each with an equation.</span>
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <caption><span data-lang-th>ตารางที่ 9.4 — เป้าหมายห้าจุดสำหรับกิจกรรมที่ 9.1</span><span data-lang-en>Table 9.4 — The five targets for Activity 9.1</span></caption>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>จุด</span><span data-lang-en>Target</span></th>
+                  <th>\( x \) (mm)</th><th>\( y \) (mm)</th>
+                  <th>\( \theta_1,\ \theta_2 \) <span data-lang-th>ชุดที่ 1</span><span data-lang-en>solution 1</span></th>
+                  <th>\( \theta_1,\ \theta_2 \) <span data-lang-th>ชุดที่ 2</span><span data-lang-en>solution 2</span></th>
+                  <th>\( \det \mathbf{J} \)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>P1</td><td>450</td><td>300</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>P2</td><td>0</td><td>520</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>P3</td><td>650</td><td>0</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>P4</td><td>-300</td><td>420</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>P5</td><td>500</td><td>480</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>ขั้นตอน</span><span data-lang-en>Steps</span></h4>
+          <ol>
+            <li><span data-lang-th>คำนวณ \( c_2 \) ของทุกจุดก่อนเป็นอย่างแรก จุดใดที่ได้ \( \lvert c_2 \rvert > 1 \) ให้ตัดออกทันทีพร้อมระบุเหตุผล</span><span data-lang-en>Compute \( c_2 \) for all five first. Any point with \( \lvert c_2 \rvert > 1 \) is eliminated at once, with the reason stated.</span></li>
+            <li><span data-lang-th>หามุมข้อต่อทั้งสองชุดของจุดที่เหลือ ด้วยสมการ (9.19) และ (9.20) โดยใช้ \( \operatorname{atan2} \) เท่านั้น</span><span data-lang-en>Find both sets of joint angles for the survivors, using equations (9.19) and (9.20) and \( \operatorname{atan2} \) only.</span></li>
+            <li><span data-lang-th>แทนคำตอบกลับเข้าสมการ (9.13) เพื่อยืนยันว่าได้พิกัดเดิม นี่คือการตรวจที่ไม่ต้องใช้คอมพิวเตอร์เลย</span><span data-lang-en>Substitute each answer back into equation (9.13) to confirm it returns the original coordinates — a check that needs no computer.</span></li>
+            <li><span data-lang-th>คำนวณ \( \det \mathbf{J} \) ของทุกจุด แล้วเรียงลำดับจากจุดที่ปลอดภัยที่สุดไปจุดที่อันตรายที่สุดสำหรับการเดินงานจริง</span><span data-lang-en>Compute \( \det \mathbf{J} \) at every point and rank them from safest to most hazardous for production use.</span></li>
+            <li><span data-lang-th>ตรวจผลทั้งหมดในโปรแกรมจำลอง และอธิบายทุกจุดที่ผลไม่ตรงกัน</span><span data-lang-en>Check everything in the simulator, and explain every disagreement.</span></li>
+          </ol>
+
+          <div class="callout callout--info" style="margin-bottom:1rem">
+            <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>คำใบ้</span><span data-lang-en>A hint</span></div>
+            <p class="mb-0">
+              <span data-lang-th>จุดที่อยู่บนจุดเอกฐานจะให้ \( c_2 = \pm 1 \) พอดี ซึ่งทำให้สองคำตอบยุบรวมเป็นชุดเดียว ไม่ใช่สองชุดอย่างจุดอื่น การเขียนว่า “มีสองคำตอบที่เท่ากัน” กับ “มีคำตอบเดียว” ต่างกันในเชิงความหมาย ให้เลือกใช้คำที่ตรงกับสมการ</span>
+              <span data-lang-en>A point on a singularity gives \( c_2 = \pm 1 \) exactly, which collapses the two solutions into one rather than leaving two as elsewhere. Writing “two equal solutions” and “one solution” are not the same claim; choose the wording the equation supports.</span>
+            </p>
+          </div>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ตารางที่ 9.4 ที่กรอกครบ พร้อมแสดงวิธีคำนวณของจุด P1 อย่างละเอียด</span><span data-lang-en>Table 9.4 completed, with the full working shown for target P1.</span></li>
+            <li><span data-lang-th>คำอธิบายว่าจุดใดแก้ไม่ได้และจุดใดอยู่บนจุดเอกฐาน พร้อมสมการที่ใช้ตัดสิน</span><span data-lang-en>A statement of which target has no solution and which is singular, with the equation that decides each.</span></li>
+            <li><span data-lang-th>ภาพหน้าจอจากโปรแกรมจำลองที่แสดงท่าทั้งสองชุดของจุด P1</span><span data-lang-en>A screenshot from the simulator showing both poses for target P1.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 9.9 --------- -->
+    <section id="lab">
+      <h2><span data-lang-th>9.9 ปฏิบัติการที่ 9</span><span data-lang-en>9.9 Laboratory 9</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <h3><span data-lang-th>ปฏิบัติการที่ 9 — จากสมการ สู่โปรแกรมจำลอง สู่หุ่นยนต์จริง</span><span data-lang-en>Laboratory 9 — From the equations, through the simulator, onto the robot</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 4 ชั่วโมง แบ่งเป็นสองคาบ &middot; ห้องปฏิบัติการหุ่นยนต์</span><span data-lang-en>Groups of 3–4 &middot; 4 hours over two sessions &middot; Robotics laboratory</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ข้อ 2–8</span><span data-lang-en>Maps to objectives 2–8</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 10% ของคะแนนรวม</span><span data-lang-en>10% of the course total</span></span>
+            <span class="badge badge--gold"><i class="fa-solid fa-link"></i> <span data-lang-th>ใช้ค่า TCP จากปฏิบัติการที่ 8</span><span data-lang-en>Uses the TCP from Laboratory 8</span></span>
+          </div>
+
+          <h4><span data-lang-th>อุปกรณ์</span><span data-lang-en>Equipment</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>คอมพิวเตอร์ที่ติดตั้ง RoboDK และ Python พร้อมแพ็กเกจ robodk</span><span data-lang-en>A computer with RoboDK and Python, with the robodk package installed</span></li>
+            <li><span data-lang-th>หุ่นยนต์อาร์ติคูเลต 6 แกนตัวเดียวกับปฏิบัติการที่ 8 พร้อมมือจับและค่า \( \vect{t}_{\text{tool}} \) ที่วัดไว้</span><span data-lang-en>The same six-axis robot as Laboratory 8, with its gripper and the \( \vect{t}_{\text{tool}} \) already measured</span></li>
+            <li><span data-lang-th>ถาดเพาะกล้าพร้อมที่ยึด และหมุดอ้างอิงสามจุดสำหรับตั้งเฟรมชิ้นงาน</span><span data-lang-en>A seedling tray with its holder, and three reference pins for defining the work-object frame</span></li>
+            <li><span data-lang-th>กล่องหรือโครงจำลองสิ่งกีดขวางที่ต้องหลบในการทดสอบการชน</span><span data-lang-en>A box or frame standing in for the obstacle used in the collision test</span></li>
+          </ul>
+
+          <h4><span data-lang-th>ขั้นตอนการทดลอง</span><span data-lang-en>Procedure</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>สร้างสถานีและตรวจตาราง DH</span><span data-lang-en>Build the station and verify the DH table</span></b><br>
+              <span data-lang-th>โหลดรุ่นหุ่นยนต์จากไลบรารี เปิดดูพารามิเตอร์ที่ซอฟต์แวร์ใช้ แล้วจดลงตารางบันทึกผลที่ 9.1 เทียบรูปแบบกับตารางที่ 9.2 และระบุว่าใช้ธรรมเนียมใด</span>
+              <span data-lang-en>Load the robot from the library, open the parameters the software uses, record them on data sheet 9.1, compare their shape with Table 9.2 and state which convention is in use.</span></li>
+            <li><b><span data-lang-th>เขียนจลนศาสตร์ไปข้างหน้าด้วยตัวเอง</span><span data-lang-en>Write your own forward kinematics</span></b><br>
+              <span data-lang-th>เขียนฟังก์ชัน Python ที่รับมุมข้อต่อหกค่าแล้วคืน \( \T{0}{6} \) โดยคูณเมทริกซ์ตามสมการ (9.10) และ (9.11) จากนั้นเทียบกับท่าที่ RoboDK รายงานที่ห้าท่าที่ต่างกันมาก บันทึกความคลาดเคลื่อนสูงสุด</span>
+              <span data-lang-en>Write a Python function that takes six joint angles and returns \( \T{0}{6} \) by multiplying out equations (9.10) and (9.11). Compare it with the pose RoboDK reports at five widely different poses and record the largest discrepancy.</span></li>
+            <li><b><span data-lang-th>เขียนจลนศาสตร์ย้อนกลับของแขนในระนาบ</span><span data-lang-en>Write the inverse kinematics of the planar sub-arm</span></b><br>
+              <span data-lang-th>ใช้สมการ (9.18) ถึง (9.20) เขียนฟังก์ชันที่คืนคำตอบทั้งสองชุด และคืนค่าที่บอกได้ว่าเอื้อมไม่ถึงเมื่อ \( \lvert c_2 \rvert > 1 \) ทดสอบกับเป้าหมายในตารางที่ 9.4 ทุกจุด</span>
+              <span data-lang-en>From equations (9.18) to (9.20), write a function returning both solutions, and returning a clear unreachable result when \( \lvert c_2 \rvert > 1 \). Test it against every target of Table 9.4.</span></li>
+            <li><b><span data-lang-th>สำรวจจุดเอกฐานในโปรแกรมจำลองและของจริง</span><span data-lang-en>Explore a singularity, in simulation and in reality</span></b><br>
+              <span data-lang-th>สั่งให้ปลายเครื่องมือเดินเป็นเส้นตรงด้วยความเร็วคงที่ผ่านบริเวณที่แขนเกือบเหยียดตรง บันทึกความเร็วข้อต่อสูงสุดที่โปรแกรมรายงาน แล้วทำซ้ำกับหุ่นยนต์จริงที่ความเร็วต่ำ บันทึกข้อความแจ้งเตือนที่ขึ้นและตำแหน่งที่มันขึ้น</span>
+              <span data-lang-en>Command a straight-line move at constant speed through the region where the arm is nearly extended. Record the peak joint speed the simulator reports, then repeat on the real robot at low speed, noting the alarm raised and where it appears.</span></li>
+            <li><b><span data-lang-th>เขียนโปรแกรมนอกสายการผลิตและตรวจการชน</span><span data-lang-en>Write an offline program and check for collisions</span></b><br>
+              <span data-lang-th>ตั้งเฟรมชิ้นงานที่มุมถาด สร้างรูปแบบการวางลงหลุมเพาะ 3 &times; 4 หลุมในเฟรมนั้น วางกล่องกีดขวางไว้ในเส้นทาง เปิดการตรวจการชน แล้วแก้เส้นทางจนผ่าน บันทึกว่าต้องเพิ่มจุดกี่จุด</span>
+              <span data-lang-en>Define the work-object frame at the corner of the tray, generate a 3 &times; 4 pattern of cell positions in it, place the obstacle in the path, switch collision checking on, and revise the path until it passes, recording how many via points were needed.</span></li>
+            <li><b><span data-lang-th>ส่งออกและเดินบนหุ่นยนต์จริง</span><span data-lang-en>Post-process and run on the real robot</span></b><br>
+              <span data-lang-th>แปลงโปรแกรมด้วยตัวแปลงของหุ่นยนต์ในห้องปฏิบัติการ เปิดไฟล์ที่ได้แล้วอ่านให้เข้าใจว่าแต่ละบรรทัดมาจากอะไร โหลดลงหุ่นยนต์ เดินด้วยความเร็ว 10% ครั้งแรกเสมอ แล้ววัดว่าปลายเครื่องมือหยุดห่างจากจุดที่จำลองไว้เท่าใดในสามหลุม</span>
+              <span data-lang-en>Post-process with the laboratory robot&rsquo;s own processor, open the result and account for where each line came from, load it, run the first pass at 10% speed, and measure how far the tool stops from the simulated position at three of the cells.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 9.1</span><span data-lang-en>Data sheet 9.1</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>\( i \)</th><th>\( a_i \)</th><th>\( \alpha_i \)</th><th>\( d_i \)</th><th>\( \theta_i \) <span data-lang-th>ที่ท่าบ้าน</span><span data-lang-en>at home</span></th>
+                  <th><span data-lang-th>ขีดจำกัดข้อต่อ</span><span data-lang-en>Joint limits</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>4</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 9.2</span><span data-lang-en>Data sheet 9.2</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>รายการ</span><span data-lang-en>Item</span></th>
+                  <th><span data-lang-th>ค่าที่วัดหรือคำนวณได้</span><span data-lang-en>Measured or computed</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>ความคลาดเคลื่อนสูงสุดระหว่างโปรแกรมของเรากับ RoboDK (5 ท่า)</span><span data-lang-en>Largest discrepancy between our code and RoboDK over five poses</span></td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ธรรมเนียม DH ที่ซอฟต์แวร์ใช้</span><span data-lang-en>DH convention used by the software</span></td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ความเร็วข้อต่อสูงสุดใกล้จุดเอกฐาน เทียบกับที่ท่ากลางปริภูมิ</span><span data-lang-en>Peak joint speed near the singularity, against mid-workspace</span></td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>จำนวนจุดผ่านที่ต้องเพิ่มเพื่อหลบสิ่งกีดขวาง</span><span data-lang-en>Number of via points added to clear the obstacle</span></td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ระยะห่างระหว่างตำแหน่งจริงกับตำแหน่งที่จำลองไว้ (3 หลุม)</span><span data-lang-en>Real minus simulated position at three cells</span></td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>การวิเคราะห์ผล</span><span data-lang-en>Analysis</span></h4>
+          <ol>
+            <li><span data-lang-th>โปรแกรมจลนศาสตร์ไปข้างหน้าที่เขียนเองตรงกับ RoboDK หรือไม่ ถ้าไม่ตรงให้ระบุว่าเป็นความคลาดเคลื่อนเชิงตัวเลขหรือเป็นความผิดพลาดเชิงธรรมเนียม และใช้หลักฐานใดแยกสองอย่างนี้</span><span data-lang-en>Does your forward kinematics agree with RoboDK? If not, is the difference numerical or a convention error, and what evidence separates the two?</span></li>
+            <li><span data-lang-th>ความเร็วข้อต่อใกล้จุดเอกฐานสูงกว่าที่ท่ากลางปริภูมิกี่เท่า และสอดคล้องกับที่สมการ (9.26) ทำนายหรือไม่</span><span data-lang-en>By what factor did the joint speed rise near the singularity, and does that match the prediction of equation (9.26)?</span></li>
+            <li><span data-lang-th>ระยะห่างระหว่างของจริงกับที่จำลองไว้ อยู่ในระดับเดียวกับความแม่นยำที่วัดได้ในปฏิบัติการที่ 8 หรือไม่ และถ้าต่างกันมากให้เสนอสาเหตุ</span><span data-lang-en>Is the real-minus-simulated distance of the same order as the accuracy measured in Laboratory 8? If it differs greatly, propose a cause.</span></li>
+            <li><span data-lang-th>ถ้าย้ายถาดไป 50 mm ในของจริง ต้องแก้อะไรบ้างในสถานีจำลองและในโปรแกรมที่ส่งออกไปแล้ว</span><span data-lang-en>If the tray moved 50 mm in reality, what would have to change in the station and in the program already posted?</span></li>
+            <li><span data-lang-th>สำหรับงานหยิบผลไม้จากสายพานที่ 60 ชิ้นต่อนาที ควรใช้หุ่นยนต์อนุกรมหรือขนาน ให้ตอบโดยอ้างตารางเปรียบเทียบในหัวข้อ 9.6 อย่างน้อยสามข้อ</span><span data-lang-en>For picking fruit off a belt at 60 a minute, would a serial or a parallel robot serve better? Answer by citing at least three rows of the comparison in §9.6.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>Deliverables</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานปฏิบัติการไม่เกิน 8 หน้า ส่งภายใน 2 สัปดาห์</span><span data-lang-en>A report of at most eight pages, due within two weeks.</span></li>
+            <li><span data-lang-th>ซอร์สโค้ดของฟังก์ชันจลนศาสตร์ไปข้างหน้าและย้อนกลับ พร้อมชุดทดสอบที่รันผ่าน</span><span data-lang-en>The source of both kinematics functions, with the tests that pass.</span></li>
+            <li><span data-lang-th>ไฟล์สถานี RoboDK และไฟล์โปรแกรมที่แปลงแล้ว พร้อมคำอธิบายทีละบรรทัดของสิบบรรทัดแรก</span><span data-lang-en>The RoboDK station and the posted program file, with a line-by-line account of its first ten lines.</span></li>
+            <li><span data-lang-th>กราฟความเร็วข้อต่อตามเส้นทางที่ผ่านใกล้จุดเอกฐาน</span><span data-lang-en>A plot of joint speed along the path that passes near the singularity.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>จลนศาสตร์ไปข้างหน้าที่เขียนเองและตรงกับซอฟต์แวร์ที่ห้าท่า</span><span data-lang-en>Forward kinematics written from scratch and agreeing with the software at five poses</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>จลนศาสตร์ย้อนกลับที่คืนสองคำตอบและจัดการกรณีเอื้อมไม่ถึงอย่างถูกต้อง</span><span data-lang-en>Inverse kinematics returning both solutions and handling the unreachable case correctly</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การสาธิตจุดเอกฐานและการเชื่อมโยงผลกับสมการ (9.25) และ (9.26)</span><span data-lang-en>The singularity demonstration, tied back to equations (9.25) and (9.26)</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>โปรแกรมนอกสายการผลิตที่ผ่านการตรวจการชนและเดินบนหุ่นยนต์จริงได้</span><span data-lang-en>An offline program that passes the collision check and runs on the real robot</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>ความปลอดภัยและความเป็นระเบียบในการปฏิบัติงาน</span><span data-lang-en>Safe and orderly laboratory practice</span></td><td>15</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--danger" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></div>
+            <p class="mb-0">
+              <span data-lang-th>ขั้นตอนที่ 6 คือการโหลดโปรแกรมที่คนเขียนขึ้นนอกห้องปฏิบัติการเข้าสู่หุ่นยนต์จริง ซึ่งเป็นสถานการณ์ที่อันตรายที่สุดในรายวิชานี้ เพราะไม่มีใครเคยเห็นเส้นทางนั้นด้วยตาจริงมาก่อน บังคับให้เดินครั้งแรกที่ความเร็ว 10% เสมอ โดยมือวางอยู่บนปุ่มหยุดฉุกเฉินตลอดเวลา และต้องมีผู้ควบคุมอนุมัติก่อนทุกครั้ง ขั้นตอนที่ 4 พาหุ่นยนต์เข้าใกล้จุดเอกฐานโดยตั้งใจ ซึ่งเป็นบริเวณที่ข้อต่ออาจเหวี่ยงเร็วกว่าที่เห็นในโปรแกรมจำลองมาก ให้ตั้งขีดจำกัดความเร็วข้อต่อในตัวควบคุมไว้ก่อนเริ่ม และห้ามอยู่ในระยะเอื้อมของหุ่นยนต์ขณะทดสอบ</span>
+              <span data-lang-en>Step 6 loads a program written outside the laboratory onto a real robot, the most hazardous situation in this course, because nobody has yet seen that path with their own eyes. The first pass must always run at 10% speed with a hand on the emergency stop throughout, and only after an instructor has approved it. Step 4 deliberately takes the robot close to a singularity, where a joint may swing much faster than the simulation suggested: set the controller&rsquo;s joint-speed limits before starting, and stand outside the robot&rsquo;s reach for the whole test.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>หลักแต่ละหลักของเมทริกซ์การหมุนคือแกนของเฟรมใหม่ เขียนในพิกัดของเฟรมเดิม จำข้อนี้ได้ก็เขียนเมทริกซ์ได้โดยไม่ต้องท่อง</span><span data-lang-en>Each column of a rotation matrix is an axis of the new frame written in the old frame&rsquo;s coordinates; remember that and no formula needs memorising.</span></li>
+        <li><span data-lang-th>เมทริกซ์การหมุนเป็นเมทริกซ์ตั้งฉาก ตรวจงานได้ด้วยทรานสโพสกับดีเทอร์มิแนนต์ที่ต้องเป็น \( +1 \) เสมอ</span><span data-lang-en>A rotation matrix is orthonormal, so the transpose and a determinant of exactly \( +1 \) serve as a check.</span></li>
+        <li><span data-lang-th>การหมุนไม่สลับที่ ลำดับของมุมออยเลอร์จึงเป็นข้อมูลที่ขาดไม่ได้เมื่อย้ายค่าระหว่างยี่ห้อ</span><span data-lang-en>Rotations do not commute, so the order of Euler angles is indispensable information when moving values between brands.</span></li>
+        <li><span data-lang-th>เมทริกซ์การแปลงเอกพันธ์รวมการหมุนกับการเลื่อนไว้ในก้อนเดียว ทำให้การต่อโซ่กลายเป็นการคูณล้วน ตามสมการ (9.6)</span><span data-lang-en>A homogeneous transformation carries rotation and translation together, so chaining becomes pure multiplication — equation (9.6).</span></li>
+        <li><span data-lang-th>การกลับทิศของการแปลงใช้สูตรลัดในสมการ (9.7) ไม่ต้องหาเมทริกซ์ผกผันของเมทริกซ์ \( 4 \times 4 \)</span><span data-lang-en>Reversing a transformation uses the shortcut of equation (9.7); no general \( 4 \times 4 \) inverse is needed.</span></li>
+        <li><span data-lang-th>พารามิเตอร์ DH ลดการแปลงระหว่างสองเฟรมเหลือสี่ตัวเลข และมีสองธรรมเนียมที่ให้ตารางคล้ายกันแต่ค่าไม่เท่ากัน</span><span data-lang-en>DH parameters reduce a frame-to-frame transformation to four numbers, in two conventions whose tables look alike but do not match.</span></li>
+        <li><span data-lang-th>จลนศาสตร์ไปข้างหน้าคือผลคูณของเมทริกซ์ และให้คำตอบเดียวเสมอ ส่วนย้อนกลับไม่เป็นเชิงเส้นและมีได้หลายคำตอบหรือไม่มีเลย</span><span data-lang-en>Forward kinematics is a matrix product with exactly one answer; the inverse is nonlinear and may have several answers or none.</span></li>
+        <li><span data-lang-th>แขนสองลิงก์มีสองคำตอบเสมอ คือข้อศอกขึ้นกับข้อศอกลง และทั้งสองวางเครื่องมือลงที่จุดเดียวกันพอดี</span><span data-lang-en>A two-link arm always has two solutions, elbow up and elbow down, and both put the tool at precisely the same point.</span></li>
+        <li><span data-lang-th>ใช้ \( \operatorname{atan2} \) เสมอ เพราะ \( \arctan \) แยกจตุภาคไม่ได้และหารด้วยศูนย์เมื่อ \( x = 0 \)</span><span data-lang-en>Always use \( \operatorname{atan2} \): \( \arctan \) cannot tell the quadrants apart and divides by zero when \( x = 0 \).</span></li>
+        <li><span data-lang-th>จุดเอกฐานคือท่าที่ \( \det \mathbf{J} = 0 \) และใกล้จุดนั้นความเร็วข้อต่อที่ต้องใช้พุ่งขึ้นเป็นสัดส่วนกับ \( 1/\lvert\sin\theta_2\rvert \)</span><span data-lang-en>A singularity is a pose where \( \det \mathbf{J} = 0 \), and near it the required joint speed grows as \( 1/\lvert\sin\theta_2\rvert \).</span></li>
+        <li><span data-lang-th>หุ่นยนต์ขนานมีสมบัติกลับด้านกับอนุกรมทุกข้อ จลนศาสตร์ย้อนกลับง่าย ไปข้างหน้ายาก มวลเคลื่อนที่น้อย แต่ปริภูมิทำงานแคบ</span><span data-lang-en>A parallel robot reverses every property of a serial one: easy inverse, hard forward, little moving mass, but a small workspace.</span></li>
+        <li><span data-lang-th>โปรแกรมจำลองคำนวณด้วยค่าออกแบบ จึงตรงกับของจริงได้ไม่เกินความแม่นยำของหุ่นยนต์ตัวนั้น</span><span data-lang-en>A simulator computes with design values, so it can agree with reality only to within that robot&rsquo;s accuracy.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>เมทริกซ์การหมุน</span><span data-lang-en>Rotation matrix</span></div>
+          <div class="deflist__def"><span data-lang-th>เมทริกซ์ตั้งฉากที่หลักแต่ละหลักคือแกนของเฟรมหนึ่ง เขียนในพิกัดของอีกเฟรมหนึ่ง มีดีเทอร์มิแนนต์เท่ากับ \( +1 \)</span><span data-lang-en>An orthonormal matrix whose columns are one frame&rsquo;s axes written in another frame&rsquo;s coordinates, with determinant \( +1 \)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>เมทริกซ์การแปลงเอกพันธ์</span><span data-lang-en>Homogeneous transformation</span></div>
+          <div class="deflist__def"><span data-lang-th>เมทริกซ์ \( 4 \times 4 \) ที่รวมการหมุนและการเลื่อนไว้ด้วยกัน ทำให้การต่อเฟรมเป็นการคูณเมทริกซ์</span><span data-lang-en>A \( 4 \times 4 \) matrix carrying rotation and translation together, so that chaining frames is matrix multiplication</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>พารามิเตอร์ DH</span><span data-lang-en>DH parameters</span></div>
+          <div class="deflist__def"><span data-lang-th>ชุดตัวเลขสี่ตัว \( a, \alpha, d, \theta \) ที่บรรยายการแปลงระหว่างเฟรมของข้อต่อสองตัวที่ติดกัน ตามกติกาการวางเฟรมมาตรฐาน</span><span data-lang-en>The four numbers \( a, \alpha, d, \theta \) describing the transformation between two consecutive joint frames under a standard placement convention</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>จลนศาสตร์ไปข้างหน้า</span><span data-lang-en>Forward kinematics</span></div>
+          <div class="deflist__def"><span data-lang-th>การหาท่าของปลายเครื่องมือจากค่าของข้อต่อ เป็นผลคูณของเมทริกซ์ตามสมการ (9.11) และมีคำตอบเดียวเสมอ</span><span data-lang-en>Finding the tool pose from the joint values: the matrix product of equation (9.11), always with exactly one answer</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>จลนศาสตร์ย้อนกลับ</span><span data-lang-en>Inverse kinematics</span></div>
+          <div class="deflist__def"><span data-lang-th>การหาค่าของข้อต่อจากท่าของปลายเครื่องมือที่ต้องการ ไม่เป็นเชิงเส้น และอาจมีหลายคำตอบหรือไม่มีคำตอบเลย</span><span data-lang-en>Finding the joint values from a desired tool pose: nonlinear, and possibly with several solutions or none</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>จาโคเบียน</span><span data-lang-en>Jacobian</span></div>
+          <div class="deflist__def"><span data-lang-th>เมทริกซ์ที่เชื่อมความเร็วของข้อต่อเข้ากับความเร็วของปลายเครื่องมือ ดีเทอร์มิแนนต์ของมันบอกว่าท่านั้นอยู่ใกล้จุดเอกฐานเพียงใด</span><span data-lang-en>The matrix linking joint velocities to tool velocity; its determinant says how close the pose is to a singularity</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ข้อมือทรงกลม</span><span data-lang-en>Spherical wrist</span></div>
+          <div class="deflist__def"><span data-lang-th>สามแกนสุดท้ายที่ตัดกันที่จุดเดียว ทำให้แยกปัญหาตำแหน่งออกจากปัญหาการวางตัวและแก้ในรูปปิดได้</span><span data-lang-en>Three final axes intersecting at one point, which separates the position problem from the orientation problem and allows a closed-form solution</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>หุ่นยนต์ขนาน</span><span data-lang-en>Parallel robot</span></div>
+          <div class="deflist__def"><span data-lang-th>หุ่นยนต์ที่แพลตฟอร์มถูกยึดด้วยโซ่ปิดหลายเส้นพร้อมกัน เช่น เดลต้า ซึ่งแก้จลนศาสตร์ย้อนกลับได้ง่ายแต่ไปข้างหน้ายาก</span><span data-lang-en>A robot whose platform is held by several closed chains at once, such as a delta, for which the inverse is easy and the forward hard</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>สิบข้อ เน้นการคำนวณเมทริกซ์ การแก้จลนศาสตร์ย้อนกลับ การวินิจฉัยจุดเอกฐาน และการตัดสินใจเชิงโครงสร้าง เกณฑ์ผ่าน 70%</span>
+        <span data-lang-en>Ten items on matrix work, solving the inverse problem, diagnosing a singularity and judging a structure. Pass mark 70%.</span>
+      </p>
+      <div data-quiz="ch09-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>Denavit, J., &amp; Hartenberg, R. S. (1955). A kinematic notation for lower-pair mechanisms based on matrices. <em>Journal of Applied Mechanics, 22</em>(2), 215–221. <span data-lang-th>— บทความต้นฉบับของธรรมเนียมที่ใช้ในหัวข้อ 9.3</span><span data-lang-en>— the original paper behind the convention of §9.3.</span></li>
+        <li>Craig, J. J. (2018). <em>Introduction to Robotics: Mechanics and Control</em> (4th ed.). Pearson. <span data-lang-th>— ตำราหลักของบทนี้ และเป็นที่มาของธรรมเนียม DH แบบดัดแปลง</span><span data-lang-en>— the principal text for this chapter, and the source of the modified DH convention.</span></li>
+        <li>Spong, M. W., Hutchinson, S., &amp; Vidyasagar, M. (2020). <em>Robot Modeling and Control</em> (2nd ed.). Wiley. <span data-lang-th>— อธิบายจาโคเบียนและจุดเอกฐานได้ชัดเจนที่สุดในระดับปริญญาตรี</span><span data-lang-en>— the clearest undergraduate treatment of the Jacobian and of singularities.</span></li>
+        <li>Siciliano, B., Sciavicco, L., Villani, L., &amp; Oriolo, G. (2010). <em>Robotics: Modelling, Planning and Control</em>. Springer.</li>
+        <li>Lynch, K. M., &amp; Park, F. C. (2017). <em>Modern Robotics: Mechanics, Planning, and Control</em>. Cambridge University Press. <span data-lang-th>— เสนอวิธีแกนสกรูที่เป็นทางเลือกแทน DH และหลีกเลี่ยงปัญหาสองธรรมเนียม</span><span data-lang-en>— offers the screw-axis approach as an alternative to DH that avoids the two-convention problem.</span></li>
+        <li>Corke, P. (2017). <em>Robotics, Vision and Control: Fundamental Algorithms in MATLAB</em> (2nd ed.). Springer. <span data-lang-th>— มีชุดเครื่องมือที่ใช้ตรวจคำตอบของปฏิบัติการที่ 9 ได้โดยตรง</span><span data-lang-en>— its toolbox can check the results of Laboratory 9 directly.</span></li>
+        <li>Clavel, R. (1990). <em>Device for the movement and positioning of an element in space</em> (US Patent No. 4,976,582). <span data-lang-th>— สิทธิบัตรต้นฉบับของหุ่นยนต์เดลต้าในหัวข้อ 9.6</span><span data-lang-en>— the original delta robot patent behind §9.6.</span></li>
+        <li>Merlet, J.-P. (2006). <em>Parallel Robots</em> (2nd ed.). Springer.</li>
+        <li>Williams II, R. L. (2016). <em>The Delta Parallel Robot: Kinematics Solutions</em>. Ohio University. <span data-lang-th>— ให้สมการจลนศาสตร์ของเดลต้าแบบเต็ม ซึ่งหัวข้อ 9.6 ย่อไว้</span><span data-lang-en>— gives in full the delta kinematics that §9.6 condenses.</span></li>
+        <li>RoboDK Inc. (2024). <em>RoboDK Documentation and Python API Reference</em>. <span data-lang-th>— คู่มือของเครื่องมือที่ใช้ในหัวข้อ 9.7 และปฏิบัติการที่ 9</span><span data-lang-en>— the manual for the tool used in §9.7 and Laboratory 9.</span></li>
+        <li>Zhao, Y., Gong, L., Huang, Y., &amp; Liu, C. (2016). A review of key techniques of vision-based control for harvesting robot. <em>Computers and Electronics in Agriculture, 127</em>, 311–323.</li>
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press.</li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="ch08.html">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>บทก่อนหน้า</span><span data-lang-en>Previous chapter</span></small>
+        <b><span data-lang-th>บทที่ 8 · ระบบหุ่นยนต์อุตสาหกรรม</span><span data-lang-en>Chapter 8 · Industrial Robot Systems</span></b>
+      </a>
+      <a class="is-next" href="ch10.html">
+        <small><span data-lang-th>บทถัดไป</span><span data-lang-en>Next chapter</span> <i class="fa-solid fa-arrow-right"></i></small>
+        <b><span data-lang-th>บทที่ 10 · ระบบหุ่นยนต์เคลื่อนที่</span><span data-lang-en>Chapter 10 · Mobile Robot Systems</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#dh"><span data-lang-th>พารามิเตอร์ DH</span><span data-lang-en>DH parameters</span></a></li>
+          <li><a href="#ik"><span data-lang-th>จลนศาสตร์ย้อนกลับ</span><span data-lang-en>Inverse kinematics</span></a></li>
+          <li><a href="#lab"><span data-lang-th>ปฏิบัติการที่ 9</span><span data-lang-en>Laboratory 9</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script src="../js/ch09-quiz.js"></script>
+<script src="../js/ch09-anim.js"></script>
+</body>
+</html>

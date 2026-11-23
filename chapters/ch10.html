@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 10 · ระบบหุ่นยนต์เคลื่อนที่" data-title-en="Chapter 10 · Mobile Robot Systems">Chapter 10 · Mobile Robot Systems</title>
+<meta name="description" content="Chapter 10: mobile robot types for agriculture, wheel and track types, differential drive kinematics, odometry and its drift, localization with GNSS and RTK, path planning and field coverage, and simulation in Webots.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="ch07.html"><span data-lang-th>บทที่ 7</span><span data-lang-en>Ch 7</span></a>
+      <a href="ch08.html"><span data-lang-th>บทที่ 8</span><span data-lang-en>Ch 8</span></a>
+      <a href="ch09.html"><span data-lang-th>บทที่ 9</span><span data-lang-en>Ch 9</span></a>
+      <a href="ch10.html" class="is-active"><span data-lang-th>บทที่ 10</span><span data-lang-en>Ch 10</span></a>
+      <a href="ch11.html"><span data-lang-th>บทที่ 11</span><span data-lang-en>Ch 11</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 10</span><span data-lang-en>Chapter 10</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 15</span><span data-lang-en>Week 15</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 2 ชม. + ปฏิบัติ 2 ชม.</span><span data-lang-en>2 h lecture + 2 h laboratory</span></span>
+      <span class="badge badge--sky"><i class="fa-solid fa-film"></i> <span data-lang-th>แอนิเมชัน 3 ชุด</span><span data-lang-en>3 animations</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 10 · ระบบหุ่นยนต์เคลื่อนที่</span>
+      <span data-lang-en>Chapter 10 · Mobile Robot Systems</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>หุ่นยนต์ในบทที่ 8 และ 9 ยึดอยู่กับพื้นและรู้ตำแหน่งของตัวเองเสมอจากตัวเข้ารหัสที่ข้อต่อ หุ่นยนต์ในบทนี้ต้องออกไปในแปลง และคำถามแรกที่มันตอบไม่ได้ก็คือ “ตอนนี้ฉันอยู่ที่ไหน” บทนี้เริ่มจากจลนศาสตร์ของการขับเคลื่อนเชิงผลต่าง ไปสู่สาเหตุที่การนับรอบล้อเพียงอย่างเดียวใช้ไม่ได้ในดิน แล้วจบที่การวางแผนเส้นทางให้ครอบคลุมแปลงและการตรวจสอบทุกอย่างใน Webots ก่อนนำรถออกไปจริง</span>
+      <span data-lang-en>The robots of Chapters 8 and 9 were bolted to the floor and always knew where they were, from the encoders at their joints. The robot in this chapter has to go out into the field, and the first question it cannot answer is &ldquo;where am I now?&rdquo; We begin with the kinematics of differential drive, move to why counting wheel revolutions alone fails on soil, and finish with planning a path that covers a field — and checking all of it in Webots before the machine goes outdoors.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#types"><span data-lang-th>10.1 ประเภทของหุ่นยนต์เคลื่อนที่</span><span data-lang-en>10.1 Types of mobile robot</span></a></li>
+      <li><a href="#wheels"><span data-lang-th>10.2 ล้อ ตีนตะขาบ และการยึดเกาะ</span><span data-lang-en>10.2 Wheels, tracks and traction</span></a></li>
+      <li><a href="#diffdrive"><span data-lang-th>10.3 ขับเคลื่อนเชิงผลต่าง</span><span data-lang-en>10.3 Differential drive</span></a></li>
+      <li><a href="#steering"><span data-lang-th>10.4 โครงร่างการขับเคลื่อนอื่น</span><span data-lang-en>10.4 Other drive layouts</span></a></li>
+      <li><a href="#localization"><span data-lang-th>10.5 การระบุตำแหน่ง</span><span data-lang-en>10.5 Localization</span></a></li>
+      <li><a href="#planning"><span data-lang-th>10.6 การวางแผนเส้นทางและการครอบคลุมแปลง</span><span data-lang-en>10.6 Path planning and field coverage</span></a></li>
+      <li><a href="#webots"><span data-lang-th>10.7 การจำลองด้วย Webots</span><span data-lang-en>10.7 Simulation in Webots</span></a></li>
+      <li><a href="#activity"><span data-lang-th>10.8 กิจกรรมในชั้นเรียน</span><span data-lang-en>10.8 In-class activity</span></a></li>
+      <li><a href="#lab"><span data-lang-th>10.9 ปฏิบัติการที่ 10</span><span data-lang-en>10.9 Laboratory 10</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>จำแนกประเภทของหุ่นยนต์เคลื่อนที่ที่ใช้ในงานเกษตร และเลือกให้เหมาะกับสภาพพื้นที่</span><span data-lang-en>Classify the mobile robots used in agriculture and match one to a given terrain.</span></li>
+        <li><span data-lang-th>อธิบายชนิดของล้อทั้งสี่แบบและตีนตะขาบ พร้อมบอกการเคลื่อนที่ที่แต่ละแบบยอมให้เกิดขึ้น</span><span data-lang-en>Describe the four wheel types and tracks, and the motion each one permits.</span></li>
+        <li><span data-lang-th>คำนวณจลนศาสตร์ของการขับเคลื่อนเชิงผลต่างได้ทั้งสองทิศทาง และหาตำแหน่งจุดศูนย์กลางการหมุน</span><span data-lang-en>Compute differential-drive kinematics in both directions and locate the centre of rotation.</span></li>
+        <li><span data-lang-th>คำนวณตำแหน่งจากการนับรอบล้อ และประมาณการสะสมของความคลาดเคลื่อนตามระยะทางที่วิ่ง</span><span data-lang-en>Compute a pose from wheel counts and estimate how the error accumulates with distance.</span></li>
+        <li><span data-lang-th>อธิบายข้อจำกัดนอนโฮโลโนมิก และบอกว่ามันส่งผลต่อการวางแผนเส้นทางอย่างไร</span><span data-lang-en>Explain the nonholonomic constraint and what it does to path planning.</span></li>
+        <li><span data-lang-th>เปรียบเทียบวิธีระบุตำแหน่งด้วย GNSS, RTK, IMU และการผสานข้อมูล พร้อมเลือกให้เหมาะกับงาน</span><span data-lang-en>Compare GNSS, RTK, IMU and sensor fusion, and choose one for a given task.</span></li>
+        <li><span data-lang-th>วางแผนเส้นทางให้ครอบคลุมแปลง คำนวณจำนวนแนว ระยะทาง และเวลาที่ใช้ต่อไร่</span><span data-lang-en>Plan a coverage path for a field and compute the passes, the distance and the time per hectare.</span></li>
+        <li><span data-lang-th>สร้างโลกจำลองใน Webots เขียนตัวควบคุม และตรวจพฤติกรรมก่อนนำไปใช้กับรถจริง</span><span data-lang-en>Build a Webots world, write a controller and verify behaviour before using a real vehicle.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ตอบก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิม ระบบเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer before reading. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch10-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 10.1 -------- -->
+    <section id="types">
+      <h2><span data-lang-th>10.1 ประเภทของหุ่นยนต์เคลื่อนที่ในงานเกษตร</span><span data-lang-en>10.1 Types of mobile robot in agriculture</span></h2>
+
+      <p>
+        <span data-lang-th>สิ่งที่เปลี่ยนไปจากบทที่ 8 ไม่ใช่เรื่องกลไก แต่เป็นเรื่องของ <em>สิ่งที่หุ่นยนต์รู้</em> แขนกลที่ยึดกับพื้นรู้ตำแหน่งปลายเครื่องมือของตัวเองได้เสมอจากสมการ (9.11) เพราะฐานไม่เคยขยับ ส่วนหุ่นยนต์เคลื่อนที่ไม่มีจุดอ้างอิงที่แน่นอนเลย มันต้องประมาณตำแหน่งของตัวเองจากสิ่งที่วัดได้ และการประมาณนั้นผิดพลาดสะสมขึ้นเรื่อย ๆ ตามระยะทาง นี่คือปัญหาที่ครอบงำทั้งบท</span>
+        <span data-lang-en>What changes from Chapter 8 is not the mechanics but <em>what the robot knows</em>. A floor-mounted arm always knows where its tool is, from equation (9.11), because its base never moves. A mobile robot has no fixed reference at all: it must estimate its own position from what it can measure, and that estimate degrades with every metre travelled. This problem dominates the whole chapter.</span>
+      </p>
+
+      <!-- ===================== Figure 10.1 ===================== -->
+      <figure class="figure">
+        <svg viewBox="0 0 860 250" role="img" aria-label="Four kinds of agricultural mobile robot: a wheeled field robot, a tracked robot, a greenhouse rail robot and an unmanned aircraft">
+
+          <!-- 1. wheeled field robot -->
+          <rect x="10" y="10" width="200" height="210" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="110" y="34" text-anchor="middle" data-lang-th>รถล้อยางในแปลง</text>
+          <text class="dg-text-b" x="110" y="34" text-anchor="middle" data-lang-en>Wheeled field robot</text>
+          <rect x="52" y="76" width="116" height="40" rx="6" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <rect x="94" y="56" width="32" height="22" rx="4" class="dg-fill-sky dg-stroke" stroke-width="1.4"/>
+          <circle cx="76" cy="126" r="18" class="dg-fill-soft dg-stroke" stroke-width="2.4"/>
+          <circle cx="144" cy="126" r="18" class="dg-fill-soft dg-stroke" stroke-width="2.4"/>
+          <circle cx="76" cy="126" r="7" class="dg-fill-surface dg-stroke" stroke-width="1.4"/>
+          <circle cx="144" cy="126" r="7" class="dg-fill-surface dg-stroke" stroke-width="1.4"/>
+          <line x1="30" y1="146" x2="190" y2="146" class="dg-stroke" stroke-width="2"/>
+          <path d="M44 146 q 6 -16 12 0" class="dg-stroke-green" stroke-width="2"/>
+          <path d="M100 146 q 6 -16 12 0" class="dg-stroke-green" stroke-width="2"/>
+          <path d="M156 146 q 6 -16 12 0" class="dg-stroke-green" stroke-width="2"/>
+          <text class="dg-text-sm" x="110" y="180" text-anchor="middle" data-lang-th>พ่นสาร กำจัดวัชพืช ตรวจแปลง</text>
+          <text class="dg-text-sm" x="110" y="180" text-anchor="middle" data-lang-en>spraying, weeding, scouting</text>
+          <text class="dg-text-sm" x="110" y="202" text-anchor="middle" data-lang-th>เร็วและประหยัด แต่ลื่นในดินเปียก</text>
+          <text class="dg-text-sm" x="110" y="202" text-anchor="middle" data-lang-en>fast and efficient, but slips on wet soil</text>
+
+          <!-- 2. tracked robot -->
+          <rect x="220" y="10" width="200" height="210" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="320" y="34" text-anchor="middle" data-lang-th>รถตีนตะขาบ</text>
+          <text class="dg-text-b" x="320" y="34" text-anchor="middle" data-lang-en>Tracked robot</text>
+          <rect x="266" y="72" width="108" height="36" rx="6" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <path d="M276 112 h 88 a 20 20 0 0 1 0 40 h -88 a 20 20 0 0 1 0 -40 z" class="dg-fill-soft dg-stroke" stroke-width="2.4"/>
+          <circle cx="276" cy="132" r="11" class="dg-fill-surface dg-stroke" stroke-width="1.6"/>
+          <circle cx="364" cy="132" r="11" class="dg-fill-surface dg-stroke" stroke-width="1.6"/>
+          <circle cx="320" cy="132" r="7" class="dg-fill-surface dg-stroke" stroke-width="1.4"/>
+          <line x1="240" y1="154" x2="400" y2="154" class="dg-stroke" stroke-width="2"/>
+          <text class="dg-text-sm" x="320" y="180" text-anchor="middle" data-lang-th>นาข้าว ดินเลน พื้นที่ลาดชัน</text>
+          <text class="dg-text-sm" x="320" y="180" text-anchor="middle" data-lang-en>paddies, mud, steep ground</text>
+          <text class="dg-text-sm" x="320" y="202" text-anchor="middle" data-lang-th>แรงยึดเกาะสูง แต่ช้าและสึกเร็ว</text>
+          <text class="dg-text-sm" x="320" y="202" text-anchor="middle" data-lang-en>high traction, but slow and wears fast</text>
+
+          <!-- 3. greenhouse rail robot -->
+          <rect x="430" y="10" width="200" height="210" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="530" y="34" text-anchor="middle" data-lang-th>รถรางในโรงเรือน</text>
+          <text class="dg-text-b" x="530" y="34" text-anchor="middle" data-lang-en>Greenhouse rail robot</text>
+          <line x1="452" y1="134" x2="608" y2="134" class="dg-stroke" stroke-width="3"/>
+          <line x1="452" y1="146" x2="608" y2="146" class="dg-stroke" stroke-width="3"/>
+          <rect x="500" y="98" width="60" height="32" rx="5" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <circle cx="512" cy="136" r="8" class="dg-fill-soft dg-stroke" stroke-width="1.8"/>
+          <circle cx="548" cy="136" r="8" class="dg-fill-soft dg-stroke" stroke-width="1.8"/>
+          <line x1="530" y1="98" x2="530" y2="72" class="dg-stroke-green" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="530" cy="66" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <line x1="452" y1="170" x2="608" y2="170" class="dg-stroke" stroke-width="2"/>
+          <text class="dg-text-sm" x="530" y="196" text-anchor="middle" data-lang-th>เก็บเกี่ยว ตรวจโรค ขนย้ายในโรงเรือน</text>
+          <text class="dg-text-sm" x="530" y="196" text-anchor="middle" data-lang-en>harvesting, scouting, transport indoors</text>
+          <text class="dg-text-sm" x="530" y="216" text-anchor="middle" data-lang-th>รู้ตำแหน่งแน่นอนเพราะรางบังคับไว้</text>
+          <text class="dg-text-sm" x="530" y="216" text-anchor="middle" data-lang-en>position is certain: the rail fixes it</text>
+
+          <!-- 4. UAV -->
+          <rect x="640" y="10" width="210" height="210" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="745" y="34" text-anchor="middle" data-lang-th>อากาศยานไร้คนขับ</text>
+          <text class="dg-text-b" x="745" y="34" text-anchor="middle" data-lang-en>Unmanned aircraft</text>
+          <line x1="700" y1="86" x2="790" y2="120" class="dg-stroke" stroke-width="4"/>
+          <line x1="790" y1="86" x2="700" y2="120" class="dg-stroke" stroke-width="4"/>
+          <ellipse cx="700" cy="86" rx="22" ry="5" class="dg-fill-green dg-stroke" stroke-width="1.4"/>
+          <ellipse cx="790" cy="86" rx="22" ry="5" class="dg-fill-green dg-stroke" stroke-width="1.4"/>
+          <ellipse cx="700" cy="120" rx="22" ry="5" class="dg-fill-green dg-stroke" stroke-width="1.4"/>
+          <ellipse cx="790" cy="120" rx="22" ry="5" class="dg-fill-green dg-stroke" stroke-width="1.4"/>
+          <rect x="726" y="94" width="38" height="20" rx="5" class="dg-fill-steel dg-stroke" stroke-width="1.8"/>
+          <circle cx="745" cy="122" r="7" class="dg-fill-sky dg-stroke" stroke-width="1.6"/>
+          <line x1="670" y1="156" x2="820" y2="156" class="dg-stroke" stroke-width="2" stroke-dasharray="5 4"/>
+          <text class="dg-text-sm" x="745" y="182" text-anchor="middle" data-lang-th>สำรวจทางอากาศ หว่าน พ่นสาร</text>
+          <text class="dg-text-sm" x="745" y="182" text-anchor="middle" data-lang-en>aerial survey, seeding, spraying</text>
+          <text class="dg-text-sm" x="745" y="204" text-anchor="middle" data-lang-th>ครอบคลุมเร็วมาก แต่บินได้สั้น</text>
+          <text class="dg-text-sm" x="745" y="204" text-anchor="middle" data-lang-en>covers ground fast, but flies briefly</text>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 10.1</span><span data-lang-en>Figure 10.1</span></b>
+          <span data-lang-th> สี่ประเภทที่พบในงานเกษตรไทย เรียงจากซ้ายไปขวาตามความไม่แน่นอนของตำแหน่ง รถรางรู้ตำแหน่งแน่นอนเพราะรางบังคับการเคลื่อนที่ไว้แล้ว จึงแทบไม่ต้องแก้ปัญหาการระบุตำแหน่งเลย ส่วนรถล้อยางและรถตีนตะขาบในแปลงต้องประมาณเอาทั้งหมด และอากาศยานต้องประมาณในสามมิติ ความยากของหัวข้อ 10.5 เพิ่มขึ้นตามลำดับนี้</span>
+          <span data-lang-en> Four kinds found on Thai farms, ordered left to right by how uncertain their position is. A rail robot knows exactly where it is, because the rail has already constrained the motion, and so barely has a localization problem at all. Wheeled and tracked field robots must estimate everything, and an aircraft must estimate it in three dimensions. The difficulty of §10.5 rises in that order.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--info">
+        <div class="callout__title"><i class="fa-solid fa-lightbulb"></i> <span data-lang-th>การบังคับการเคลื่อนที่ทางกลไกเป็นวิธีแก้ปัญหาที่ถูกที่สุดเสมอ</span><span data-lang-en>Constraining the motion mechanically is always the cheapest fix</span></div>
+        <p class="mb-0">
+          <span data-lang-th>รถรางในโรงเรือนไม่ต้องใช้ GNSS ไม่ต้องใช้ IMU และไม่ต้องทำ SLAM เพราะมันเคลื่อนที่ได้ทางเดียวและนับระยะจากล้อบนรางได้แม่นมาก ก่อนจะลงทุนกับระบบระบุตำแหน่งราคาแพง ควรถามก่อนเสมอว่างานนั้นบังคับด้วยกลไกได้หรือไม่ ในแปลงที่ปลูกเป็นแถวตรงและถาวร การใช้รางหรือการเดินตามแถวพืชด้วยเซนเซอร์อย่างง่ายมักให้ผลดีกว่าระบบนำทางด้วยดาวเทียมที่ราคาสูงกว่าสิบเท่า</span>
+          <span data-lang-en>A greenhouse rail robot needs no GNSS, no IMU and no SLAM, because it can move only one way and counting wheel revolutions on a rail is very accurate. Before investing in an expensive localization system, always ask whether the task can be constrained mechanically instead. In a field of straight, permanent rows, a rail or simple row-following sensors often beat a satellite navigation system costing ten times as much.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 10.2 -------- -->
+    <section id="wheels">
+      <h2><span data-lang-th>10.2 ล้อ ตีนตะขาบ และการยึดเกาะ</span><span data-lang-en>10.2 Wheels, tracks and traction</span></h2>
+
+      <p>
+        <span data-lang-th>ล้อที่ใช้ในหุ่นยนต์เคลื่อนที่มีอยู่สี่ชนิดหลัก และสิ่งที่แยกแต่ละชนิดออกจากกันคือ <em>ทิศทางที่มันห้ามไม่ให้เคลื่อนที่</em> ไม่ใช่ทิศทางที่มันอนุญาต ล้อมาตรฐานหนึ่งล้อห้ามการเลื่อนด้านข้าง ซึ่งเป็นข้อจำกัดที่กลายมาเป็นหัวใจของหัวข้อ 10.4</span>
+        <span data-lang-en>Four kinds of wheel are used on mobile robots, and what distinguishes them is <em>the direction each one forbids</em> rather than the one it allows. A single standard wheel forbids sideways motion, and that constraint becomes the heart of §10.4.</span>
+      </p>
+
+      <!-- ===================== Figure 10.2 ===================== -->
+      <figure class="figure">
+        <svg viewBox="0 0 860 250" role="img" aria-label="Four wheel types: standard, steered, castor and omnidirectional, with the motion each permits">
+
+          <!-- 1. standard -->
+          <rect x="10" y="10" width="200" height="210" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="110" y="34" text-anchor="middle" data-lang-th>ล้อมาตรฐาน</text>
+          <text class="dg-text-b" x="110" y="34" text-anchor="middle" data-lang-en>Standard</text>
+          <ellipse cx="110" cy="112" rx="12" ry="40" class="dg-fill-soft dg-stroke" stroke-width="2.4"/>
+          <line x1="80" y1="112" x2="140" y2="112" class="dg-stroke" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <line x1="110" y1="60" x2="110" y2="42" class="dg-stroke-green" stroke-width="2.6"/>
+          <polygon points="110,42 105,54 115,54" class="dg-arrow"/>
+          <line x1="110" y1="164" x2="110" y2="182" class="dg-stroke-green" stroke-width="2.6"/>
+          <polygon points="110,182 105,170 115,170" class="dg-arrow"/>
+          <line x1="152" y1="112" x2="178" y2="112" class="dg-stroke" stroke-width="2.6" opacity="0.5"/>
+          <line x1="158" y1="100" x2="176" y2="124" class="dg-stroke-gold" stroke-width="2.6"/>
+          <line x1="176" y1="100" x2="158" y2="124" class="dg-stroke-gold" stroke-width="2.6"/>
+          <text class="dg-text-sm" x="110" y="208" text-anchor="middle" data-lang-th>กลิ้งหน้าหลังได้ ห้ามเลื่อนข้าง</text>
+          <text class="dg-text-sm" x="110" y="208" text-anchor="middle" data-lang-en>rolls fore and aft, no sideways slide</text>
+
+          <!-- 2. steered -->
+          <rect x="220" y="10" width="200" height="210" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="320" y="34" text-anchor="middle" data-lang-th>ล้อบังคับเลี้ยว</text>
+          <text class="dg-text-b" x="320" y="34" text-anchor="middle" data-lang-en>Steered</text>
+          <ellipse cx="320" cy="118" rx="12" ry="38" class="dg-fill-soft dg-stroke" stroke-width="2.4" transform="rotate(25 320 118)"/>
+          <circle cx="320" cy="118" r="5" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <line x1="320" y1="118" x2="320" y2="62" class="dg-stroke" stroke-width="2" stroke-dasharray="4 3"/>
+          <path d="M282 78 A 48 48 0 0 1 358 78" class="dg-stroke-gold" stroke-width="2.4"/>
+          <polygon points="358,78 346,76 350,86" class="dg-arrow"/>
+          <polygon points="282,78 294,76 290,86" class="dg-arrow"/>
+          <text class="dg-text-sm" x="320" y="192" text-anchor="middle" data-lang-th>แกนเลี้ยวผ่านจุดสัมผัสพื้น</text>
+          <text class="dg-text-sm" x="320" y="192" text-anchor="middle" data-lang-en>steering axis through the contact point</text>
+          <text class="dg-text-sm" x="320" y="212" text-anchor="middle" data-lang-th>ต้องขับมอเตอร์เลี้ยวเพิ่มอีกตัว</text>
+          <text class="dg-text-sm" x="320" y="212" text-anchor="middle" data-lang-en>needs a second motor to steer it</text>
+
+          <!-- 3. castor -->
+          <rect x="430" y="10" width="200" height="210" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="530" y="34" text-anchor="middle" data-lang-th>ล้อกลิ้งอิสระ</text>
+          <text class="dg-text-b" x="530" y="34" text-anchor="middle" data-lang-en>Castor</text>
+          <circle cx="508" cy="70" r="5" class="dg-fill-gold dg-stroke" stroke-width="1.6"/>
+          <line x1="508" y1="70" x2="508" y2="186" class="dg-stroke" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <line x1="508" y1="70" x2="552" y2="92" class="dg-stroke" stroke-width="4"/>
+          <ellipse cx="556" cy="118" rx="12" ry="34" class="dg-fill-soft dg-stroke" stroke-width="2.4" transform="rotate(18 556 118)"/>
+          <path d="M478 110 A 42 42 0 0 0 500 150" class="dg-stroke-gold" stroke-width="2.2"/>
+          <polygon points="500,150 496,139 489,146" class="dg-arrow"/>
+          <text class="dg-text-sm" x="530" y="192" text-anchor="middle" data-lang-th>แกนหมุนเยื้องจากจุดสัมผัสพื้น</text>
+          <text class="dg-text-sm" x="530" y="192" text-anchor="middle" data-lang-en>pivot offset from the contact point</text>
+          <text class="dg-text-sm" x="530" y="212" text-anchor="middle" data-lang-th>หันตามเองโดยไม่ต้องมีมอเตอร์</text>
+          <text class="dg-text-sm" x="530" y="212" text-anchor="middle" data-lang-en>follows on its own, with no motor</text>
+
+          <!-- 4. omnidirectional -->
+          <rect x="640" y="10" width="210" height="210" rx="10" class="dg-fill-surface dg-stroke" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text class="dg-text-b" x="745" y="34" text-anchor="middle" data-lang-th>ล้อรอบทิศทาง</text>
+          <text class="dg-text-b" x="745" y="34" text-anchor="middle" data-lang-en>Omnidirectional</text>
+          <circle cx="745" cy="112" r="40" class="dg-fill-soft dg-stroke" stroke-width="2.4"/>
+          <line x1="722" y1="80" x2="738" y2="96" class="dg-stroke-green" stroke-width="3" stroke-linecap="round"/>
+          <line x1="752" y1="76" x2="768" y2="92" class="dg-stroke-green" stroke-width="3" stroke-linecap="round"/>
+          <line x1="774" y1="98" x2="786" y2="110" class="dg-stroke-green" stroke-width="3" stroke-linecap="round"/>
+          <line x1="706" y1="104" x2="718" y2="116" class="dg-stroke-green" stroke-width="3" stroke-linecap="round"/>
+          <line x1="722" y1="128" x2="738" y2="144" class="dg-stroke-green" stroke-width="3" stroke-linecap="round"/>
+          <line x1="752" y1="132" x2="768" y2="148" class="dg-stroke-green" stroke-width="3" stroke-linecap="round"/>
+          <line x1="745" y1="60" x2="745" y2="44" class="dg-stroke-gold" stroke-width="2.4"/>
+          <polygon points="745,44 740,56 750,56" class="dg-arrow"/>
+          <line x1="793" y1="112" x2="812" y2="112" class="dg-stroke-gold" stroke-width="2.4"/>
+          <polygon points="812,112 800,107 800,117" class="dg-arrow"/>
+          <text class="dg-text-sm" x="745" y="192" text-anchor="middle" data-lang-th>ลูกกลิ้งเฉียงทำให้เลื่อนข้างได้</text>
+          <text class="dg-text-sm" x="745" y="192" text-anchor="middle" data-lang-en>angled rollers permit sideways motion</text>
+          <text class="dg-text-sm" x="745" y="212" text-anchor="middle" data-lang-th>ใช้ในอาคาร ไม่เหมาะกับดินและหญ้า</text>
+          <text class="dg-text-sm" x="745" y="212" text-anchor="middle" data-lang-en>for indoors; unsuited to soil and grass</text>
+        </svg>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 10.2</span><span data-lang-en>Figure 10.2</span></b>
+          <span data-lang-th> ชนิดของล้อสี่แบบ เครื่องหมายกากบาทบนล้อมาตรฐานคือการเลื่อนด้านข้างที่ล้อไม่ยอมให้เกิดขึ้น ซึ่งเป็นที่มาของข้อจำกัดนอนโฮโลโนมิกในสมการ (10.8) ล้อรอบทิศทางยกข้อจำกัดนี้ออกไปด้วยลูกกลิ้งเฉียงที่กลิ้งตามขวางได้ แต่ลูกกลิ้งเล็ก ๆ เหล่านั้นจมลงในดินร่วนและติดเศษพืชทันที จึงแทบไม่พบในแปลงจริงเลย</span>
+          <span data-lang-en> The four wheel types. The cross on the standard wheel marks the sideways motion it refuses to allow, which is the origin of the nonholonomic constraint of equation (10.8). An omnidirectional wheel removes that constraint with angled rollers that run crosswise — but those small rollers sink into loose soil and clog with plant debris at once, so they are almost never seen in a real field.</span>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>10.2.1 ตีนตะขาบและความลื่นไถล</span><span data-lang-en>10.2.1 Tracks and slip</span></h3>
+
+      <p>
+        <span data-lang-th>ตีนตะขาบกระจายน้ำหนักลงบนพื้นที่สัมผัสที่กว้างกว่าล้อมาก ความดันที่กระทำต่อดินจึงต่ำลง ซึ่งให้ประโยชน์สองอย่างพร้อมกัน คือยึดเกาะได้ดีกว่าในดินอ่อน และอัดแน่นดินน้อยกว่า ซึ่งเป็นเรื่องที่สำคัญมากในแปลงเพาะปลูก แต่ต้องแลกด้วยการเลี้ยวที่เกิดจากการไถลเสมอ ไม่ใช่การกลิ้ง</span>
+        <span data-lang-en>A track spreads the weight over a far larger contact area than a wheel, so the pressure on the soil is lower. That buys two things at once: better grip in soft ground, and less compaction — which matters a great deal in a cropped field. The cost is that a track turns by sliding rather than rolling, always.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>ไม่ว่าจะเป็นล้อหรือตีนตะขาบ ความสัมพันธ์ระหว่างความเร็วเชิงมุมของล้อกับความเร็วจริงของรถไม่เคยสมบูรณ์แบบ ส่วนต่างนี้เรียกว่า <strong>อัตราการลื่นไถล</strong></span>
+        <span data-lang-en>Whether on wheels or tracks, the relation between wheel angular velocity and the vehicle&rsquo;s actual speed is never perfect. The discrepancy is the <strong>slip ratio</strong>.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ i \;=\; 1 - \frac{v_{\text{actual}}}{\omega_w r} $$</div>
+        <div class="eq__num">(10.1)</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 10.1 — อัตราการลื่นไถลโดยประมาณบนพื้นผิวที่พบในงานเกษตร</span><span data-lang-en>Table 10.1 — Typical slip ratios on surfaces found in agricultural work</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>พื้นผิว</span><span data-lang-en>Surface</span></th>
+              <th><span data-lang-th>ล้อยาง</span><span data-lang-en>Rubber tyre</span></th>
+              <th><span data-lang-th>ตีนตะขาบ</span><span data-lang-en>Track</span></th>
+              <th><span data-lang-th>ผลต่อการนับรอบล้อ</span><span data-lang-en>Effect on odometry</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>พื้นคอนกรีตในโรงเรือน</span><span data-lang-en>Concrete floor indoors</span></td>
+              <td>0.01–0.02</td><td>0.03–0.05</td>
+              <td><span data-lang-th>น้อยมาก ใช้การนับรอบล้อได้โดยตรง</span><span data-lang-en>negligible; wheel counts can be used directly</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ดินแห้งอัดแน่น</span><span data-lang-en>Firm dry soil</span></td>
+              <td>0.05–0.10</td><td>0.04–0.08</td>
+              <td><span data-lang-th>ระยะทางที่อ่านได้มากกว่าจริงราว 5–10%</span><span data-lang-en>distance reads 5–10% long</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ดินร่วนที่เพิ่งไถ</span><span data-lang-en>Freshly tilled loose soil</span></td>
+              <td>0.15–0.30</td><td>0.08–0.15</td>
+              <td><span data-lang-th>คลาดเคลื่อนมากจนต้องมีเซนเซอร์อื่นช่วย</span><span data-lang-en>large enough to require another sensor</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ดินเลนในนาข้าว</span><span data-lang-en>Paddy mud</span></td>
+              <td>0.30–0.60</td><td>0.15–0.30</td>
+              <td><span data-lang-th>ใช้การนับรอบล้อประมาณตำแหน่งไม่ได้เลย</span><span data-lang-en>wheel counts cannot estimate position at all</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>ความลื่นไถลไม่ใช่สัญญาณรบกวน</span><span data-lang-en>Slip is not noise</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ถ้าความลื่นไถลเป็นค่าสุ่มรอบศูนย์ การเฉลี่ยระยะยาวก็จะหักล้างกันเองและไม่เป็นปัญหา แต่ตารางที่ 10.1 แสดงว่ามันเป็นค่าบวกเสมอ ล้อจึงหมุนมากกว่าระยะทางที่เดินทางได้จริงทุกครั้ง ผลคือความคลาดเคลื่อนสะสมไปทางเดียวและโตขึ้นเรื่อย ๆ ไม่มีวันหักล้างกัน นี่คือเหตุผลเชิงกายภาพที่การนับรอบล้อเพียงอย่างเดียวใช้ไม่ได้ในแปลง ซึ่งเราจะเห็นผลเป็นตัวเลขในหัวข้อ 10.5</span>
+          <span data-lang-en>If slip were random about zero, it would average out over a long run and cause no trouble. Table 10.1 shows that it is always positive: the wheel turns more than the ground travelled, every time. The error therefore accumulates in one direction and grows without ever cancelling. That is the physical reason wheel counts alone fail in a field, and §10.5 puts numbers on it.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 10.3 -------- -->
+    <section id="diffdrive">
+      <h2><span data-lang-th>10.3 ขับเคลื่อนเชิงผลต่างและจลนศาสตร์</span><span data-lang-en>10.3 Differential drive and its kinematics</span></h2>
+
+      <p>
+        <span data-lang-th>โครงร่างที่ใช้มากที่สุดในหุ่นยนต์เคลื่อนที่คือ <strong>การขับเคลื่อนเชิงผลต่าง</strong> คือล้อขับสองล้อบนแกนเดียวกัน ขับแยกกันคนละมอเตอร์ และมีล้อกลิ้งอิสระคอยพยุงอีกหนึ่งหรือสองล้อ โครงสร้างนี้ไม่มีกลไกเลี้ยวเลย การเลี้ยวเกิดจากการให้ล้อสองข้างหมุนไม่เท่ากันเท่านั้น</span>
+        <span data-lang-en>The commonest layout on a mobile robot is the <strong>differential drive</strong>: two driven wheels on one axis, each with its own motor, with one or two castors for support. There is no steering mechanism at all; turning comes solely from driving the two wheels at different speeds.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>ถ้าล้อทั้งสองไม่ลื่นไถล จุดทุกจุดบนตัวรถจะหมุนรอบจุดเดียวกันขณะนั้น เรียกว่า <strong>จุดศูนย์กลางการหมุนขณะนั้น</strong> หรือ ICC ซึ่งต้องอยู่บนเส้นที่ลากผ่านแกนล้อทั้งสองเสมอ เพราะล้อมาตรฐานห้ามการเลื่อนด้านข้างตามรูปที่ 10.2</span>
+        <span data-lang-en>If neither wheel slips, every point of the vehicle turns about one common point at that instant — the <strong>instantaneous centre of curvature</strong>, or ICC. It must lie on the line through both wheel axes, because a standard wheel forbids sideways motion, as Figure 10.2 showed.</span>
+      </p>
+
+      <!-- ===================== Figure 10.3 ===================== -->
+      <figure class="figure">
+        <div class="fig-ext">
+          <img src="../img/fig-10-03-differential-drive.svg" style="max-width:420px" loading="lazy"
+               alt="Top view of a differential-drive robot turning about an instantaneous centre of rotation on the extended wheel axis, with the world frame and the vehicle pose marked">
+        </div>
+        <div class="fig-key">
+          <span><b>ICR</b> = <span data-lang-th>ICC ในบทนี้</span><span data-lang-en>the ICC of this chapter</span></span>
+          <span><b>φ</b> = \( 	heta \) <span data-lang-th>ทิศหัวรถ</span><span data-lang-en>heading</span></span>
+          <span><b>V</b> = \( v \) <span data-lang-th>ความเร็วเดินหน้า</span><span data-lang-en>forward speed</span></span>
+          <span><b>b</b>, <b>R</b>, <b>ω</b>, <b>v<sub>L</sub></b>, <b>v<sub>R</sub></b> <span data-lang-th>ใช้สัญลักษณ์เดียวกับสมการ (10.2) และ (10.3)</span><span data-lang-en>the same symbols as equations (10.2) and (10.3)</span></span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 10.3</span><span data-lang-en>Figure 10.3</span></b>
+          <span data-lang-th> รถขับเคลื่อนเชิงผลต่างมองจากด้านบนขณะเลี้ยว จุดศูนย์กลางการหมุนอยู่บนแนวแกนล้อที่ยืดออกไปเสมอ ล้อนอกวิ่งบนวงกลมที่ใหญ่กว่าจึงต้องเร็วกว่า และผลต่างของความเร็วสองข้างเป็นตัวกำหนดว่าจุดนั้นอยู่ไกลแค่ไหน เมื่อความเร็วเท่ากัน จุดนั้นจะอยู่ที่อนันต์ ซึ่งก็คือการวิ่งตรง และเมื่อความเร็วตรงข้ามกันพอดี มันจะอยู่กลางตัวรถ คือการหมุนอยู่กับที่ ภาพนี้แสดงเฟรมโลก \( O	ext{-}XY \) และท่าของรถ \( (x, y, arphi) \) ไว้ด้วย ซึ่งเป็นสิ่งที่สมการ (10.8) และ (10.9) ใช้โดยตรง</span>
+          <span data-lang-en> A differential-drive robot seen from above while turning. The ICR — the instantaneous centre, which this course calls the ICC — always lies on the extended wheel axis. The outer wheel runs on the larger circle and so must turn faster, and the difference between the two speeds sets how far away that centre sits. With equal speeds it goes to infinity, which is driving straight; with exactly opposite speeds it sits at the centre of the vehicle, which is turning on the spot. The figure also carries the world frame \( O	ext{-}XY \) and the pose \( (x, y, arphi) \) that equations (10.8) and (10.9) work in.</span>
+          <small class="fig-credit">
+            <span data-lang-th>ภาพ: Mr.Doctor.No, “Differential Drive Kinematics of a Wheeled Mobile Robot.svg”, วิกิมีเดียคอมมอนส์ — สัญญาอนุญาต CC BY-SA 4.0 ใช้โดยไม่ดัดแปลง</span>
+            <span data-lang-en>Image: Mr.Doctor.No, “Differential Drive Kinematics of a Wheeled Mobile Robot.svg”, Wikimedia Commons — licensed CC BY-SA 4.0, used unmodified</span>
+            &middot; <a href="https://commons.wikimedia.org/wiki/File:Differential_Drive_Kinematics_of_a_Wheeled_Mobile_Robot.svg">commons.wikimedia.org</a>
+            &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+          </small>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>10.3.1 จากความเร็วล้อสู่การเคลื่อนที่ของตัวรถ</span><span data-lang-en>10.3.1 From wheel speeds to vehicle motion</span></h3>
+
+      <p>
+        <span data-lang-th>ให้ \( b \) เป็นระยะห่างระหว่างล้อทั้งสอง และ \( v_L, v_R \) เป็นความเร็วเชิงเส้นที่ขอบล้อซ้ายและขวา ความเร็วเดินหน้าของจุดกึ่งกลางเพลาคือค่าเฉลี่ย ส่วนอัตราการหมุนคือผลต่างหารด้วยระยะห่างล้อ</span>
+        <span data-lang-en>Let \( b \) be the separation of the two wheels and \( v_L, v_R \) the linear speeds at their rims. The forward speed of the axle&rsquo;s midpoint is their average, and the rate of turn is their difference divided by the separation.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ v \;=\; \frac{v_R + v_L}{2}, \qquad \omega \;=\; \frac{v_R - v_L}{b} $$</div>
+        <div class="eq__num">(10.2)</div>
+      </div>
+
+      <div class="eq">
+        <div class="eq__body">$$ R \;=\; \frac{v}{\omega} \;=\; \frac{b}{2}\cdot\frac{v_R + v_L}{v_R - v_L} $$</div>
+        <div class="eq__num">(10.3)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ในทางปฏิบัติเรามักต้องการทิศกลับกัน คือผู้วางแผนเส้นทางสั่งมาเป็น \( v \) และ \( \omega \) แล้วตัวควบคุมต้องแปลงเป็นความเร็วล้อสองข้าง ซึ่งแก้สมการ (10.2) ย้อนกลับได้ทันที</span>
+        <span data-lang-en>In practice the other direction is wanted: the planner commands \( v \) and \( \omega \), and the controller must turn that into two wheel speeds, which follows immediately by inverting equation (10.2).</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ v_R \;=\; v + \frac{\omega b}{2}, \qquad v_L \;=\; v - \frac{\omega b}{2} $$</div>
+        <div class="eq__num">(10.4)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 10.1 — รถกำจัดวัชพืชเลี้ยวที่หัวแปลง</span><span data-lang-en>Worked example 10.1 — A weeding robot turning at the headland</span></div>
+        <p>
+          <span data-lang-th>รถกำจัดวัชพืชมีระยะห่างล้อ \( b = 0.60 \) m และรัศมีล้อ \( r = 0.16 \) m ต้องวิ่งโค้งรัศมี 2.5 m ด้วยความเร็ว 0.80 m/s จงหาความเร็วรอบของล้อทั้งสองข้าง</span>
+          <span data-lang-en>A weeding robot has a wheel separation \( b = 0.60 \) m and wheel radius \( r = 0.16 \) m. It must follow a 2.5 m arc at 0.80 m/s. Find the rotational speed of each wheel.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ \omega = \frac{v}{R} = \frac{0.80}{2.5} = 0.32\ \text{rad/s} $$</div>
+          <div class="eq__num">(10.5)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ v_R = 0.80 + (0.32)(0.30) = 0.896\ \text{m/s}, \qquad v_L = 0.80 - (0.32)(0.30) = 0.704\ \text{m/s} $$</div>
+          <div class="eq__num">(10.6)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ \omega_R = \frac{0.896}{0.16} = 5.60\ \text{rad/s} = 53.5\ \text{rpm}, \qquad \omega_L = \frac{0.704}{0.16} = 4.40\ \text{rad/s} = 42.0\ \text{rpm} $$</div>
+          <div class="eq__num">(10.7)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ความต่างของรอบล้อเพียง 11.5 rpm บนรอบเฉลี่ย 47.8 rpm คือราว 24% ซึ่งหมายความว่า <em>ความคลาดเคลื่อนของการควบคุมความเร็วล้อเพียง 2% ก็ทำให้รัศมีโค้งผิดไปเกือบหนึ่งในสิบแล้ว</em> นี่คือเหตุผลที่รถเหล่านี้ต้องมีวงรอบควบคุมความเร็วแบบปิดที่ล้อแต่ละข้าง ตามที่เรียนมาในบทที่ 7 ไม่ใช่สั่ง PWM ไปตรง ๆ</span>
+          <span data-lang-en>A difference of just 11.5 rpm on a mean of 47.8 rpm is about 24%, which means that <em>a 2% error in wheel speed control throws the turning radius out by nearly a tenth</em>. That is why such vehicles need a closed speed loop on each wheel, of the kind built in Chapter 7, rather than a PWM value sent straight to the motor.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>10.3.2 การประมาณตำแหน่งจากการนับรอบล้อ</span><span data-lang-en>10.3.2 Estimating position from wheel counts</span></h3>
+
+      <p>
+        <span data-lang-th>เมื่อรู้ \( v \) และ \( \omega \) แล้ว ท่าของรถในระนาบเปลี่ยนแปลงตามเวลาดังนี้</span>
+        <span data-lang-en>With \( v \) and \( \omega \) known, the vehicle&rsquo;s planar pose evolves in time as follows.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \dot{x} = v\cos\theta, \qquad \dot{y} = v\sin\theta, \qquad \dot{\theta} = \omega $$</div>
+        <div class="eq__num">(10.8)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ตัวควบคุมจริงอ่านตัวเข้ารหัสทุกคาบ \( \Delta t \) จึงต้องใช้รูปไม่ต่อเนื่อง การประมาณที่ใช้กันทั่วไปคือใช้ทิศทางกึ่งกลางของช่วง ซึ่งแม่นกว่าการใช้ทิศเริ่มต้นมาก</span>
+        <span data-lang-en>A real controller reads its encoders every \( \Delta t \), so a discrete form is needed. The usual approximation uses the heading at the middle of the interval, which is considerably more accurate than using the heading at its start.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \begin{aligned}
+          \theta_{k+1} &= \theta_k + \omega_k \Delta t \\
+          x_{k+1} &= x_k + v_k \Delta t \cos\!\left(\theta_k + \tfrac{1}{2}\omega_k \Delta t\right) \\
+          y_{k+1} &= y_k + v_k \Delta t \sin\!\left(\theta_k + \tfrac{1}{2}\omega_k \Delta t\right)
+        \end{aligned} $$</div>
+        <div class="eq__num">(10.9)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ความเร็วล้อแต่ละข้างได้มาจากจำนวนพัลส์ \( n \) ที่นับได้ในคาบนั้น โดยที่ \( N \) คือจำนวนนับต่อรอบของตัวเข้ารหัสและ \( g \) คืออัตราทดเกียร์ ซึ่งเป็นสมการเดียวกับ (8.8) ในบทที่ 8 เพียงแต่อ่านกลับทาง</span>
+        <span data-lang-en>Each wheel speed comes from the pulse count \( n \) in that interval, where \( N \) is the encoder&rsquo;s counts per revolution and \( g \) the gear ratio — the same relation as equation (8.8), simply read the other way.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \Delta s \;=\; \frac{2\pi r\, n}{N g}, \qquad v \;=\; \frac{\Delta s}{\Delta t} $$</div>
+        <div class="eq__num">(10.10)</div>
+      </div>
+
+      <div class="callout callout--info">
+        <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>สมการเหล่านี้เป็นจลนศาสตร์ ไม่ใช่พลศาสตร์</span><span data-lang-en>These are kinematics, not dynamics</span></div>
+        <p class="mb-0">
+          <span data-lang-th>สมการ (10.2) ถึง (10.9) ไม่มีมวล แรง หรือแรงเสียดทานอยู่เลย จึงบอกได้เพียงว่า <em>ถ้า</em> ล้อหมุนด้วยความเร็วนั้นจริงและไม่ลื่นไถล รถจะไปอยู่ที่ใด สมการเหล่านี้ไม่รู้ว่ารถเร่งทันหรือไม่ ไม่รู้ว่าล้อลื่นไปเท่าใด และไม่รู้ว่าพื้นลาดเอียงหรือไม่ ทุกครั้งที่เห็นว่าตำแหน่งจริงไม่ตรงกับที่คำนวณได้ ให้สงสัยข้อสมมติเหล่านี้ก่อนเสมอ ไม่ใช่สงสัยสมการ</span>
+          <span data-lang-en>Equations (10.2) to (10.9) contain no mass, no force and no friction. They say only where the vehicle will be <em>if</em> the wheels really turn at those speeds and do not slip. They know nothing about whether the vehicle can accelerate that hard, how much the wheels slipped, or whether the ground was sloping. Whenever the real position disagrees with the computed one, suspect these assumptions first, not the equations.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 10.1 ===================== -->
+      <figure class="anim" data-anim="ch10-diff">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 10.1 — ความเร็วล้อสองค่า กำหนดทุกอย่างที่รถทำได้</span>
+          <span data-lang-en>Animation 10.1 — Two wheel speeds decide everything the vehicle can do</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 380" role="img" aria-label="Top view of a differential drive robot driving under two wheel-speed sliders, with the instantaneous centre of curvature marked">
+            <rect x="24" y="24" width="500" height="332" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4" stroke-dasharray="5 4"/>
+
+            <circle id="a101-circ" cx="0" cy="0" r="0" class="dg-stroke-gold" stroke-width="1.4" stroke-dasharray="6 5" fill="none"/>
+            <polyline id="a101-trail" class="dg-stroke-green" stroke-width="2.4" fill="none" points=""/>
+            <g id="a101-icc" opacity="0">
+              <line x1="-9" y1="0" x2="9" y2="0" class="dg-stroke-gold" stroke-width="2.4"/>
+              <line x1="0" y1="-9" x2="0" y2="9" class="dg-stroke-gold" stroke-width="2.4"/>
+            </g>
+            <line id="a101-axle" x1="0" y1="0" x2="0" y2="0" class="dg-stroke-gold" stroke-width="1.2" stroke-dasharray="4 4"/>
+
+            <g id="a101-bot">
+              <rect x="-26" y="-20" width="52" height="40" rx="7" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+              <rect x="-20" y="-28" width="14" height="10" rx="3" class="dg-fill-soft dg-stroke" stroke-width="1.6"/>
+              <rect x="-20" y="18" width="14" height="10" rx="3" class="dg-fill-soft dg-stroke" stroke-width="1.6"/>
+              <circle cx="18" cy="0" r="5" class="dg-fill-surface dg-stroke" stroke-width="1.4"/>
+              <line x1="0" y1="0" x2="34" y2="0" class="dg-stroke-green" stroke-width="2.4"/>
+              <polygon points="34,0 24,-4 24,4" class="dg-fill-green"/>
+            </g>
+
+            <rect x="548" y="40" width="288" height="300" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4"/>
+            <text class="dg-text-sm" x="572" y="70" data-lang-th>ความเร็วเดินหน้า</text>
+            <text class="dg-text-sm" x="572" y="70" data-lang-en>forward speed</text>
+            <text id="a101-v" class="dg-text-b" x="572" y="94">—</text>
+            <text class="dg-text-sm" x="572" y="128" data-lang-th>อัตราการหมุน</text>
+            <text class="dg-text-sm" x="572" y="128" data-lang-en>rate of turn</text>
+            <text id="a101-w" class="dg-text-b" x="572" y="152">—</text>
+            <text class="dg-text-sm" x="572" y="186" data-lang-th>รัศมีการเลี้ยว</text>
+            <text class="dg-text-sm" x="572" y="186" data-lang-en>turning radius</text>
+            <text id="a101-r" class="dg-text-b" x="572" y="210">—</text>
+            <text class="dg-text-sm" x="572" y="244" data-lang-th>ท่าของรถ</text>
+            <text class="dg-text-sm" x="572" y="244" data-lang-en>pose of the vehicle</text>
+            <text id="a101-pose" class="dg-text-b" x="572" y="268">—</text>
+            <text class="dg-text-sm" x="572" y="302" data-lang-th>กรณีการเคลื่อนที่</text>
+            <text class="dg-text-sm" x="572" y="302" data-lang-en>mode of motion</text>
+            <text id="a101-mode" class="dg-text-b" x="572" y="326">—</text>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>เส้นทางที่รถผ่านมา</span><span data-lang-en>the path driven</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>ICC และวงกลมที่รถกำลังวิ่งตาม</span><span data-lang-en>the ICC and the circle being followed</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn is-on" type="button" data-anim-toggle="icc" aria-pressed="true"><i class="fa-solid fa-crosshairs"></i><span data-lang-th>แสดง ICC</span><span data-lang-en>Show ICC</span></button>
+          <label class="anim__param">
+            \( v_L \)
+            <input type="range" data-anim-param="vl" data-unit="m/s" min="-1" max="1.5" step="0.05" value="0.6">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            \( v_R \)
+            <input type="range" data-anim-param="vr" data-unit="m/s" min="-1" max="1.5" step="0.05" value="0.9">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 10.1</span><span data-lang-en>Animation 10.1</span></b>
+          <span data-lang-th> ลองสามกรณีนี้ตามลำดับ หนึ่ง ตั้งความเร็วสองข้างให้เท่ากัน ICC จะหายไปเพราะมันอยู่ที่อนันต์และรถวิ่งตรง สอง ตั้งให้ต่างกันเล็กน้อย จะได้วงกลมใหญ่ตามสมการ (10.3) สาม ตั้งให้เท่ากันแต่คนละเครื่องหมาย ICC จะมาอยู่กลางตัวรถพอดีและรถหมุนอยู่กับที่โดยไม่เคลื่อนที่ไปไหน สังเกตว่าทั้งสามกรณีใช้สมการเดียวกันหมด ไม่มีกรณีพิเศษใดเลย</span>
+          <span data-lang-en> Try three settings in order. First, make both speeds equal: the ICC vanishes, because it has gone to infinity and the vehicle runs straight. Second, make them differ slightly: a large circle appears, as equation (10.3) predicts. Third, make them equal but opposite: the ICC moves to the centre of the vehicle and it spins without going anywhere. All three come from the same equation, with no special cases.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 10.4 -------- -->
+    <section id="steering">
+      <h2><span data-lang-th>10.4 โครงร่างการขับเคลื่อนอื่นและข้อจำกัดนอนโฮโลโนมิก</span><span data-lang-en>10.4 Other drive layouts, and the nonholonomic constraint</span></h2>
+
+      <p>
+        <span data-lang-th>รถที่ใช้ล้อมาตรฐานทุกคัน ไม่ว่าจะเป็นแบบขับเคลื่อนเชิงผลต่างหรือแบบรถยนต์ มีข้อห้ามข้อเดียวกันคือ <em>เคลื่อนที่ไปด้านข้างไม่ได้</em> เขียนเป็นสมการได้ว่าองค์ประกอบของความเร็วในแนวตั้งฉากกับทิศหัวรถต้องเป็นศูนย์ตลอดเวลา</span>
+        <span data-lang-en>Every vehicle on standard wheels — differential drive or car-like — shares one prohibition: <em>it cannot move sideways</em>. Written as an equation, the component of velocity perpendicular to the heading must be zero at all times.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \dot{x}\sin\theta - \dot{y}\cos\theta \;=\; 0 $$</div>
+        <div class="eq__num">(10.11)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ข้อจำกัดนี้เรียกว่า <strong>นอนโฮโลโนมิก</strong> เพราะมันจำกัด <em>ความเร็ว</em> แต่ไม่ได้จำกัด <em>ตำแหน่ง</em> รถยังไปถึงจุดใดก็ได้ในระนาบและหันไปทางใดก็ได้ เพียงแต่ต้องเดินทางให้ถูกวิธี การจอดรถเข้าซองเป็นตัวอย่างที่ทุกคนคุ้นเคย คือเราไปถึงตำแหน่งข้าง ๆ ได้ แต่ต้องเดินหน้าถอยหลังหลายครั้ง ไม่สามารถเลื่อนตรงไปด้านข้างได้ในครั้งเดียว</span>
+        <span data-lang-en>This is a <strong>nonholonomic</strong> constraint, because it restricts the <em>velocity</em> without restricting the <em>position</em>. The vehicle can still reach any point in the plane facing any direction; it merely has to travel there properly. Parallel parking is the familiar example: the spot alongside is reachable, but only through a sequence of forward and reverse moves, never by sliding straight sideways.</span>
+      </p>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>ทำไมตัววางแผนเส้นทางจึงเขียนยากกว่าที่คิด</span><span data-lang-en>Why a path planner is harder to write than expected</span></div>
+        <p class="mb-0">
+          <span data-lang-th>อัลกอริทึมหาเส้นทางที่สั้นที่สุดบนตารางกริดจะให้เส้นทางที่มีมุมหักฉาก ซึ่งรถนอนโฮโลโนมิกเดินตามไม่ได้เลยเพราะต้องเลื่อนข้าง เส้นทางที่ได้จึงต้องผ่านการปรับให้เรียบและให้รัศมีความโค้งทุกจุดไม่ต่ำกว่ารัศมีวงเลี้ยวต่ำสุดของรถเสียก่อน นี่คือความต่างสำคัญระหว่างการวางแผนเส้นทางของหุ่นยนต์เคลื่อนที่กับของแขนกลในบทที่ 9 ซึ่งเคลื่อนที่ในปริภูมิข้อต่อได้อย่างอิสระ</span>
+          <span data-lang-en>A shortest-path algorithm on a grid returns a route with right-angled corners, which a nonholonomic vehicle cannot follow at all, since the corners would require sliding sideways. The route must first be smoothed so that its curvature nowhere exceeds what the vehicle&rsquo;s minimum turning radius allows. This is the important difference from planning for the arm of Chapter 9, which moves freely in joint space.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>10.4.1 การเลี้ยวแบบแอกเคอร์มันน์</span><span data-lang-en>10.4.1 Ackermann steering</span></h3>
+
+      <p>
+        <span data-lang-th>รถแทรกเตอร์และรถยนต์ใช้การเลี้ยวที่ล้อหน้า ซึ่งเงื่อนไขทางจลนศาสตร์คือแนวแกนของล้อทุกล้อต้องตัดกันที่ ICC จุดเดียว เหมือนกับรูปที่ 10.3 ทุกประการ ถ้าคิดรวมล้อหน้าสองล้อเป็นล้อเดียวที่กึ่งกลาง จะได้ความสัมพันธ์อย่างง่ายระหว่างมุมเลี้ยว \( \delta \) กับรัศมีวงเลี้ยว โดย \( L \) คือระยะฐานล้อ</span>
+        <span data-lang-en>Tractors and cars steer at the front wheels, and the kinematic condition is that the axes of all wheels meet at one ICC — exactly as in Figure 10.3. Treating the two front wheels as a single wheel at the centre gives a simple relation between the steering angle \( \delta \) and the turning radius, with \( L \) the wheelbase.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \tan\delta \;=\; \frac{L}{R} \qquad \Longrightarrow \qquad R_{\min} \;=\; \frac{L}{\tan\delta_{\max}} $$</div>
+        <div class="eq__num">(10.12)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>แทรกเตอร์ที่มีฐานล้อ \( L = 2.1 \) m และเลี้ยวได้สูงสุด \( 40\deg \) จะมีรัศมีวงเลี้ยวต่ำสุด \( 2.1/\tan 40\deg = 2.5 \) m ตัวเลขนี้ไม่ได้เป็นเพียงข้อมูลจำเพาะ แต่เป็นตัวกำหนดความกว้างของหัวแปลงที่ต้องเว้นไว้สำหรับกลับรถ ซึ่งจะกลับมาใช้อีกครั้งในหัวข้อ 10.6</span>
+        <span data-lang-en>A tractor with a wheelbase \( L = 2.1 \) m steering to \( 40\deg \) has a minimum turning radius of \( 2.1/\tan 40\deg = 2.5 \) m. That figure is not merely a specification: it sets how wide the headland must be left for turning, which returns in §10.6.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 10.2 — เปรียบเทียบโครงร่างการขับเคลื่อนสำหรับงานเกษตร</span><span data-lang-en>Table 10.2 — Drive layouts compared for agricultural work</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>โครงร่าง</span><span data-lang-en>Layout</span></th>
+              <th><span data-lang-th>หมุนอยู่กับที่</span><span data-lang-en>Turns on the spot</span></th>
+              <th><span data-lang-th>เลื่อนข้าง</span><span data-lang-en>Moves sideways</span></th>
+              <th><span data-lang-th>ความคลาดเคลื่อนจากการนับรอบล้อ</span><span data-lang-en>Odometry error</span></th>
+              <th><span data-lang-th>งานที่เหมาะ</span><span data-lang-en>Suited to</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>ขับเคลื่อนเชิงผลต่าง</span><span data-lang-en>Differential drive</span></td>
+              <td><span data-lang-th>ได้</span><span data-lang-en>yes</span></td>
+              <td><span data-lang-th>ไม่ได้</span><span data-lang-en>no</span></td>
+              <td><span data-lang-th>ต่ำ ถ้าพื้นแข็ง</span><span data-lang-en>low on firm ground</span></td>
+              <td><span data-lang-th>โรงเรือน แปลงผักแถวแคบ</span><span data-lang-en>greenhouses, narrow vegetable rows</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>แอกเคอร์มันน์</span><span data-lang-en>Ackermann</span></td>
+              <td><span data-lang-th>ไม่ได้</span><span data-lang-en>no</span></td>
+              <td><span data-lang-th>ไม่ได้</span><span data-lang-en>no</span></td>
+              <td><span data-lang-th>ต่ำที่สุด เพราะล้อกลิ้งล้วน</span><span data-lang-en>lowest: the wheels only roll</span></td>
+              <td><span data-lang-th>แปลงใหญ่ ความเร็วสูง ลากอุปกรณ์หนัก</span><span data-lang-en>large fields, higher speed, heavy implements</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>สกิดสเตียร์และตีนตะขาบ</span><span data-lang-en>Skid steer and tracks</span></td>
+              <td><span data-lang-th>ได้</span><span data-lang-en>yes</span></td>
+              <td><span data-lang-th>ไม่ได้</span><span data-lang-en>no</span></td>
+              <td><span data-lang-th>สูง เพราะการเลี้ยวต้องไถลเสมอ</span><span data-lang-en>high: turning always slides</span></td>
+              <td><span data-lang-th>นาข้าว ดินอ่อน พื้นที่ลาดชัน</span><span data-lang-en>paddies, soft soil, slopes</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>รอบทิศทาง</span><span data-lang-en>Omnidirectional</span></td>
+              <td><span data-lang-th>ได้</span><span data-lang-en>yes</span></td>
+              <td><span data-lang-th>ได้</span><span data-lang-en>yes</span></td>
+              <td><span data-lang-th>ปานกลาง ลูกกลิ้งลื่นง่าย</span><span data-lang-en>moderate: the rollers slip readily</span></td>
+              <td><span data-lang-th>โรงคัดบรรจุ คลังสินค้า พื้นเรียบ</span><span data-lang-en>packhouses, warehouses, smooth floors</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 10.5 -------- -->
+    <section id="localization">
+      <h2><span data-lang-th>10.5 การระบุตำแหน่ง</span><span data-lang-en>10.5 Localization</span></h2>
+
+      <p>
+        <span data-lang-th>สมการ (10.9) ให้วิธีประมาณตำแหน่งจากการนับรอบล้อ เรียกว่า <strong>การคำนวณตำแหน่งแบบสะสม</strong> วิธีนี้ไม่ต้องใช้อุปกรณ์ภายนอกเลย ทำงานได้ทุกที่ และให้ค่าทุกคาบการควบคุม ข้อเสียมีเพียงข้อเดียวแต่ร้ายแรงมาก คือมันบวกความคลาดเคลื่อนเข้าไปเรื่อย ๆ โดยไม่มีอะไรมาดึงกลับ</span>
+        <span data-lang-en>Equation (10.9) estimates position by accumulating wheel counts, which is called <strong>dead reckoning</strong>. It needs no external equipment, works anywhere and produces a value every control cycle. It has exactly one drawback, and it is a severe one: it adds up error indefinitely with nothing to pull it back.</span>
+      </p>
+
+      <h3><span data-lang-th>10.5.1 ความคลาดเคลื่อนของทิศทางคือตัวร้ายที่แท้จริง</span><span data-lang-en>10.5.1 Heading error is the real culprit</span></h3>
+
+      <p>
+        <span data-lang-th>สมมติว่าล้อขวามีรัศมีประสิทธิผลมากกว่าล้อซ้ายอยู่เศษส่วน \( \varepsilon \) ซึ่งเกิดได้ง่ายมากจากแรงดันลมยางที่ต่างกันเพียงเล็กน้อยหรือจากการสึกที่ไม่เท่ากัน เมื่อสั่งให้วิ่งตรงเป็นระยะ \( d \) ล้อขวาจะเดินทางได้ \( d(1+\varepsilon) \) ขณะที่ล้อซ้ายได้ \( d \) ผลต่างนี้ถูกตีความว่าเป็นการเลี้ยว</span>
+        <span data-lang-en>Suppose the right wheel&rsquo;s effective radius exceeds the left&rsquo;s by a fraction \( \varepsilon \) — which a small difference in tyre pressure or uneven wear produces very easily. Commanded to run straight for a distance \( d \), the right wheel covers \( d(1+\varepsilon) \) while the left covers \( d \), and that difference is read as a turn.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \Delta\theta \;=\; \frac{d\,\varepsilon}{b} $$</div>
+        <div class="eq__num">(10.13)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>และเมื่อทิศทางผิดไปแล้ว ระยะทางที่วิ่งต่อไปอีก \( d' \) จะทำให้ตำแหน่งเบี่ยงออกด้านข้างเป็นสัดส่วนโดยตรง</span>
+        <span data-lang-en>Once the heading is wrong, every further metre \( d' \) driven displaces the position sideways in direct proportion.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ e_{\perp} \;\approx\; d' \,\Delta\theta $$</div>
+        <div class="eq__num">(10.14)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 10.2 — ยางอ่อนไปนิดเดียว</span><span data-lang-en>Worked example 10.2 — One tyre slightly soft</span></div>
+        <p>
+          <span data-lang-th>รถกำจัดวัชพืชจากตัวอย่าง 10.1 มี \( b = 0.60 \) m ยางล้อขวาอ่อนกว่าเล็กน้อยจนรัศมีประสิทธิผลต่างกัน 0.5% จงหาความคลาดเคลื่อนของทิศทางหลังวิ่งตรงไป 50 m และระยะเบี่ยงด้านข้างหลังวิ่งต่ออีก 50 m</span>
+          <span data-lang-en>The weeding robot of example 10.1 has \( b = 0.60 \) m. One tyre is slightly soft, giving a 0.5% difference in effective radius. Find the heading error after 50 m of straight running, and the lateral displacement over the next 50 m.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ \Delta\theta = \frac{(50)(0.005)}{0.60} = 0.417\ \text{rad} = 23.9\deg $$</div>
+          <div class="eq__num">(10.15)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ e_{\perp} \approx (50)(0.417) = 20.8\ \text{m} $$</div>
+          <div class="eq__num">(10.16)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ยางที่อ่อนกว่ากันครึ่งเปอร์เซ็นต์ ซึ่งมองด้วยตาไม่เห็นเลย ทำให้รถออกนอกเส้นทางไปกว่ายี่สิบเมตรภายในระยะร้อยเมตร ตัวเลขนี้ไม่ได้เกินจริงและเป็นเหตุผลว่าทำไมไม่มีรถเกษตรอัตโนมัติคันใดในโลกที่ใช้การนับรอบล้อเพียงอย่างเดียว การนับรอบล้อยังมีประโยชน์มากในฐานะแหล่งข้อมูลที่ให้ค่าถี่และต่อเนื่อง แต่ต้องมีเซนเซอร์ที่วัดเทียบกับโลกภายนอกมาคอยดึงกลับเสมอ</span>
+          <span data-lang-en>Half a percent of difference between two tyres — invisible to the eye — takes the vehicle more than twenty metres off course within a hundred metres of travel. The figure is not exaggerated, and it is why no autonomous farm vehicle anywhere relies on wheel counts alone. Odometry remains valuable as a fast, continuous source of information, but something that measures against the outside world must always be there to pull it back.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 10.2 ===================== -->
+      <figure class="anim" data-anim="ch10-odom">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 10.2 — รถที่เชื่อว่าตัวเองวิ่งเป็นสี่เหลี่ยม</span>
+          <span data-lang-en>Animation 10.2 — The robot that believes it is driving a square</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 380" role="img" aria-label="A robot commanded to drive a square, with its true path drifting away from the path it believes it is taking">
+            <rect x="24" y="24" width="500" height="332" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4" stroke-dasharray="5 4"/>
+            <rect id="a102-plan" x="0" y="0" width="0" height="0" class="dg-stroke-gold" stroke-width="1.8" stroke-dasharray="7 5" fill="none"/>
+
+            <polyline id="a102-belief" class="dg-stroke" stroke-width="2.2" fill="none" stroke-dasharray="6 4"/>
+            <polyline id="a102-true" class="dg-stroke-green" stroke-width="2.6" fill="none"/>
+            <line id="a102-link" x1="0" y1="0" x2="0" y2="0" class="dg-stroke-gold" stroke-width="2"/>
+
+            <g id="a102-ghost" opacity="0.55">
+              <rect x="-16" y="-12" width="32" height="24" rx="5" class="dg-fill-surface dg-stroke" stroke-width="1.8" stroke-dasharray="3 2"/>
+              <line x1="0" y1="0" x2="22" y2="0" class="dg-stroke" stroke-width="2"/>
+            </g>
+            <g id="a102-bot">
+              <rect x="-16" y="-12" width="32" height="24" rx="5" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+              <line x1="0" y1="0" x2="24" y2="0" class="dg-stroke-green" stroke-width="2.4"/>
+              <polygon points="24,0 15,-4 15,4" class="dg-fill-green"/>
+            </g>
+
+            <rect x="548" y="40" width="288" height="300" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4"/>
+            <text class="dg-text-sm" x="572" y="70" data-lang-th>ระยะทางที่วิ่งไปแล้ว</text>
+            <text class="dg-text-sm" x="572" y="70" data-lang-en>distance driven</text>
+            <text id="a102-d" class="dg-text-b" x="572" y="94">—</text>
+            <text class="dg-text-sm" x="572" y="128" data-lang-th>ความคลาดเคลื่อนของทิศทาง</text>
+            <text class="dg-text-sm" x="572" y="128" data-lang-en>heading error</text>
+            <text id="a102-he" class="dg-text-b" x="572" y="152">—</text>
+            <text class="dg-text-sm" x="572" y="186" data-lang-th>ระยะห่างระหว่างที่คิดกับที่เป็นจริง</text>
+            <text class="dg-text-sm" x="572" y="186" data-lang-en>belief minus truth</text>
+            <text id="a102-pe" class="dg-text-b" x="572" y="210">—</text>
+            <text class="dg-text-sm" x="572" y="244" data-lang-th>ขอบเขตบนจากสมการ (10.13)</text>
+            <text class="dg-text-sm" x="572" y="244" data-lang-en>upper bound from equation (10.13)</text>
+            <text id="a102-pred" class="dg-text-b" x="572" y="268">—</text>
+            <text class="dg-text-sm" x="572" y="302" data-lang-th>แหล่งข้อมูลที่ใช้อยู่</text>
+            <text class="dg-text-sm" x="572" y="302" data-lang-en>sources in use</text>
+            <text id="a102-src" class="dg-text-b" x="572" y="326">—</text>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>เส้นทางที่สั่งไว้</span><span data-lang-en>the commanded square</span></span>
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>เส้นทางจริงของรถ</span><span data-lang-en>where the robot really went</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>เส้นทางที่รถเชื่อว่าตัวเองไป</span><span data-lang-en>where the robot believes it went</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="gnss" aria-pressed="false"><i class="fa-solid fa-satellite-dish"></i><span data-lang-th>เปิดรับ GNSS</span><span data-lang-en>GNSS fix on</span></button>
+          <label class="anim__param">
+            <span data-lang-th>รัศมีล้อต่างกัน</span><span data-lang-en>Wheel radius mismatch</span> \( \varepsilon \)
+            <input type="range" data-anim-param="eps" data-unit="%" min="0" max="3" step="0.1" value="0.8">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ความลื่นไถล</span><span data-lang-en>Slip</span>
+            <input type="range" data-anim-param="slip" data-unit="%" min="0" max="20" step="1" value="4">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 10.2</span><span data-lang-en>Animation 10.2</span></b>
+          <span data-lang-th> รถขับตามเส้นทางสี่เหลี่ยมโดยใช้ <em>ความเชื่อ</em> ของตัวเองเป็นเข็มทิศ เส้นประสีเทาคือสิ่งที่มันคิดว่ากำลังทำ ซึ่งเป็นสี่เหลี่ยมสวยงามเสมอ ส่วนเส้นสีเขียวคือสิ่งที่เกิดขึ้นจริง ลองตั้งรัศมีล้อให้ต่างกันเป็นศูนย์ก่อน จะเห็นว่าสองเส้นทับกันสนิท แล้วค่อย ๆ เพิ่มขึ้นทีละ 0.1% สังเกตว่าเส้นสีเขียวค่อย ๆ บานออกเป็นก้นหอย ความคลาดเคลื่อนของทิศทางที่วัดได้จะต่ำกว่าขอบเขตบนจากสมการ (10.13) อยู่เสมอ เพราะรถหันกลับเข้าหามุมถัดไปทุกครั้งจึงหักล้างการไหลไปได้บางส่วน แต่ไม่มีทางหยุดมันได้ จากนั้นกดเปิด GNSS ความเชื่อจะถูกดึงกลับทุกไม่กี่วินาที รถจึงหันกลับมาเดินตามสี่เหลี่ยมได้อีกครั้ง โดยความคลาดเคลื่อนคงอยู่ในระดับความแม่นยำของตัวรับสัญญาณ ไม่โตขึ้นอีกต่อไป</span>
+          <span data-lang-en> The robot drives the square using its own <em>belief</em> as its compass. The dashed grey line is what it thinks it is doing, and that is always a tidy square; the green line is what actually happens. Start with the radius mismatch at zero and the two lines lie on top of each other, then raise it by 0.1% at a time: the green path opens into a spiral. The measured heading error always stays below the bound of equation (10.13), because the robot turns towards each new corner and so cancels part of the drift — though it can never stop it. Now switch on the GNSS fix: the belief is pulled back every few seconds, the robot turns back onto the square, and the error settles at the receiver&rsquo;s own accuracy instead of growing.</span>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>10.5.2 เซนเซอร์ที่วัดเทียบกับโลกภายนอก</span><span data-lang-en>10.5.2 Sensors that measure against the outside world</span></h3>
+
+      <p>
+        <span data-lang-th>ความคลาดเคลื่อนสะสมหยุดได้ด้วยเซนเซอร์ที่วัดเทียบกับสิ่งที่อยู่นอกตัวรถ ซึ่งแต่ละชนิดมีจุดแข็งและจุดอ่อนที่ชดเชยกันได้พอดี</span>
+        <span data-lang-en>Accumulating error is stopped by a sensor that measures against something outside the vehicle, and the available kinds have strengths and weaknesses that complement each other neatly.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 10.3 — แหล่งข้อมูลสำหรับการระบุตำแหน่งในแปลง</span><span data-lang-en>Table 10.3 — Sources of position information in the field</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>แหล่งข้อมูล</span><span data-lang-en>Source</span></th>
+              <th><span data-lang-th>ความแม่นยำโดยทั่วไป</span><span data-lang-en>Typical accuracy</span></th>
+              <th><span data-lang-th>อัตราการให้ค่า</span><span data-lang-en>Update rate</span></th>
+              <th><span data-lang-th>ความคลาดเคลื่อนสะสม</span><span data-lang-en>Drifts?</span></th>
+              <th><span data-lang-th>จุดอ่อนหลัก</span><span data-lang-en>Main weakness</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>การนับรอบล้อ</span><span data-lang-en>Wheel odometry</span></td>
+              <td><span data-lang-th>1–5% ของระยะทาง</span><span data-lang-en>1–5% of distance</span></td>
+              <td>50–1000 Hz</td>
+              <td><span data-lang-th>สะสมไม่สิ้นสุด</span><span data-lang-en>without limit</span></td>
+              <td><span data-lang-th>ลื่นไถลและรัศมีล้อที่ไม่เท่ากัน</span><span data-lang-en>slip and unequal wheel radii</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>GNSS ทั่วไป</span><span data-lang-en>Standalone GNSS</span></td>
+              <td>2–5 m</td>
+              <td>1–10 Hz</td>
+              <td><span data-lang-th>ไม่สะสม</span><span data-lang-en>no</span></td>
+              <td><span data-lang-th>สัญญาณถูกบังโดยต้นไม้และอาคาร</span><span data-lang-en>signal blocked by trees and buildings</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>GNSS แบบ RTK</span><span data-lang-en>RTK GNSS</span></td>
+              <td>0.02–0.05 m</td>
+              <td>5–20 Hz</td>
+              <td><span data-lang-th>ไม่สะสม</span><span data-lang-en>no</span></td>
+              <td><span data-lang-th>ต้องมีสถานีฐานและการเชื่อมต่อที่ไม่ขาด</span><span data-lang-en>needs a base station and an unbroken link</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>หน่วยวัดความเฉื่อย (IMU)</span><span data-lang-en>Inertial unit (IMU)</span></td>
+              <td><span data-lang-th>ทิศทางดีมากในระยะสั้น</span><span data-lang-en>excellent heading, briefly</span></td>
+              <td>100–1000 Hz</td>
+              <td><span data-lang-th>สะสมเร็วมาก</span><span data-lang-en>quickly</span></td>
+              <td><span data-lang-th>อคติของไจโรทำให้มุมไหลไปตามเวลา</span><span data-lang-en>gyro bias makes the angle drift with time</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ไลดาร์หรือกล้องกับแผนที่ (SLAM)</span><span data-lang-en>Lidar or camera with a map (SLAM)</span></td>
+              <td>0.05–0.20 m</td>
+              <td>5–30 Hz</td>
+              <td><span data-lang-th>ไม่สะสมถ้ากลับมาเจอจุดเดิม</span><span data-lang-en>no, once a place is revisited</span></td>
+              <td><span data-lang-th>แปลงโล่งไม่มีลักษณะเด่นให้จับ</span><span data-lang-en>an open field offers nothing distinctive to latch onto</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--info">
+        <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>การผสานข้อมูลคือการใช้จุดแข็งของแต่ละตัวมากลบจุดอ่อนของอีกตัว</span><span data-lang-en>Fusion is using each sensor&rsquo;s strength against another&rsquo;s weakness</span></div>
+        <p class="mb-0">
+          <span data-lang-th>สังเกตตารางที่ 10.3 ให้ดี การนับรอบล้อและ IMU ให้ค่าถี่มากแต่ไหลไปตามเวลา ส่วน GNSS ให้ค่าช้าและมีสัญญาณรบกวนแต่ไม่ไหลไปไหน การรวมสองกลุ่มนี้เข้าด้วยกันด้วย <strong>ตัวกรองคาลมาน</strong> จึงให้ผลที่ทั้งถี่และไม่ไหล ซึ่งดีกว่าเซนเซอร์ตัวใดตัวหนึ่งเพียงลำพัง หลักการนี้ไม่ได้จำกัดอยู่แค่หุ่นยนต์ แต่เป็นแนวคิดเดียวกับที่บทที่ 7 ใช้ คือเทอมที่ตอบเร็วทำงานร่วมกับเทอมที่ขจัดความคลาดเคลื่อนระยะยาว</span>
+          <span data-lang-en>Read Table 10.3 carefully. Odometry and the IMU update very fast but drift with time; GNSS is slow and noisy but does not drift at all. Combining the two families through a <strong>Kalman filter</strong> gives an estimate that is both fast and drift-free, better than any single sensor. The principle is not peculiar to robots: it is the same idea as Chapter 7, where a fast-responding term works alongside one that removes long-term error.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 10.6 -------- -->
+    <section id="planning">
+      <h2><span data-lang-th>10.6 การวางแผนเส้นทางและการครอบคลุมแปลง</span><span data-lang-en>10.6 Path planning and field coverage</span></h2>
+
+      <p>
+        <span data-lang-th>การวางแผนเส้นทางของหุ่นยนต์แบ่งเป็นสองชั้นที่ทำงานคนละจังหวะเวลา</span>
+        <span data-lang-en>Path planning for a robot divides into two layers working on different timescales.</span>
+      </p>
+
+      <ul>
+        <li><span data-lang-th><strong>การวางแผนระดับโลก</strong> ใช้แผนที่ที่รู้ล่วงหน้า คำนวณครั้งเดียวก่อนออกเดินทาง วิธีที่พบบ่อยที่สุดคือแบ่งพื้นที่เป็นตารางกริดแล้วหาเส้นทางที่สั้นที่สุดด้วย A* ซึ่งเลือกช่องถัดไปจากผลรวมของระยะทางที่เดินมาแล้วกับระยะทางที่ประมาณว่าเหลืออยู่</span><span data-lang-en><strong>Global planning</strong> uses a map known in advance and runs once before setting off. The commonest method divides the area into a grid and searches for the shortest route with A*, which picks the next cell from the sum of the distance already travelled and an estimate of the distance remaining.</span></li>
+        <li><span data-lang-th><strong>การวางแผนระดับท้องถิ่น</strong> ทำงานทุกคาบการควบคุม โดยใช้ข้อมูลเซนเซอร์สด เพื่อหลบสิ่งที่แผนที่ไม่รู้ เช่น คนที่เดินเข้ามา กิ่งไม้ที่หัก หรือหลุมที่เพิ่งเกิด แล้วจึงกลับเข้าสู่เส้นทางเดิม</span><span data-lang-en><strong>Local planning</strong> runs every control cycle on live sensor data, to avoid what the map does not know about — a person walking in, a fallen branch, a hole that has just appeared — and then rejoins the planned route.</span></li>
+      </ul>
+
+      <div class="eq">
+        <div class="eq__body">$$ f(n) \;=\; g(n) + h(n) $$</div>
+        <div class="eq__num">(10.17)</div>
+      </div>
+
+      <h3><span data-lang-th>10.6.1 การวางแผนให้ครอบคลุมแปลง</span><span data-lang-en>10.6.1 Planning to cover a field</span></h3>
+
+      <p>
+        <span data-lang-th>งานเกษตรส่วนใหญ่ไม่ได้ต้องการเส้นทางที่สั้นที่สุดจากจุดหนึ่งไปอีกจุดหนึ่ง แต่ต้องการเส้นทางที่ <em>ผ่านทุกตารางเมตรของแปลงอย่างน้อยหนึ่งครั้ง</em> ซึ่งเป็นปัญหาคนละประเภทกันเรียกว่า <strong>การวางแผนเส้นทางแบบครอบคลุม</strong> รูปแบบที่ใช้กันแทบทุกแปลงคือการวิ่งกลับไปกลับมาเป็นแนวขนาน</span>
+        <span data-lang-en>Most agricultural work does not want the shortest route between two points but a route that <em>passes over every square metre of the field at least once</em> — a different problem, called <strong>coverage path planning</strong>. The pattern used on nearly every field is a set of parallel back-and-forth passes.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>ความกว้างทำงานที่ได้จริงน้อยกว่าความกว้างของอุปกรณ์เสมอ เพราะต้องเผื่อการซ้อนทับเป็นสัดส่วน \( O \) ไว้กันพลาดระหว่างแนว</span>
+        <span data-lang-en>The effective working width is always less than the implement&rsquo;s own width, because an overlap fraction \( O \) must be allowed between passes to guard against gaps.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ w_{\text{eff}} \;=\; w\,(1 - O), \qquad N \;=\; \left\lceil \frac{W}{w_{\text{eff}}} \right\rceil $$</div>
+        <div class="eq__num">(10.18)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>แนวทำงานไม่ได้ยาวเท่าความยาวแปลง เพราะต้องเว้นหัวแปลงไว้ที่ปลายทั้งสองด้านสำหรับกลับรถ ความกว้างของหัวแปลงถูกกำหนดโดยรัศมีวงเลี้ยวต่ำสุดจากสมการ (10.12) ไม่ใช่โดยความชอบของผู้ออกแบบ</span>
+        <span data-lang-en>A pass is not as long as the field, because a headland must be left at each end for turning. The width of that headland is set by the minimum turning radius of equation (10.12), not by the designer&rsquo;s preference.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ H \;\ge\; 2 R_{\min}, \qquad L_{\text{pass}} \;=\; L - 2H $$</div>
+        <div class="eq__num">(10.19)</div>
+      </div>
+
+      <div class="eq">
+        <div class="eq__body">$$ D_{\text{total}} \;=\; N\,L_{\text{pass}} + (N-1)\,\ell_{\text{turn}}, \qquad
+                               T \;=\; \frac{N\,L_{\text{pass}}}{v} + (N-1)\,t_{\text{turn}} $$</div>
+        <div class="eq__num">(10.20)</div>
+      </div>
+
+      <!-- ===================== Figure 10.4 ===================== -->
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 340" role="img" aria-label="A field laid out for coverage, with headlands at each end, parallel passes of the effective working width, and a turn at the headland">
+            <rect x="60" y="40" width="740" height="250" rx="4" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+
+            <!-- headlands -->
+            <rect x="60" y="40" width="86" height="250" class="dg-fill-gold" opacity="0.3"/>
+            <rect x="714" y="40" width="86" height="250" class="dg-fill-gold" opacity="0.3"/>
+            <line x1="146" y1="40" x2="146" y2="290" class="dg-stroke" stroke-width="1.4" stroke-dasharray="5 4"/>
+            <line x1="714" y1="40" x2="714" y2="290" class="dg-stroke" stroke-width="1.4" stroke-dasharray="5 4"/>
+
+            <!-- the passes -->
+            <rect x="146" y="58" width="568" height="30" class="dg-fill-green" opacity="0.4"/>
+            <rect x="146" y="106" width="568" height="30" class="dg-fill-green" opacity="0.4"/>
+            <rect x="146" y="154" width="568" height="30" class="dg-fill-green" opacity="0.4"/>
+            <rect x="146" y="202" width="568" height="30" class="dg-fill-green" opacity="0.4"/>
+            <rect x="146" y="250" width="568" height="30" class="dg-fill-green" opacity="0.4"/>
+
+            <!-- the driven path, back and forth with turns in the headland -->
+            <path d="M146 73 H 714 A 24 24 0 0 1 714 121 H 146 A 24 24 0 0 0 146 169 H 714 A 24 24 0 0 1 714 217 H 146 A 24 24 0 0 0 146 265 H 714"
+                  class="dg-stroke-green" stroke-width="2.6" fill="none"/>
+            <circle cx="146" cy="73" r="6" class="dg-fill-sky dg-stroke" stroke-width="1.8"/>
+
+            <!-- w and w_eff -->
+            <line x1="820" y1="58" x2="820" y2="88" class="dg-stroke-gold" stroke-width="2"/>
+            <polygon points="820,58 816,69 825,69" class="dg-arrow"/>
+            <polygon points="820,88 816,77 825,77" class="dg-arrow"/>
+            <line x1="840" y1="73" x2="840" y2="121" class="dg-stroke" stroke-width="2"/>
+            <polygon points="840,73 836,84 845,84" class="dg-arrow"/>
+            <polygon points="840,121 836,110 845,110" class="dg-arrow"/>
+
+            <!-- H -->
+            <line x1="60" y1="310" x2="146" y2="310" class="dg-stroke-gold" stroke-width="2"/>
+            <polygon points="60,310 71,306 71,315" class="dg-arrow"/>
+            <polygon points="146,310 135,306 135,315" class="dg-arrow"/>
+            <line x1="146" y1="310" x2="714" y2="310" class="dg-stroke" stroke-width="2"/>
+            <polygon points="146,310 157,306 157,315" class="dg-arrow"/>
+            <polygon points="714,310 703,306 703,315" class="dg-arrow"/>
+
+            <text class="dg-text-sm" x="103" y="26" text-anchor="middle" data-lang-th>หัวแปลง</text>
+            <text class="dg-text-sm" x="103" y="26" text-anchor="middle" data-lang-en>headland</text>
+            <text class="dg-text-sm" x="757" y="26" text-anchor="middle" data-lang-th>หัวแปลง</text>
+            <text class="dg-text-sm" x="757" y="26" text-anchor="middle" data-lang-en>headland</text>
+            <text class="dg-text-sm" x="430" y="26" text-anchor="middle" data-lang-th>แนวทำงานขนานกันไปกลับ</text>
+            <text class="dg-text-sm" x="430" y="26" text-anchor="middle" data-lang-en>parallel back-and-forth passes</text>
+          </svg>
+          <span class="fig-label" style="left:94.0%; top:17%">\( w \)</span>
+          <span class="fig-label" style="left:97.0%; top:27%">\( w_{\text{eff}} \)</span>
+          <span class="fig-label" style="left:10.5%; top:86%">\( H \)</span>
+          <span class="fig-label" style="left:47.0%; top:86%">\( L_{\text{pass}} \)</span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 10.4</span><span data-lang-en>Figure 10.4</span></b>
+          <span data-lang-th> การวางผังแปลงสำหรับงานที่ต้องครอบคลุมทั้งแปลง แถบสีเขียวคือพื้นที่ที่อุปกรณ์กว้าง \( w \) ทำงานได้จริง และระยะห่างระหว่างแนวคือ \( w_{\text{eff}} \) ซึ่งแคบกว่าเพราะต้องซ้อนทับกัน ส่วนแถบสีทองสองข้างคือหัวแปลงที่เสียไปกับการกลับรถ และต้องกลับมาทำทีหลังด้วยการวิ่งรอบแปลง สังเกตว่าถ้ารัศมีวงเลี้ยวต่ำสุดใหญ่ขึ้น หัวแปลงก็ต้องกว้างขึ้นตาม ทำให้แนวทำงานสั้นลงและประสิทธิภาพของแปลงลดลง</span>
+          <span data-lang-en> A field laid out for a coverage task. The green bands are the ground the \( w \)-wide implement actually treats, while the spacing between passes is \( w_{\text{eff}} \), narrower because of the overlap. The gold strips at each end are the headlands given up to turning, worked afterwards by driving around the perimeter. Note that a larger minimum turning radius forces a wider headland, which shortens every pass and lowers the efficiency of the field.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 10.3 — วางแผนพ่นสารในแปลงอ้อย</span><span data-lang-en>Worked example 10.3 — Planning a spraying run in a cane field</span></div>
+        <p>
+          <span data-lang-th>แปลงขนาด \( L = 200 \) m, \( W = 120 \) m บูมพ่นกว้าง \( w = 3.0 \) m ซ้อนทับ 10% รถวิ่งด้วย 1.5 m/s กลับรถครั้งละ 25 s และมีรัศมีวงเลี้ยวต่ำสุด 2.5 m จงหาจำนวนแนว ระยะทางรวม เวลาที่ใช้ และอัตราการทำงานต่อชั่วโมง</span>
+          <span data-lang-en>A field is \( L = 200 \) m by \( W = 120 \) m, the boom is \( w = 3.0 \) m wide with a 10% overlap, the vehicle runs at 1.5 m/s, each turn takes 25 s and the minimum turning radius is 2.5 m. Find the number of passes, the total distance, the time and the work rate per hour.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ w_{\text{eff}} = 3.0(1 - 0.10) = 2.7\ \text{m}, \qquad N = \left\lceil \frac{120}{2.7} \right\rceil = \lceil 44.4 \rceil = 45 $$</div>
+          <div class="eq__num">(10.21)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ H = 2(2.5) = 5\ \text{m}, \qquad L_{\text{pass}} = 200 - 2(5) = 190\ \text{m} $$</div>
+          <div class="eq__num">(10.22)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ T = \frac{(45)(190)}{1.5} + (44)(25) = 5700 + 1100 = 6800\ \text{s} = 1.89\ \text{h} $$</div>
+          <div class="eq__num">(10.23)</div>
+        </div>
+        <div class="eq">
+          <div class="eq__body">$$ \text{อัตราการทำงาน / work rate} = \frac{2.4\ \text{ha}}{1.89\ \text{h}} = 1.27\ \text{ha/h} $$</div>
+          <div class="eq__num">(10.24)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ตัวเลขสองตัวที่ควรสังเกต อย่างแรกคือเวลาที่ใช้กลับรถ 1100 s คิดเป็น 16% ของเวลาทั้งหมด ซึ่งเป็นเวลาที่ไม่ได้ทำงานเลย นี่คือเหตุผลที่แปลงยาวได้เปรียบแปลงสั้นอย่างมาก อย่างที่สองคือ 45 แนวคูณความกว้างบูม 3.0 m ได้ 135 m ขณะที่แปลงกว้างเพียง 120 m ส่วนเกิน 15 m คือพื้นที่ที่ถูกพ่นซ้ำสองครั้ง คิดเป็นสารเคมีที่ใช้เกินไป 12.5% ซึ่งเป็นต้นทุนที่มองไม่เห็นในแผนแต่จ่ายจริงทุกฤดู</span>
+          <span data-lang-en>Two figures deserve attention. First, the 1100 s spent turning is 16% of the total, and none of it does any work — which is why a long field beats a short one so decisively. Second, 45 passes times a 3.0 m boom is 135 m of treated width across a field only 120 m wide: the surplus 15 m is ground sprayed twice, 12.5% of chemical used beyond what is needed. That cost is invisible in the plan and paid in full every season.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 10.3 ===================== -->
+      <figure class="anim" data-anim="ch10-cover">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 10.3 — ความกว้างบูมกับการซ้อนทับ สิ่งที่ต้องแลกกัน</span>
+          <span data-lang-en>Animation 10.3 — Boom width against overlap, and what is traded</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 380" role="img" aria-label="A field being covered by parallel passes whose width and overlap are adjustable, showing the treated, double-treated and missed areas">
+            <rect x="24" y="40" width="480" height="288" rx="4" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <g id="a103-bands"></g>
+            <rect id="a103-head1" x="24" y="40" width="0" height="288" class="dg-fill-gold" opacity="0.22"/>
+            <rect id="a103-head2" x="0" y="40" width="0" height="288" class="dg-fill-gold" opacity="0.22"/>
+            <polyline id="a103-path" class="dg-stroke-green" stroke-width="1.8" fill="none" opacity="0.8" points=""/>
+            <rect id="a103-bot" x="0" y="0" width="14" height="10" rx="2" class="dg-fill-steel dg-stroke" stroke-width="1.6"/>
+            <text class="dg-text-sm" x="264" y="24" text-anchor="middle" data-lang-th>แปลง 60 ม. × 36 ม.</text>
+            <text class="dg-text-sm" x="264" y="24" text-anchor="middle" data-lang-en>field, 60 m by 36 m</text>
+            <text class="dg-text-sm" x="264" y="352" text-anchor="middle" data-lang-th>สีเข้มคือพื้นที่ที่ถูกทำซ้ำสองครั้ง</text>
+            <text class="dg-text-sm" x="264" y="352" text-anchor="middle" data-lang-en>the darker ground was treated twice</text>
+
+            <rect x="528" y="40" width="308" height="300" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.4"/>
+            <text class="dg-text-sm" x="552" y="70" data-lang-th>ความกว้างทำงานจริง</text>
+            <text class="dg-text-sm" x="552" y="70" data-lang-en>effective working width</text>
+            <text id="a103-weff" class="dg-text-b" x="552" y="94">—</text>
+            <text class="dg-text-sm" x="552" y="128" data-lang-th>จำนวนแนว</text>
+            <text class="dg-text-sm" x="552" y="128" data-lang-en>number of passes</text>
+            <text id="a103-n" class="dg-text-b" x="552" y="152">—</text>
+            <text class="dg-text-sm" x="552" y="186" data-lang-th>ระยะทางรวม</text>
+            <text class="dg-text-sm" x="552" y="186" data-lang-en>total distance</text>
+            <text id="a103-dist" class="dg-text-b" x="552" y="210">—</text>
+            <text class="dg-text-sm" x="552" y="244" data-lang-th>พื้นที่ที่ทำซ้ำสองครั้ง</text>
+            <text class="dg-text-sm" x="552" y="244" data-lang-en>ground treated twice</text>
+            <text id="a103-ovl" class="dg-text-b" x="552" y="268">—</text>
+            <text class="dg-text-sm" x="552" y="302" data-lang-th>เวลาที่ใช้ และอัตราการทำงาน</text>
+            <text class="dg-text-sm" x="552" y="302" data-lang-en>time, and the work rate</text>
+            <text id="a103-time" class="dg-text-b" x="552" y="326">—</text>
+          </svg>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>พื้นที่ที่ทำแล้ว และเส้นทางที่วิ่ง</span><span data-lang-en>ground treated, and the route driven</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>หัวแปลงที่เว้นไว้กลับรถ</span><span data-lang-en>the headlands left for turning</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ความกว้างบูม</span><span data-lang-en>Boom width</span> \( w \)
+            <input type="range" data-anim-param="w" data-unit="m" min="1.5" max="6" step="0.5" value="3">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>การซ้อนทับ</span><span data-lang-en>Overlap</span> \( O \)
+            <input type="range" data-anim-param="ov" data-unit="%" min="0" max="30" step="5" value="10">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>รัศมีวงเลี้ยวต่ำสุด</span><span data-lang-en>Min turn radius</span>
+            <input type="range" data-anim-param="rmin" data-unit="m" min="1" max="5" step="0.5" value="2.5">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 10.3</span><span data-lang-en>Animation 10.3</span></b>
+          <span data-lang-th> ตั้งการซ้อนทับเป็นศูนย์ก่อน จะเห็นว่าระยะทางสั้นที่สุดและไม่มีพื้นที่ซ้ำเลย แต่ในงานจริงความคลาดเคลื่อนของการระบุตำแหน่งในหัวข้อ 10.5 จะทำให้เกิดช่องว่างที่ไม่ได้ทำ ซึ่งแย่กว่าการทำซ้ำมาก จากนั้นเพิ่มการซ้อนทับทีละ 5% ดูตัวเลขพื้นที่ซ้ำกับระยะทางรวมที่โตขึ้นพร้อมกัน นี่คือราคาที่จ่ายเพื่อความมั่นใจ และเป็นเหตุผลที่การลงทุนใน RTK คุ้มค่า เพราะมันทำให้ลดการซ้อนทับจาก 10% เหลือ 3% ได้อย่างปลอดภัย สุดท้ายลองเพิ่มรัศมีวงเลี้ยว จะเห็นหัวแปลงกว้างขึ้นและพื้นที่ทำงานหดลงทันที</span>
+          <span data-lang-en> Start with the overlap at zero: the distance is shortest and no ground is treated twice — but in real work the localization errors of §10.5 would leave untreated gaps, which is far worse than treating twice. Now raise the overlap in 5% steps and watch the doubled area and the total distance grow together. That is the price of confidence, and it is why RTK pays for itself: it lets the overlap drop from 10% to 3% safely. Finally raise the turning radius and the headlands widen while the worked area shrinks at once.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 10.7 -------- -->
+    <section id="webots">
+      <h2><span data-lang-th>10.7 การจำลองด้วย Webots</span><span data-lang-en>10.7 Simulation in Webots</span></h2>
+
+      <p>
+        <span data-lang-th>บทที่ 9 ใช้ RoboDK ซึ่งเหมาะกับแขนกลที่ยึดกับพื้น เพราะสิ่งที่ต้องตรวจคือการเอื้อมถึง การชน และจุดเอกฐาน ล้วนเป็นเรื่องเรขาคณิตล้วน ๆ แต่หุ่นยนต์เคลื่อนที่มีคำถามที่เรขาคณิตตอบไม่ได้ เช่น ล้อจะลื่นหรือไม่ รถจะคว่ำบนทางลาดหรือไม่ และเซนเซอร์จะเห็นอะไรเมื่อมีต้นไม้บัง คำถามเหล่านี้ต้องการโปรแกรมจำลองที่คำนวณฟิสิกส์และจำลองเซนเซอร์ด้วย ซึ่งคือสิ่งที่ Webots ทำ</span>
+        <span data-lang-en>Chapter 9 used RoboDK, which suits a floor-mounted arm because what must be checked — reach, collision, singularity — is purely geometric. A mobile robot raises questions geometry cannot answer: will the wheels slip, will the vehicle tip on that slope, and what will the sensors see when a tree is in the way? Those need a simulator that computes physics and models sensors, which is what Webots does.</span>
+      </p>
+
+      <h3><span data-lang-th>10.7.1 สิ่งที่อยู่ในโลกจำลอง</span><span data-lang-en>10.7.1 What a world contains</span></h3>
+
+      <p>
+        <span data-lang-th>โลกใน Webots เป็นต้นไม้ของโหนด และเช่นเดียวกับบทที่ 9 ทุกชื่อในต้นไม้นั้นมีสมการรองรับอยู่ในบทนี้</span>
+        <span data-lang-en>A Webots world is a tree of nodes, and as in Chapter 9 every name in that tree has an equation behind it in this chapter.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 10.4 — โหนดใน Webots กับสมการในบทนี้และอุปกรณ์จริง</span><span data-lang-en>Table 10.4 — Webots nodes, this chapter&rsquo;s equations and the real hardware</span></caption>
+          <thead>
+            <tr>
+              <th>Webots</th>
+              <th><span data-lang-th>ในบทนี้</span><span data-lang-en>In this chapter</span></th>
+              <th><span data-lang-th>บนรถจริง</span><span data-lang-en>On the real vehicle</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>RotationalMotor</code></td><td>\( v_L, v_R \) <span data-lang-th>ในสมการ (10.2)</span><span data-lang-en>in equation (10.2)</span></td><td><span data-lang-th>มอเตอร์พร้อมไดรฟ์และวงรอบความเร็ว</span><span data-lang-en>motor with its drive and speed loop</span></td></tr>
+            <tr><td><code>PositionSensor</code></td><td>\( n \) <span data-lang-th>ในสมการ (10.10)</span><span data-lang-en>in equation (10.10)</span></td><td><span data-lang-th>ตัวเข้ารหัสที่เพลาล้อ</span><span data-lang-en>the encoder on the wheel shaft</span></td></tr>
+            <tr><td><code>GPS</code></td><td><span data-lang-th>การแก้ความคลาดเคลื่อนในหัวข้อ 10.5</span><span data-lang-en>the correction of §10.5</span></td><td><span data-lang-th>ตัวรับ GNSS หรือ RTK</span><span data-lang-en>a GNSS or RTK receiver</span></td></tr>
+            <tr><td><code>InertialUnit</code>, <code>Gyro</code></td><td>\( \theta \) <span data-lang-th>ในสมการ (10.9)</span><span data-lang-en>in equation (10.9)</span></td><td>IMU</td></tr>
+            <tr><td><code>DistanceSensor</code>, <code>Lidar</code></td><td><span data-lang-th>การวางแผนระดับท้องถิ่นในหัวข้อ 10.6</span><span data-lang-en>local planning in §10.6</span></td><td><span data-lang-th>เซนเซอร์หลบสิ่งกีดขวาง</span><span data-lang-en>the obstacle-avoidance sensors</span></td></tr>
+            <tr><td><code>ContactProperties</code></td><td>\( i \) <span data-lang-th>ในสมการ (10.1)</span><span data-lang-en>in equation (10.1)</span></td><td><span data-lang-th>สัมประสิทธิ์เสียดทานของยางกับดิน</span><span data-lang-en>the friction between tyre and soil</span></td></tr>
+            <tr><td><code>Supervisor</code></td><td><span data-lang-th>ตำแหน่งจริงที่ใช้วัดความคลาดเคลื่อน</span><span data-lang-en>the true pose, for measuring error</span></td><td><span data-lang-th>ไม่มี ต้องวัดด้วยเครื่องมือภายนอก</span><span data-lang-en>nothing; it must be measured externally</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--info">
+        <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>โหนด Supervisor คือสิ่งที่ไม่มีในโลกจริง</span><span data-lang-en>The Supervisor node is the thing reality does not have</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ใน Webots เราถามตำแหน่งจริงของรถได้ตลอดเวลาผ่าน <code>Supervisor</code> ซึ่งมีประโยชน์มากในการวัดว่าอัลกอริทึมของเราคลาดเคลื่อนไปเท่าใด แต่ต้องระวังอย่างยิ่งที่จะไม่เผลอนำค่านั้นไปใช้ในตัวควบคุมเอง เพราะรถจริงไม่มีทางรู้ค่านี้ ข้อผิดพลาดที่พบบ่อยที่สุดในงานของนักศึกษาคือเขียนตัวควบคุมที่ทำงานได้ดีเยี่ยมในโปรแกรมจำลอง แล้วพบว่าใช้กับรถจริงไม่ได้เลย เพราะมันแอบใช้ข้อมูลที่มีอยู่เฉพาะในโลกจำลอง</span>
+          <span data-lang-en>In Webots the vehicle&rsquo;s true position can be queried at any time through the <code>Supervisor</code>, which is invaluable for measuring how far an algorithm has drifted. Great care is needed not to let that value leak into the controller itself, because a real vehicle can never know it. The commonest fault in student work is a controller that performs beautifully in simulation and not at all in reality, because it was quietly using information that exists only inside the simulator.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>10.7.2 โครงของตัวควบคุม</span><span data-lang-en>10.7.2 The shape of a controller</span></h3>
+
+      <p>
+        <span data-lang-th>ตัวควบคุมใน Webots คือโปรแกรมที่วนรอบเดียวกับที่รถจริงใช้ คือ อ่านเซนเซอร์ ปรับความเชื่อเรื่องตำแหน่ง ตัดสินใจ แล้วสั่งมอเตอร์ จากนั้นรอให้เวลาจำลองเดินไปหนึ่งคาบ โครงนี้ตรงกับรอบการสแกนของ PLC ในบทที่ 4 ทุกประการ และควรเขียนให้แยกส่วนกันชัดเจนตั้งแต่ต้น เพราะทั้งสี่ส่วนจะถูกย้ายไปรันบนรถจริงในปฏิบัติการที่ 10</span>
+        <span data-lang-en>A Webots controller is a program with the same loop a real vehicle runs: read the sensors, update the belief about position, decide, command the motors, then wait one simulation step. The structure matches the PLC scan cycle of Chapter 4 exactly, and the four parts should be kept clearly separate from the start, because all four move onto the real vehicle in Laboratory 10.</span>
+      </p>
+
+      <ol class="steps">
+        <li><b><span data-lang-th>อ่านค่า</span><span data-lang-en>Read</span></b><br>
+          <span data-lang-th>อ่าน <code>PositionSensor</code> ของล้อทั้งสองข้าง และเซนเซอร์ภายนอกที่มี แปลงจำนวนนับเป็นระยะทางด้วยสมการ (10.10)</span>
+          <span data-lang-en>Read both wheel <code>PositionSensor</code> values and whatever external sensors exist, converting counts to distance with equation (10.10).</span></li>
+        <li><b><span data-lang-th>ปรับความเชื่อ</span><span data-lang-en>Update the belief</span></b><br>
+          <span data-lang-th>อัปเดตท่าด้วยสมการ (10.9) แล้วถ้ามีค่าจาก GPS หรือ IMU เข้ามาในคาบนั้น ให้ดึงความเชื่อเข้าหาค่าที่วัดได้ตามน้ำหนักที่กำหนด</span>
+          <span data-lang-en>Advance the pose with equation (10.9), then, if a GPS or IMU reading arrived in that cycle, pull the belief towards it by a chosen weight.</span></li>
+        <li><b><span data-lang-th>ตัดสินใจ</span><span data-lang-en>Decide</span></b><br>
+          <span data-lang-th>เทียบความเชื่อกับเป้าหมายถัดไปในแผน แล้วคำนวณ \( v \) และ \( \omega \) ที่ต้องการ โดยจำกัดไม่ให้เกินขีดจำกัดของรถ</span>
+          <span data-lang-en>Compare the belief with the next waypoint in the plan and compute the desired \( v \) and \( \omega \), clipped to the vehicle&rsquo;s limits.</span></li>
+        <li><b><span data-lang-th>สั่งมอเตอร์</span><span data-lang-en>Command</span></b><br>
+          <span data-lang-th>แปลง \( v \) และ \( \omega \) เป็นความเร็วล้อสองข้างด้วยสมการ (10.4) แล้วส่งให้ <code>RotationalMotor</code> ทั้งสองตัว</span>
+          <span data-lang-en>Convert \( v \) and \( \omega \) into two wheel speeds with equation (10.4) and send them to both <code>RotationalMotor</code> nodes.</span></li>
+      </ol>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>สิ่งที่โปรแกรมจำลองบอกเราไม่ได้</span><span data-lang-en>What the simulator cannot tell us</span></div>
+        <p class="mb-0">
+          <span data-lang-th>Webots คำนวณฟิสิกส์ของวัตถุแข็งได้ดีมาก แต่ดินไม่ใช่วัตถุแข็ง ดินยุบ เปลี่ยนความชื้นตามเวลา และเปลี่ยนสัมประสิทธิ์เสียดทานไปตามความลึกที่ล้อจม ค่า <code>ContactProperties</code> ที่ตั้งไว้จึงเป็นเพียงค่าเฉลี่ยหยาบ ๆ ของสภาพหนึ่งเท่านั้น ให้ใช้โปรแกรมจำลองเพื่อตรวจ <em>ตรรกะ</em> ของตัวควบคุม การหลบสิ่งกีดขวาง และความถูกต้องของแผนการครอบคลุมแปลง ส่วนตัวเลขเรื่องความลื่นไถลและเวลาที่ใช้จริงต้องวัดในแปลงเท่านั้น</span>
+          <span data-lang-en>Webots computes rigid-body physics very well, but soil is not a rigid body: it yields, it changes with moisture, and its friction changes with how deeply the wheel has sunk. A <code>ContactProperties</code> value is therefore a coarse average of one condition. Use the simulator to check the <em>logic</em> of the controller, the obstacle avoidance and the correctness of a coverage plan; the real figures for slip and for time taken can only be measured in the field.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 10.8 -------- -->
+    <section id="activity">
+      <h2><span data-lang-th>10.8 กิจกรรมในชั้นเรียน</span><span data-lang-en>10.8 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 10.1 — วางแผนครอบคลุมแปลงจริง และสเปกระบบนำทางที่ต้องใช้</span><span data-lang-en>Activity 10.1 — Plan a real field, and specify the navigation it needs</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 40 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Groups of 3–4 &middot; 40 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>โจทย์</span><span data-lang-en>The brief</span></h4>
+          <p>
+            <span data-lang-th>แปลงอ้อยรูปสี่เหลี่ยมผืนผ้าขนาด 320 m &times; 150 m มีเสาไฟฟ้าหนึ่งต้นอยู่กลางแปลง ซึ่งต้องเว้นระยะปลอดภัยรอบเสา 6 m รถพ่นสารมีบูมกว้าง 4.0 m วิ่งด้วย 1.8 m/s ฐานล้อ 2.4 m และเลี้ยวได้สูงสุด \( 35\deg \) การกลับรถหนึ่งครั้งใช้เวลา 30 s ให้วางแผนการทำงานและระบุระบบนำทางที่ต้องใช้</span>
+            <span data-lang-en>A rectangular cane field measures 320 m by 150 m, with one electricity pole in the middle around which a 6 m clearance must be kept. The sprayer has a 4.0 m boom, runs at 1.8 m/s, has a 2.4 m wheelbase steering to \( 35\deg \), and each turn takes 30 s. Plan the operation and specify the navigation system it needs.</span>
+          </p>
+
+          <h4><span data-lang-th>ขั้นตอน</span><span data-lang-en>Steps</span></h4>
+          <ol>
+            <li><span data-lang-th>คำนวณรัศมีวงเลี้ยวต่ำสุดจากสมการ (10.12) แล้วหาความกว้างหัวแปลงที่ต้องเว้นไว้</span><span data-lang-en>Compute the minimum turning radius from equation (10.12) and the headland width it forces.</span></li>
+            <li><span data-lang-th>วางแผนสองแบบ แบบหนึ่งวิ่งแนวยาว 320 m อีกแบบวิ่งแนวสั้น 150 m คำนวณจำนวนแนว ระยะทาง และเวลาทั้งหมดของทั้งสองแบบที่การซ้อนทับ 10%</span><span data-lang-en>Plan it twice, once with passes along the 320 m side and once along the 150 m side, computing the passes, distance and total time for each at 10% overlap.</span></li>
+            <li><span data-lang-th>คำนวณสัดส่วนเวลาที่เสียไปกับการกลับรถของแต่ละแบบ แล้วอธิบายว่าทำไมตัวเลขนี้จึงต่างกันมาก</span><span data-lang-en>Compute the fraction of time each plan loses to turning, and explain why the two differ so much.</span></li>
+            <li><span data-lang-th>คำนวณปริมาณสารที่ใช้เกินจากการซ้อนทับ ทั้งที่ 10% และถ้าลดลงเหลือ 3% คิดเป็นกี่เปอร์เซ็นต์ของทั้งแปลง</span><span data-lang-en>Compute the chemical used in excess from the overlap, at 10% and if it were cut to 3%, as a percentage of the whole field.</span></li>
+            <li><span data-lang-th>จากการซ้อมทับ 3% ที่ต้องการ ให้ย้อนกลับไปหาว่าระบบระบุตำแหน่งต้องแม่นยำกี่เซนติเมตร แล้วเลือกแหล่งข้อมูลจากตารางที่ 10.3 พร้อมเหตุผล</span><span data-lang-en>From the 3% overlap wanted, work backwards to the positioning accuracy in centimetres that implies, and choose a source from Table 10.3 with your reasons.</span></li>
+            <li><span data-lang-th>วาดเส้นทางรอบเสาไฟฟ้า และระบุว่าพื้นที่ใดที่รถเข้าไม่ถึงและต้องจัดการด้วยวิธีอื่น</span><span data-lang-en>Sketch the route around the pole and identify the ground the vehicle cannot reach, which must be handled another way.</span></li>
+          </ol>
+
+          <div class="callout callout--info" style="margin-bottom:1rem">
+            <div class="callout__title"><i class="fa-solid fa-circle-info"></i> <span data-lang-th>คำใบ้สองข้อ</span><span data-lang-en>Two hints</span></div>
+            <p class="mb-0">
+              <span data-lang-th>ข้อแรก ความกว้างทำงาน 4.0 m ที่การซ้อนทับ 3% หมายความว่าช่องว่างระหว่างแนวมีเพียง 0.12 m ให้เผื่อผิดได้ ดังนั้นความคลาดเคลื่อนทางด้านข้างต้องน้อยกว่าครึ่งหนึ่งของค่านั้น ข้อที่สอง การวิ่งแนวสั้นทำให้ต้องกลับรถบ่อยกว่าสองเท่ากว่า และเวลากลับรถ 30 s ไม่ได้ลดลงเลยเมื่อแนวสั้นลง</span>
+              <span data-lang-en>First, a 4.0 m working width at 3% overlap leaves only 0.12 m of margin between passes, so the lateral error must stay below half of that. Second, passes along the short side need more than twice as many turns, and the 30 s each turn costs does not shrink when the pass does.</span>
+            </p>
+          </div>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ตารางเปรียบเทียบแผนทั้งสองแบบ ครบทั้งจำนวนแนว ระยะทาง เวลา และสัดส่วนเวลากลับรถ</span><span data-lang-en>A table comparing both plans: passes, distance, time and the fraction lost to turning.</span></li>
+            <li><span data-lang-th>ภาพวาดมาตราส่วนของแผนที่เลือก พร้อมเส้นทางรอบเสาไฟฟ้าและพื้นที่ที่เข้าไม่ถึง</span><span data-lang-en>A scale drawing of the chosen plan, with the route around the pole and the unreachable ground.</span></li>
+            <li><span data-lang-th>ข้อกำหนดความแม่นยำของระบบนำทางเป็นเซนติเมตร พร้อมแหล่งข้อมูลที่เลือกและเหตุผล</span><span data-lang-en>A navigation accuracy requirement in centimetres, with the source chosen and why.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 10.9 -------- -->
+    <section id="lab">
+      <h2><span data-lang-th>10.9 ปฏิบัติการที่ 10</span><span data-lang-en>10.9 Laboratory 10</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <h3><span data-lang-th>ปฏิบัติการที่ 10 — สอบเทียบการนับรอบล้อ และเทียบของจริงกับ Webots</span><span data-lang-en>Laboratory 10 — Calibrating odometry, and reality against Webots</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 2 ชั่วโมง &middot; ลานปฏิบัติการหุ่นยนต์เคลื่อนที่</span><span data-lang-en>Groups of 3–4 &middot; 2 hours &middot; Mobile robot test area</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ข้อ 3–8</span><span data-lang-en>Maps to objectives 3–8</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 6% ของคะแนนรวม</span><span data-lang-en>6% of the course total</span></span>
+            <span class="badge badge--gold"><i class="fa-solid fa-link"></i> <span data-lang-th>ใช้วงรอบควบคุมความเร็วจากบทที่ 7</span><span data-lang-en>Uses the speed loop of Chapter 7</span></span>
+          </div>
+
+          <h4><span data-lang-th>อุปกรณ์</span><span data-lang-en>Equipment</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รถหุ่นยนต์ขับเคลื่อนเชิงผลต่างพร้อมตัวเข้ารหัสที่ล้อทั้งสองข้าง</span><span data-lang-en>A differential-drive robot with an encoder on each wheel</span></li>
+            <li><span data-lang-th>คอมพิวเตอร์ที่ติดตั้ง Webots และ Python พร้อมตัวควบคุมตัวอย่างของรายวิชา</span><span data-lang-en>A computer with Webots and Python, and the course&rsquo;s example controller</span></li>
+            <li><span data-lang-th>ตลับเมตร ชอล์กหรือเทปตีเส้น และลูกดิ่งสำหรับทำเครื่องหมายจุดเริ่มต้น</span><span data-lang-en>A tape measure, chalk or line tape, and a plumb bob for marking the start point</span></li>
+            <li><span data-lang-th>แผ่นวัสดุสองชนิดสำหรับเปลี่ยนสภาพพื้น เช่น พื้นเรียบกับแผ่นยางหรือพรมหยาบ</span><span data-lang-en>Two surface materials for changing the ground, such as smooth floor and a rubber or coarse mat</span></li>
+          </ul>
+
+          <h4><span data-lang-th>ขั้นตอนการทดลอง</span><span data-lang-en>Procedure</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>ตรวจวงรอบความเร็วของล้อก่อน</span><span data-lang-en>Check the wheel speed loops first</span></b><br>
+              <span data-lang-th>สั่งความเร็วเท่ากันทั้งสองล้อ แล้ววัดความเร็วจริงของแต่ละข้างจากตัวเข้ารหัส ปรับวงรอบ PI ตามบทที่ 7 จนทั้งสองข้างตามค่าสั่งได้ภายใน 2% มิฉะนั้นการทดลองที่เหลือจะวัดแต่ความผิดพลาดของวงรอบควบคุม ไม่ใช่ของการนับรอบล้อ</span>
+              <span data-lang-en>Command equal speeds and measure each wheel&rsquo;s actual speed from its encoder, tuning the PI loop of Chapter 7 until both track the command within 2%. Otherwise the rest of the experiment measures the control loop&rsquo;s error rather than the odometry&rsquo;s.</span></li>
+            <li><b><span data-lang-th>ยืนยันจลนศาสตร์</span><span data-lang-en>Confirm the kinematics</span></b><br>
+              <span data-lang-th>สั่งคู่ \( (v, \omega) \) สามชุดที่ให้รัศมีวงเลี้ยวต่างกัน วัดรัศมีจริงจากรอยที่รถวิ่ง แล้วเทียบกับสมการ (10.3) บันทึกเปอร์เซ็นต์ความคลาดเคลื่อนของแต่ละชุด</span>
+              <span data-lang-en>Command three \( (v, \omega) \) pairs giving different turning radii, measure the actual radius from the track left on the ground, compare with equation (10.3), and record the percentage error of each.</span></li>
+            <li><b><span data-lang-th>ทดสอบสี่เหลี่ยมสองทิศ</span><span data-lang-en>The bidirectional square test</span></b><br>
+              <span data-lang-th>ทำเครื่องหมายจุดเริ่มต้นและทิศหัวรถ สั่งให้วิ่งสี่เหลี่ยมด้านละ 3 m ตามเข็มนาฬิกาห้ารอบ วัดตำแหน่งปลายทางทุกรอบ แล้วทำซ้ำทวนเข็มนาฬิกาอีกห้ารอบ นี่คือการทดสอบมาตรฐานที่แยกสาเหตุของความคลาดเคลื่อนสองอย่างออกจากกันได้</span>
+              <span data-lang-en>Mark the start point and heading, drive a 3 m square clockwise five times measuring the end point each run, then repeat anticlockwise. This is the standard test that separates the two sources of systematic error.</span></li>
+            <li><b><span data-lang-th>คำนวณค่าแก้และนำไปใช้</span><span data-lang-en>Compute the corrections and apply them</span></b><br>
+              <span data-lang-th>จากค่าเฉลี่ยของสองทิศ คำนวณมุม \( \alpha \) และ \( \beta \) ตามสมการ (10.25) แล้วหาค่าแก้ของระยะห่างล้อและอัตราส่วนรัศมีล้อตามสมการ (10.26) ใส่ค่าแก้ลงในโปรแกรม แล้วทำซ้ำขั้นตอนที่ 3 หนึ่งรอบเพื่อยืนยันว่าความคลาดเคลื่อนลดลง</span>
+              <span data-lang-en>From the two directional means compute the angles \( \alpha \) and \( \beta \) of equation (10.25), then the wheelbase and wheel-radius corrections of equation (10.26). Enter them in the program and repeat step 3 once to confirm the error has fallen.</span></li>
+            <li><b><span data-lang-th>เปลี่ยนพื้นผิวแล้ววัดความลื่นไถล</span><span data-lang-en>Change the surface and measure slip</span></b><br>
+              <span data-lang-th>วิ่งตรง 5 m บนพื้นสองชนิด วัดระยะที่เดินทางได้จริงด้วยตลับเมตร เทียบกับระยะที่คำนวณจากการนับรอบล้อ แล้วหาอัตราการลื่นไถลตามสมการ (10.1) เทียบกับตารางที่ 10.1</span>
+              <span data-lang-en>Drive 5 m straight on both surfaces, measure the real distance with the tape, compare with the distance computed from wheel counts, and find the slip ratio of equation (10.1) against Table 10.1.</span></li>
+            <li><b><span data-lang-th>สร้างโลกเดียวกันใน Webots</span><span data-lang-en>Build the same world in Webots</span></b><br>
+              <span data-lang-th>สร้างลานทดสอบขนาดเท่าของจริง ใส่รถที่มีระยะห่างล้อและรัศมีล้อตรงกับรถจริง ย้ายตัวควบคุมตัวเดียวกันเข้าไป แล้วรันการทดสอบสี่เหลี่ยมในขั้นตอนที่ 3 ซ้ำ บันทึกความคลาดเคลื่อนที่ได้ และตั้ง <code>ContactProperties</code> จนความลื่นไถลใกล้เคียงกับที่วัดได้จริง</span>
+              <span data-lang-en>Build a test area of the real dimensions, add a vehicle whose wheel separation and radius match the real one, move the same controller across, and repeat the square test of step 3, recording the error and tuning <code>ContactProperties</code> until the slip resembles what you measured.</span></li>
+          </ol>
+
+          <div class="eq">
+            <div class="eq__body">$$ \alpha = \frac{x_{\text{cw}} + x_{\text{ccw}}}{-4L}, \qquad \beta = \frac{x_{\text{cw}} - x_{\text{ccw}}}{-4L} $$</div>
+            <div class="eq__num">(10.25)</div>
+          </div>
+
+          <div class="eq">
+            <div class="eq__body">$$ b_{\text{corrected}} = \frac{90\deg}{90\deg - \alpha}\, b, \qquad
+                                   E_d = \frac{R_{\beta} + b/2}{R_{\beta} - b/2}, \quad R_{\beta} = \frac{L/2}{\sin(\beta/2)} $$</div>
+            <div class="eq__num">(10.26)</div>
+          </div>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 10.1</span><span data-lang-en>Data sheet 10.1</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>รอบที่</span><span data-lang-en>Run</span></th>
+                  <th><span data-lang-th>ตามเข็ม</span><span data-lang-en>Clockwise</span> \( x \) (mm)</th>
+                  <th><span data-lang-th>ตามเข็ม</span><span data-lang-en>Clockwise</span> \( y \) (mm)</th>
+                  <th><span data-lang-th>ทวนเข็ม</span><span data-lang-en>Anticlockwise</span> \( x \) (mm)</th>
+                  <th><span data-lang-th>ทวนเข็ม</span><span data-lang-en>Anticlockwise</span> \( y \) (mm)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>4</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><b><span data-lang-th>ค่าเฉลี่ย</span><span data-lang-en>mean</span></b></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 10.2</span><span data-lang-en>Data sheet 10.2</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>รายการ</span><span data-lang-en>Item</span></th>
+                  <th><span data-lang-th>ก่อนแก้ค่า</span><span data-lang-en>Before correction</span></th>
+                  <th><span data-lang-th>หลังแก้ค่า</span><span data-lang-en>After correction</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>ความคลาดเคลื่อนปลายทางเฉลี่ย ตามเข็ม</span><span data-lang-en>Mean end-point error, clockwise</span></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ความคลาดเคลื่อนปลายทางเฉลี่ย ทวนเข็ม</span><span data-lang-en>Mean end-point error, anticlockwise</span></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>\( \alpha \), \( \beta \)</td><td>&nbsp;</td><td>&mdash;</td></tr>
+                <tr><td>\( b_{\text{corrected}} \), \( E_d \)</td><td>&mdash;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>อัตราการลื่นไถล พื้นเรียบ และพื้นหยาบ</span><span data-lang-en>Slip ratio, smooth and coarse surfaces</span></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ความคลาดเคลื่อนของสี่เหลี่ยมเดียวกันใน Webots</span><span data-lang-en>Error on the same square in Webots</span></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>การวิเคราะห์ผล</span><span data-lang-en>Analysis</span></h4>
+          <ol>
+            <li><span data-lang-th>ความคลาดเคลื่อนของการวิ่งตามเข็มกับทวนเข็มไปคนละทิศหรือทิศเดียวกัน และผลนั้นบอกอะไรเกี่ยวกับสาเหตุที่แท้จริง</span><span data-lang-en>Did the clockwise and anticlockwise errors fall on the same side or on opposite sides, and what does that say about which cause dominates?</span></li>
+            <li><span data-lang-th>ค่าแก้ที่คำนวณได้ลดความคลาดเคลื่อนลงกี่เปอร์เซ็นต์ และส่วนที่เหลืออยู่น่าจะมาจากอะไร</span><span data-lang-en>By what percentage did the corrections reduce the error, and where is the remainder likely to come from?</span></li>
+            <li><span data-lang-th>แทนค่ารัศมีล้อที่ต่างกันซึ่งวัดได้ลงในสมการ (10.13) แล้วเทียบกับความคลาดเคลื่อนของทิศทางที่วัดได้จริง ตรงกันหรือไม่</span><span data-lang-en>Put the measured wheel-radius difference into equation (10.13) and compare with the heading error you actually measured. Do they agree?</span></li>
+            <li><span data-lang-th>อัตราการลื่นไถลบนพื้นสองชนิดต่างกันกี่เท่า และถ้ารถนี้ต้องออกไปวิ่งในแปลงดินร่วน ควรเพิ่มเซนเซอร์ชนิดใดก่อนเป็นอันดับแรก</span><span data-lang-en>By what factor did the slip differ between the two surfaces, and if this vehicle were to work on tilled soil, which sensor should be added first?</span></li>
+            <li><span data-lang-th>ความคลาดเคลื่อนใน Webots น้อยกว่าของจริงมากหรือไม่ และถ้าใช่ ให้ระบุว่าสิ่งใดในโลกจริงที่โปรแกรมจำลองไม่ได้จำลองไว้</span><span data-lang-en>Was the error in Webots much smaller than in reality, and if so, name what in the real world the simulation did not model.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>Deliverables</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานปฏิบัติการไม่เกิน 6 หน้า ส่งภายใน 1 สัปดาห์</span><span data-lang-en>A report of at most six pages, due within one week.</span></li>
+            <li><span data-lang-th>กราฟกระจายของจุดปลายทางทั้งสิบรอบในระนาบ \( xy \) แยกสีตามทิศการวิ่ง</span><span data-lang-en>A scatter plot of all ten end points in the \( xy \) plane, coloured by direction of travel.</span></li>
+            <li><span data-lang-th>ค่า \( b_{\text{corrected}} \) และ \( E_d \) ที่ได้ พร้อมหลักฐานว่าความคลาดเคลื่อนลดลงจริงหลังใส่ค่า</span><span data-lang-en>The \( b_{\text{corrected}} \) and \( E_d \) obtained, with evidence that the error really fell after applying them.</span></li>
+            <li><span data-lang-th>ไฟล์โลกและตัวควบคุมของ Webots พร้อมภาพเทียบเส้นทางจำลองกับเส้นทางจริง</span><span data-lang-en>The Webots world and controller files, with a figure comparing the simulated and real paths.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>การทดสอบสี่เหลี่ยมสองทิศที่ครบสิบรอบและบันทึกอย่างเป็นระบบ</span><span data-lang-en>A complete ten-run bidirectional square test, systematically recorded</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การคำนวณค่าแก้และหลักฐานว่าความคลาดเคลื่อนลดลงจริง</span><span data-lang-en>The computed corrections, and evidence that the error actually fell</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>การวัดความลื่นไถลบนสองพื้นผิวและการเชื่อมโยงกับตารางที่ 10.1</span><span data-lang-en>Slip measured on two surfaces and tied back to Table 10.1</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>โลกจำลองที่ตรงกับของจริง และการอธิบายส่วนที่ยังต่างกัน</span><span data-lang-en>A simulation that matches reality, with the remaining differences explained</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ความปลอดภัยและความเป็นระเบียบในการปฏิบัติงาน</span><span data-lang-en>Safe and orderly laboratory practice</span></td><td>15</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--danger" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></div>
+            <p class="mb-0">
+              <span data-lang-th>หุ่นยนต์เคลื่อนที่ต่างจากแขนกลตรงที่มันออกจากพื้นที่ที่เราคิดว่ามันจะอยู่ได้ และอันตรายของมันคือการวิ่งชนคนหรือตกจากขอบ ขั้นตอนที่ 3 และ 4 รถจะวิ่งออกนอกเส้นทางที่ตั้งใจไว้มากตามที่คาดไว้แล้ว ต้องกำหนดขอบเขตพื้นที่ทดลองด้วยกรวยหรือเทปให้ชัดเจน มีคนหนึ่งคนถือสวิตช์หยุดฉุกเฉินแบบไร้สายและไม่ทำอย่างอื่นตลอดการทดลอง ห้ามทดลองใกล้บันได ทางลาด หรือขอบชานชาลา และถอดแบตเตอรี่ออกทุกครั้งก่อนเปลี่ยนล้อหรือปรับแรงดันลมยาง</span>
+              <span data-lang-en>A mobile robot differs from an arm in that it leaves the space one expected it to stay in, and its hazards are running into people and driving off an edge. In steps 3 and 4 the vehicle will depart from its intended path substantially, by design. Mark the test area clearly with cones or tape, have one person holding a wireless emergency stop and doing nothing else for the whole test, never test near stairs, ramps or a platform edge, and remove the battery before changing a wheel or adjusting tyre pressure.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>ความต่างสำคัญระหว่างแขนกลกับหุ่นยนต์เคลื่อนที่ไม่ใช่กลไก แต่คือหุ่นยนต์เคลื่อนที่ไม่รู้ตำแหน่งของตัวเองแน่นอน</span><span data-lang-en>What separates a mobile robot from an arm is not mechanics but that it never knows its own position for certain.</span></li>
+        <li><span data-lang-th>การบังคับการเคลื่อนที่ด้วยกลไก เช่น ราง เป็นวิธีแก้ปัญหาการระบุตำแหน่งที่ถูกที่สุดเสมอ ควรพิจารณาก่อนเลือกเซนเซอร์ราคาแพง</span><span data-lang-en>Constraining the motion mechanically, with a rail for instance, is always the cheapest answer to localization, and deserves consideration before any expensive sensor.</span></li>
+        <li><span data-lang-th>ล้อมาตรฐานห้ามการเลื่อนด้านข้าง ซึ่งเป็นที่มาของข้อจำกัดนอนโฮโลโนมิกในสมการ (10.11)</span><span data-lang-en>A standard wheel forbids sideways motion, and that is the origin of the nonholonomic constraint of equation (10.11).</span></li>
+        <li><span data-lang-th>การขับเคลื่อนเชิงผลต่างเลี้ยวได้โดยไม่มีกลไกเลี้ยวเลย ความเร็วล้อสองค่ากำหนดทั้ง \( v \), \( \omega \) และตำแหน่งของ ICC พร้อมกัน</span><span data-lang-en>A differential drive turns with no steering mechanism at all: two wheel speeds fix \( v \), \( \omega \) and the ICC together.</span></li>
+        <li><span data-lang-th>สมการจลนศาสตร์ทั้งหมดในบทนี้ไม่มีมวลและแรงเสียดทาน จึงใช้ได้ก็ต่อเมื่อล้อไม่ลื่นไถลเท่านั้น</span><span data-lang-en>Every kinematic equation here contains no mass and no friction, so it holds only while the wheels do not slip.</span></li>
+        <li><span data-lang-th>ความลื่นไถลเป็นค่าบวกเสมอ ไม่ใช่สัญญาณรบกวนสุ่ม ความคลาดเคลื่อนจึงสะสมไปทางเดียวและไม่มีวันหักล้างกัน</span><span data-lang-en>Slip is always positive rather than random noise, so its error accumulates in one direction and never cancels.</span></li>
+        <li><span data-lang-th>ความคลาดเคลื่อนของทิศทางร้ายแรงกว่าของระยะทางมาก เพราะมันถูกคูณด้วยทุกเมตรที่วิ่งต่อไปตามสมการ (10.14)</span><span data-lang-en>A heading error is far worse than a distance error, because it is multiplied by every further metre driven — equation (10.14).</span></li>
+        <li><span data-lang-th>รัศมีล้อที่ต่างกันเพียง 0.5% ทำให้รถออกนอกเส้นทางยี่สิบเมตรในระยะร้อยเมตร การนับรอบล้อลำพังจึงใช้ในแปลงไม่ได้</span><span data-lang-en>Half a percent of difference between wheel radii takes a vehicle twenty metres off course in a hundred, so odometry alone is unusable in a field.</span></li>
+        <li><span data-lang-th>การผสานข้อมูลใช้เซนเซอร์ที่เร็วแต่ไหลร่วมกับเซนเซอร์ที่ช้าแต่ไม่ไหล ซึ่งเป็นแนวคิดเดียวกับเทอม P และ I ในบทที่ 7</span><span data-lang-en>Fusion pairs a fast sensor that drifts with a slow one that does not — the same idea as the P and I terms of Chapter 7.</span></li>
+        <li><span data-lang-th>งานเกษตรต้องการเส้นทางที่ครอบคลุมทุกตารางเมตร ไม่ใช่เส้นทางที่สั้นที่สุด จึงเป็นปัญหาคนละประเภทกับการหาเส้นทาง</span><span data-lang-en>Agricultural work needs a route covering every square metre rather than the shortest one, which is a different problem from path finding.</span></li>
+        <li><span data-lang-th>รัศมีวงเลี้ยวต่ำสุดกำหนดความกว้างหัวแปลง ซึ่งกำหนดความยาวแนวทำงาน ซึ่งกำหนดสัดส่วนเวลาที่เสียไปกับการกลับรถ</span><span data-lang-en>The minimum turning radius sets the headland width, which sets the pass length, which sets the fraction of time lost to turning.</span></li>
+        <li><span data-lang-th>การซ้อนทับที่มากเกินจำเป็นคือสารเคมีและเชื้อเพลิงที่จ่ายเกินทุกฤดู และลดได้ด้วยการระบุตำแหน่งที่แม่นยำขึ้น</span><span data-lang-en>Overlap beyond what is needed is chemical and fuel paid for every season, and better positioning is what reduces it.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>การขับเคลื่อนเชิงผลต่าง</span><span data-lang-en>Differential drive</span></div>
+          <div class="deflist__def"><span data-lang-th>ล้อขับสองล้อบนแกนเดียวกันที่ขับแยกกัน การเลี้ยวเกิดจากความต่างของความเร็วล้อโดยไม่มีกลไกเลี้ยว</span><span data-lang-en>Two independently driven wheels on one axis, turning by the difference in their speeds with no steering mechanism</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>จุดศูนย์กลางการหมุนขณะนั้น (ICC)</span><span data-lang-en>Instantaneous centre of curvature</span></div>
+          <div class="deflist__def"><span data-lang-th>จุดที่ทุกส่วนของรถหมุนรอบในขณะนั้น อยู่บนแนวแกนล้อที่ยืดออกไปเสมอ</span><span data-lang-en>The point every part of the vehicle turns about at that instant, always on the extended wheel axis</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ข้อจำกัดนอนโฮโลโนมิก</span><span data-lang-en>Nonholonomic constraint</span></div>
+          <div class="deflist__def"><span data-lang-th>ข้อจำกัดที่กระทำกับความเร็วแต่ไม่กระทำกับตำแหน่ง รถจึงไปได้ทุกที่แต่ต้องเดินทางให้ถูกวิธี</span><span data-lang-en>A restriction on velocity but not on position, so the vehicle can reach anywhere but only by travelling there properly</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>การคำนวณตำแหน่งแบบสะสม</span><span data-lang-en>Dead reckoning</span></div>
+          <div class="deflist__def"><span data-lang-th>การประมาณตำแหน่งโดยบวกการเคลื่อนที่ที่วัดได้เข้ากับตำแหน่งก่อนหน้า ให้ค่าถี่แต่คลาดเคลื่อนสะสมไม่สิ้นสุด</span><span data-lang-en>Estimating position by adding measured motion to the previous estimate: fast, but accumulating error without limit</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>อัตราการลื่นไถล</span><span data-lang-en>Slip ratio</span></div>
+          <div class="deflist__def"><span data-lang-th>ส่วนต่างระหว่างระยะที่ล้อหมุนไปกับระยะที่เดินทางได้จริง มีค่าเป็นบวกเสมอตามสมการ (10.1)</span><span data-lang-en>The shortfall between what the wheel turned and what the ground gave, always positive — equation (10.1)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">RTK</div>
+          <div class="deflist__def"><span data-lang-th>การแก้สัญญาณดาวเทียมด้วยสถานีฐานที่ทราบตำแหน่งแน่นอน ให้ความแม่นยำระดับเซนติเมตรแทนที่จะเป็นเมตร</span><span data-lang-en>Correcting the satellite signal against a base station of known position, giving centimetres instead of metres</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>การวางแผนเส้นทางแบบครอบคลุม</span><span data-lang-en>Coverage path planning</span></div>
+          <div class="deflist__def"><span data-lang-th>การหาเส้นทางที่ผ่านทุกจุดของพื้นที่อย่างน้อยหนึ่งครั้ง ไม่ใช่เส้นทางที่สั้นที่สุดระหว่างสองจุด</span><span data-lang-en>Finding a route that passes over every point of an area at least once, rather than the shortest route between two points</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>หัวแปลง</span><span data-lang-en>Headland</span></div>
+          <div class="deflist__def"><span data-lang-th>แถบที่เว้นไว้ที่ปลายแปลงสำหรับกลับรถ ความกว้างถูกกำหนดโดยรัศมีวงเลี้ยวต่ำสุดตามสมการ (10.19)</span><span data-lang-en>The strip left at each end of a field for turning, its width set by the minimum turning radius — equation (10.19)</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>สิบข้อ เน้นการคำนวณจลนศาสตร์ การประมาณความคลาดเคลื่อน การวางแผนครอบคลุมแปลง และการเลือกระบบนำทาง เกณฑ์ผ่าน 70%</span>
+        <span data-lang-en>Ten items on computing kinematics, estimating error, planning coverage and choosing a navigation system. Pass mark 70%.</span>
+      </p>
+      <div data-quiz="ch10-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>Siegwart, R., Nourbakhsh, I. R., &amp; Scaramuzza, D. (2011). <em>Introduction to Autonomous Mobile Robots</em> (2nd ed.). MIT Press. <span data-lang-th>— ตำราหลักของบทนี้ ครอบคลุมชนิดของล้อ จลนศาสตร์ และการระบุตำแหน่ง</span><span data-lang-en>— the principal text for this chapter, covering wheel types, kinematics and localization.</span></li>
+        <li>Borenstein, J., &amp; Feng, L. (1996). Measurement and correction of systematic odometry errors in mobile robots. <em>IEEE Transactions on Robotics and Automation, 12</em>(6), 869–880. <span data-lang-th>— ที่มาของการทดสอบสี่เหลี่ยมสองทิศและสมการ (10.25) และ (10.26)</span><span data-lang-en>— the source of the bidirectional square test and of equations (10.25) and (10.26).</span></li>
+        <li>Thrun, S., Burgard, W., &amp; Fox, D. (2005). <em>Probabilistic Robotics</em>. MIT Press. <span data-lang-th>— ตำราอ้างอิงเรื่องตัวกรองคาลมาน การผสานข้อมูล และ SLAM</span><span data-lang-en>— the reference work on Kalman filtering, sensor fusion and SLAM.</span></li>
+        <li>Dudek, G., &amp; Jenkin, M. (2010). <em>Computational Principles of Mobile Robotics</em> (2nd ed.). Cambridge University Press.</li>
+        <li>LaValle, S. M. (2006). <em>Planning Algorithms</em>. Cambridge University Press. <span data-lang-th>— การวางแผนเส้นทางภายใต้ข้อจำกัดนอนโฮโลโนมิกในหัวข้อ 10.4</span><span data-lang-en>— planning under the nonholonomic constraints of §10.4.</span></li>
+        <li>Choset, H. (2001). Coverage for robotics: A survey of recent results. <em>Annals of Mathematics and Artificial Intelligence, 31</em>(1–4), 113–126.</li>
+        <li>Oksanen, T., &amp; Visala, A. (2009). Coverage path planning algorithms for agricultural field machines. <em>Journal of Field Robotics, 26</em>(8), 651–668. <span data-lang-th>— ขยายหัวข้อ 10.6 ไปสู่แปลงที่ไม่ได้เป็นสี่เหลี่ยม</span><span data-lang-en>— extends §10.6 to fields that are not rectangular.</span></li>
+        <li>Bechar, A., &amp; Vigneault, C. (2016). Agricultural robots for field operations: Concepts and components. <em>Biosystems Engineering, 149</em>, 94–111.</li>
+        <li>Wong, J. Y. (2008). <em>Theory of Ground Vehicles</em> (4th ed.). Wiley. <span data-lang-th>— กลศาสตร์ของล้อกับดิน ซึ่งเป็นที่มาของตัวเลขในตารางที่ 10.1</span><span data-lang-en>— the mechanics of wheel and soil behind the figures of Table 10.1.</span></li>
+        <li>Michel, O. (2004). Cyberbotics Ltd. Webots: Professional mobile robot simulation. <em>International Journal of Advanced Robotic Systems, 1</em>(1), 39–42.</li>
+        <li>Cyberbotics Ltd. (2024). <em>Webots Reference Manual and User Guide</em>. <span data-lang-th>— คู่มือของเครื่องมือที่ใช้ในหัวข้อ 10.7 และปฏิบัติการที่ 10</span><span data-lang-en>— the manual for the tool used in §10.7 and Laboratory 10.</span></li>
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press.</li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="ch09.html">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>บทก่อนหน้า</span><span data-lang-en>Previous chapter</span></small>
+        <b><span data-lang-th>บทที่ 9 · จลนศาสตร์หุ่นยนต์และการจำลอง</span><span data-lang-en>Chapter 9 · Robot Kinematics and Simulation</span></b>
+      </a>
+      <a class="is-next" href="ch11.html">
+        <small><span data-lang-th>บทถัดไป</span><span data-lang-en>Next chapter</span> <i class="fa-solid fa-arrow-right"></i></small>
+        <b><span data-lang-th>บทที่ 11 · การประยุกต์ในงานวิศวกรรมเกษตร</span><span data-lang-en>Chapter 11 · Applications in Agricultural Engineering</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#diffdrive"><span data-lang-th>ขับเคลื่อนเชิงผลต่าง</span><span data-lang-en>Differential drive</span></a></li>
+          <li><a href="#localization"><span data-lang-th>การระบุตำแหน่ง</span><span data-lang-en>Localization</span></a></li>
+          <li><a href="#lab"><span data-lang-th>ปฏิบัติการที่ 10</span><span data-lang-en>Laboratory 10</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script src="../js/ch10-quiz.js"></script>
+<script src="../js/ch10-anim.js"></script>
+</body>
+</html>

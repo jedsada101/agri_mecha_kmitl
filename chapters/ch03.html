@@ -1570,66 +1570,28 @@
       </p>
 
       <figure class="figure">
-        <svg viewBox="0 0 860 400" role="img" aria-labelledby="fig34-title">
-          <title id="fig34-title">How an IP code is built from its two digits</title>
-
-          <!-- the code itself -->
-          <text class="dg-text-b" x="430" y="42" text-anchor="middle" style="font-size:16px" data-lang-th>โครงสร้างของรหัส IP</text>
-          <text class="dg-text-b" x="430" y="42" text-anchor="middle" style="font-size:16px" data-lang-en>How an IP code is built</text>
-
-          <rect x="286" y="58" width="288" height="66" rx="12" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
-          <text class="dg-text-b" x="330" y="103" text-anchor="middle" style="font-size:30px">IP</text>
-          <text class="dg-text-b" x="420" y="103" text-anchor="middle" style="font-size:30px">6</text>
-          <text class="dg-text-b" x="500" y="103" text-anchor="middle" style="font-size:30px">5</text>
-
-          <line x1="420" y1="124" x2="300" y2="158" class="dg-stroke" stroke-width="2"/>
-          <line x1="500" y1="124" x2="620" y2="158" class="dg-stroke" stroke-width="2"/>
-          <text class="dg-text-sm" x="230" y="154" text-anchor="middle" data-lang-th>หลักที่ 1 — ของแข็งและฝุ่น</text>
-          <text class="dg-text-sm" x="230" y="154" text-anchor="middle" data-lang-en>1st digit — solids and dust</text>
-          <text class="dg-text-sm" x="690" y="154" text-anchor="middle" data-lang-th>หลักที่ 2 — น้ำ</text>
-          <text class="dg-text-sm" x="690" y="154" text-anchor="middle" data-lang-en>2nd digit — water</text>
-
-          <!-- ================= left column: solids ================= -->
-          <rect x="24" y="166" width="392" height="216" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
-          <g class="dg-text-sm">
-            <text x="48" y="192">0</text><text x="86" y="192" data-lang-th>ไม่ป้องกัน</text><text x="86" y="192" data-lang-en>no protection</text>
-            <text x="48" y="218">1</text><text x="86" y="218" data-lang-th>ของแข็ง &gt; 50 mm (มือ)</text><text x="86" y="218" data-lang-en>solids &gt; 50 mm (a hand)</text>
-            <text x="48" y="244">2</text><text x="86" y="244" data-lang-th>ของแข็ง &gt; 12.5 mm (นิ้วมือ)</text><text x="86" y="244" data-lang-en>solids &gt; 12.5 mm (a finger)</text>
-            <text x="48" y="270">3</text><text x="86" y="270" data-lang-th>ของแข็ง &gt; 2.5 mm (เครื่องมือ)</text><text x="86" y="270" data-lang-en>solids &gt; 2.5 mm (a tool)</text>
-            <text x="48" y="296">4</text><text x="86" y="296" data-lang-th>ของแข็ง &gt; 1 mm (ลวด แมลง)</text><text x="86" y="296" data-lang-en>solids &gt; 1 mm (wire, insects)</text>
-            <text x="48" y="322">5</text><text x="86" y="322" data-lang-th>กันฝุ่นได้บางส่วน ไม่กระทบการทำงาน</text><text x="86" y="322" data-lang-en>dust-protected, no harmful ingress</text>
-          </g>
-          <rect x="34" y="334" width="372" height="30" rx="7" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
-          <g class="dg-text-b">
-            <text x="48" y="354">6</text>
-            <text x="86" y="354" data-lang-th>กันฝุ่นสนิท — มาตรฐานของอุปกรณ์ในแปลง</text>
-            <text x="86" y="354" data-lang-en>dust-tight — the field-equipment standard</text>
-          </g>
-
-          <!-- ================= right column: water ================= -->
-          <rect x="444" y="166" width="392" height="216" rx="10" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
-          <g class="dg-text-sm">
-            <text x="468" y="192">0</text><text x="506" y="192" data-lang-th>ไม่ป้องกัน</text><text x="506" y="192" data-lang-en>no protection</text>
-            <text x="468" y="215">1–2</text><text x="506" y="215" data-lang-th>หยดน้ำตกตรง ๆ</text><text x="506" y="215" data-lang-en>dripping water</text>
-            <text x="468" y="238">3</text><text x="506" y="238" data-lang-th>น้ำฉีดเฉียง 60°</text><text x="506" y="238" data-lang-en>spray up to 60° from vertical</text>
-            <text x="468" y="261">4</text><text x="506" y="261" data-lang-th>น้ำสาดทุกทิศทาง</text><text x="506" y="261" data-lang-en>splashing from any direction</text>
-          </g>
-          <rect x="454" y="270" width="372" height="28" rx="7" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
-          <g class="dg-text-b">
-            <text x="468" y="289">5</text>
-            <text x="506" y="289" data-lang-th>น้ำฉีดจากหัวฉีด 6.3 mm ทุกทิศ</text>
-            <text x="506" y="289" data-lang-en>jets from a 6.3 mm nozzle, any direction</text>
-          </g>
-          <g class="dg-text-sm">
-            <text x="468" y="318">6</text><text x="506" y="318" data-lang-th>น้ำฉีดแรงจากหัวฉีด 12.5 mm</text><text x="506" y="318" data-lang-en>powerful jets, 12.5 mm nozzle</text>
-            <text x="468" y="341">7</text><text x="506" y="341" data-lang-th>จุ่มน้ำลึก 1 m นาน 30 นาที</text><text x="506" y="341" data-lang-en>immersion to 1 m for 30 min</text>
-            <text x="468" y="364">8</text><text x="506" y="364" data-lang-th>จุ่มต่อเนื่องตามที่ผู้ผลิตระบุ</text><text x="506" y="364" data-lang-en>continuous immersion, as specified</text>
-          </g>
-        </svg>
+        <div class="fig-ext">
+          <img src="../img/fig-03-03-ip-code.jpg" style="max-width:620px" loading="lazy"
+               alt="The IP code chart of IEC 60529: the first digit for solids in the left column, the second digit for water in the right column">
+        </div>
+        <div class="fig-key">
+          <span><b>IP5X</b> <span data-lang-th>กันฝุ่นได้ ไม่เข้าจนเกิดอันตราย</span><span data-lang-en>dust-protected, no harmful ingress</span></span>
+          <span><b>IP6X</b> <span data-lang-th>กันฝุ่นสนิท — มาตรฐานของอุปกรณ์ในแปลง</span><span data-lang-en>dust-tight — the field-equipment standard</span></span>
+          <span><b>IPX4</b> <span data-lang-th>กันน้ำกระเด็นทุกทิศทาง</span><span data-lang-en>splashing water from any direction</span></span>
+          <span><b>IPX5</b> <span data-lang-th>กันน้ำฉีดเป็นลำ — ล้างโรงเรือนได้</span><span data-lang-en>water jets — survives a hose-down</span></span>
+          <span><b>IPX6</b> <span data-lang-th>กันน้ำฉีดแรงสูง</span><span data-lang-en>powerful water jets</span></span>
+          <span><b>IPX7</b> <span data-lang-th>จมน้ำชั่วคราวได้</span><span data-lang-en>temporary immersion</span></span>
+        </div>
         <figcaption>
-          <b><span data-lang-th>รูปที่ 3.4</span><span data-lang-en>Figure 3.4</span></b>
-          <span data-lang-th> รหัส IP ตามมาตรฐาน IEC 60529 หลักแรกคือการป้องกันของแข็งและฝุ่น หลักที่สองคือน้ำ ตัวเลขทั้งสองเป็นอิสระต่อกัน IP65 จึงหมายถึงกันฝุ่นสนิทและทนน้ำฉีด แต่ <strong>จุ่มน้ำไม่ได้</strong> ส่วนรหัสพิเศษ IP69K หมายถึงทนน้ำร้อนแรงดันสูงจากเครื่องฉีดล้าง ซึ่งจำเป็นในโรงคัดบรรจุและโรงเรือนสัตว์</span>
-          <span data-lang-en> The IP code of IEC 60529. The first digit covers solids and dust, the second water, and the two are independent — so IP65 means dust-tight and jet-proof but <strong>not</strong> submersible. The special code IP69K denotes resistance to high-pressure hot-water washing, a requirement in packhouses and livestock buildings.</span>
+          <b><span data-lang-th>รูปที่ 3.3</span><span data-lang-en>Figure 3.3</span></b>
+          <span data-lang-th> รหัส IP ตาม IEC 60529 หลักซ้ายคือหลักแรก ว่าด้วยของแข็งและฝุ่น หลักขวาคือหลักที่สอง ว่าด้วยน้ำ สองหลักนี้เป็นอิสระต่อกัน รหัส IP65 จึงหมายถึงกันฝุ่นสนิทและกันน้ำฉีดพร้อมกัน สังเกตตัวเลขกำกับขนาดของวัตถุที่กันได้ในสองหลักแรก คือ 50 mm ลงมาเหลือ 1 mm และมุม 15° กับ 60° ที่คอลัมน์ขวาคือมุมที่ฉีดน้ำเข้าทดสอบ</span>
+          <span data-lang-en> The IP code of IEC 60529. The left column is the first digit, for solids and dust; the right column is the second, for water. The two are independent, so IP65 means dust-tight <em>and</em> jet-protected together. Note the figures beside each solid level — 50 mm down to 1 mm — and the 15° and 60° in the water column, which are the angles the test spray is directed through.</span>
+          <small class="fig-credit">
+            <span data-lang-th>ภาพ: Dmitry G, “IP rating.JPG”, วิกิมีเดียคอมมอนส์ — สัญญาอนุญาต CC BY-SA 3.0 ใช้โดยไม่ดัดแปลง</span>
+            <span data-lang-en>Image: Dmitry G, “IP rating.JPG”, Wikimedia Commons — licensed CC BY-SA 3.0, used unmodified</span>
+            &middot; <a href="https://commons.wikimedia.org/wiki/File:IP_rating.JPG">commons.wikimedia.org</a>
+            &middot; <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>
+          </small>
         </figcaption>
       </figure>
 

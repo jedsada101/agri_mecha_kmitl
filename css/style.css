@@ -1074,3 +1074,36 @@ html[data-theme="dark"] .anim__readout b { color: var(--green-400); }
 @keyframes dgPulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
 .dg-active { stroke-width: 3.5; }
 @media (prefers-reduced-motion: reduce) { .dg-pulse { animation: none; opacity: 1; } }
+
+/* --------------------------------------------------------------------------
+   22. External figures
+   Third-party illustrations used under their own licence. The image file is
+   never modified, so no share-alike obligation is triggered and the credit
+   below each one is all that the licence asks for. Because such an image
+   carries its own fixed colours, it sits on a light plate that stays light in
+   dark mode rather than being recoloured, and `.fig-key` bridges the labels
+   printed inside it to the notation the chapter uses in its equations.
+   -------------------------------------------------------------------------- */
+.fig-ext {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.1rem;
+  display: flex;
+  justify-content: center;
+}
+.fig-ext img { max-width: 100%; height: auto; display: block; }
+
+.fig-key {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: .35rem 1.5rem;
+  margin-top: .9rem;
+  font-size: .84rem; color: var(--ink-soft);
+}
+.fig-key b { color: var(--ink); font-family: var(--font-mono); }
+
+.fig-credit {
+  display: block; margin-top: .7rem;
+  font-size: .75rem; color: var(--ink-mute); line-height: 1.5;
+}
+.fig-credit a { color: inherit; text-decoration: underline; }

@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 5 · การประยุกต์และติดตั้ง PLC" data-title-en="Chapter 5 · PLC Applications and Implementation">Chapter 5 · PLC Applications and Implementation</title>
+<meta name="description" content="Chapter 5: PLC hardware and I/O, sinking and sourcing wiring, addressing, data registers, mathematical functions and analogue scaling, with agricultural machine exercises.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="ch02.html"><span data-lang-th>บทที่ 2</span><span data-lang-en>Ch 2</span></a>
+      <a href="ch03.html"><span data-lang-th>บทที่ 3</span><span data-lang-en>Ch 3</span></a>
+      <a href="ch04.html"><span data-lang-th>บทที่ 4</span><span data-lang-en>Ch 4</span></a>
+      <a href="ch05.html" class="is-active"><span data-lang-th>บทที่ 5</span><span data-lang-en>Ch 5</span></a>
+      <a href="ch06.html"><span data-lang-th>บทที่ 6</span><span data-lang-en>Ch 6</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 5</span><span data-lang-en>Chapter 5</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 7–8</span><span data-lang-en>Weeks 7–8</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 4 ชม. + ปฏิบัติ 4 ชม.</span><span data-lang-en>4 h lecture + 4 h laboratory</span></span>
+      <span class="badge badge--sky"><i class="fa-solid fa-film"></i> <span data-lang-th>แอนิเมชัน 3 ชุด</span><span data-lang-en>3 animations</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 5 · การประยุกต์และติดตั้ง PLC</span>
+      <span data-lang-en>Chapter 5 · PLC Applications and Implementation</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>บทที่แล้วเราเขียนตรรกะได้แล้ว บทนี้คือการทำให้มันเดินได้จริงบนตู้ควบคุม: ต่อเซนเซอร์ PNP กับ NPN เข้าขั้วไหน ทำไมต่อผิดแล้วไม่มีอะไรเกิดขึ้น เก็บค่าที่วัดได้ไว้ในรีจิสเตอร์อย่างไร และแปลงค่าดิบจากโมดูลอนาล็อกให้เป็นหน่วยทางวิศวกรรมด้วยคำสั่งคณิตศาสตร์แบบใด</span>
+      <span data-lang-en>Last chapter we wrote the logic. This one makes it run on a real cabinet: which terminal a PNP or an NPN sensor goes to, why a wrong connection leaves nothing happening at all, how measured values are held in registers, and which arithmetic instructions turn a raw analogue count into engineering units.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#hardware"><span data-lang-th>5.1 ฮาร์ดแวร์ของ PLC</span><span data-lang-en>5.1 PLC hardware</span></a></li>
+      <li><a href="#wiring"><span data-lang-th>5.2 การเดินสาย I/O</span><span data-lang-en>5.2 Wiring the I/O</span></a></li>
+      <li><a href="#addressing"><span data-lang-th>5.3 การกำหนดแอดเดรส</span><span data-lang-en>5.3 Addressing</span></a></li>
+      <li><a href="#registers"><span data-lang-th>5.4 รีจิสเตอร์ข้อมูล</span><span data-lang-en>5.4 Data registers</span></a></li>
+      <li><a href="#math"><span data-lang-th>5.5 ฟังก์ชันคณิตศาสตร์และการสเกล</span><span data-lang-en>5.5 Maths and scaling</span></a></li>
+      <li><a href="#compare"><span data-lang-th>5.6 การเปรียบเทียบและการตัดสินใจ</span><span data-lang-en>5.6 Comparison and decisions</span></a></li>
+      <li><a href="#practice"><span data-lang-th>5.7 แบบฝึกปฏิบัติ</span><span data-lang-en>5.7 Practical exercises</span></a></li>
+      <li><a href="#activity"><span data-lang-th>5.8 กิจกรรมในชั้นเรียน</span><span data-lang-en>5.8 In-class activity</span></a></li>
+      <li><a href="#lab"><span data-lang-th>5.9 ปฏิบัติการที่ 5</span><span data-lang-en>5.9 Laboratory 5</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>ระบุส่วนประกอบของตู้ควบคุม PLC และหน้าที่ของแต่ละส่วน รวมถึงเหตุผลที่ต้องแยกวงจรกำลังออกจากวงจรควบคุม</span><span data-lang-en>Identify the parts of a PLC cabinet and what each does, including why power and control circuits are kept apart.</span></li>
+        <li><span data-lang-th>เดินสายเซนเซอร์แบบ PNP และ NPN เข้ากับอินพุตของ PLC ได้ถูกต้อง และวินิจฉัยอาการเมื่อต่อสลับกัน</span><span data-lang-en>Wire PNP and NPN sensors to PLC inputs correctly, and diagnose the symptoms when they are swapped.</span></li>
+        <li><span data-lang-th>เลือกชนิดของเอาต์พุต (รีเลย์ ทรานซิสเตอร์ ไทรแอก) ให้เหมาะกับโหลดในงานเกษตร</span><span data-lang-en>Select an output type — relay, transistor or triac — to suit an agricultural load.</span></li>
+        <li><span data-lang-th>อ่านและกำหนดแอดเดรสของ I/O และหน่วยความจำภายในตามรูปแบบของผู้ผลิตที่ใช้จริง</span><span data-lang-en>Read and assign I/O and internal memory addresses in a real vendor&rsquo;s notation.</span></li>
+        <li><span data-lang-th>แปลงค่าดิบจากโมดูลอนาล็อกให้เป็นหน่วยทางวิศวกรรมด้วยสมการสเกลเชิงเส้น และเขียนเป็นคำสั่งใน PLC</span><span data-lang-en>Convert a raw analogue count into engineering units with a linear scaling equation, and implement it as PLC instructions.</span></li>
+        <li><span data-lang-th>ออกแบบตรรกะที่ใช้รีจิสเตอร์ ตัวเปรียบเทียบ และคำสั่งคณิตศาสตร์ สำหรับงานควบคุมในฟาร์มจริง</span><span data-lang-en>Design logic using registers, comparators and arithmetic instructions for a real farm control task.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ตอบก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิม ระบบเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer before reading. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch05-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 5.1 --------- -->
+    <section id="hardware">
+      <h2><span data-lang-th>5.1 ฮาร์ดแวร์ของ PLC และตู้ควบคุม</span><span data-lang-en>5.1 PLC hardware and the control cabinet</span></h2>
+
+      <p>
+        <span data-lang-th>PLC ที่ใช้ในฟาร์มไม่ได้อยู่โดด ๆ แต่อยู่ในตู้ควบคุมที่มีอุปกรณ์อื่นประกอบอีกหลายอย่าง การรู้ว่าอะไรอยู่ตรงไหนช่วยให้ไล่ปัญหาได้เร็วขึ้นมาก เพราะปัญหาส่วนใหญ่ที่พบหน้างานไม่ได้อยู่ในโปรแกรม แต่อยู่ที่สายและแหล่งจ่ายไฟ</span>
+        <span data-lang-en>A farm PLC never lives alone; it sits in a cabinet alongside several other devices. Knowing what is where speeds up fault-finding enormously, because most problems met on site are not in the program but in the wiring and the supplies.</span>
+      </p>
+
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 400" role="img" aria-labelledby="fig51-title">
+            <title id="fig51-title">Layout of a small agricultural PLC control cabinet</title>
+
+            <rect x="24" y="24" width="812" height="352" rx="14" class="dg-fill-surface dg-stroke" stroke-width="2.5"/>
+
+            <!-- DIN rail 1: incoming power -->
+            <rect x="48" y="56" width="140" height="64" rx="8" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="118" y="82" text-anchor="middle" data-lang-th>เมนเบรกเกอร์</text>
+            <text class="dg-text-sm" x="118" y="82" text-anchor="middle" data-lang-en>main breaker</text>
+            <text class="dg-text-sm" x="118" y="102" text-anchor="middle">230 VAC</text>
+
+            <rect x="204" y="56" width="150" height="64" rx="8" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="279" y="82" text-anchor="middle" data-lang-th>อุปกรณ์กันไฟกระชาก</text>
+            <text class="dg-text-sm" x="279" y="82" text-anchor="middle" data-lang-en>surge protection</text>
+            <text class="dg-text-sm" x="279" y="102" text-anchor="middle" data-lang-th>และกรองสัญญาณ</text>
+            <text class="dg-text-sm" x="279" y="102" text-anchor="middle" data-lang-en>and line filter</text>
+
+            <rect x="370" y="56" width="150" height="64" rx="8" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="445" y="82" text-anchor="middle" data-lang-th>แหล่งจ่ายไฟ</text>
+            <text class="dg-text-sm" x="445" y="82" text-anchor="middle" data-lang-en>power supply</text>
+            <text class="dg-text-sm" x="445" y="102" text-anchor="middle">230 VAC → 24 VDC</text>
+
+            <rect x="536" y="56" width="140" height="64" rx="8" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="606" y="82" text-anchor="middle" data-lang-th>รีเลย์นิรภัย</text>
+            <text class="dg-text-sm" x="606" y="82" text-anchor="middle" data-lang-en>safety relay</text>
+            <text class="dg-text-sm" x="606" y="102" text-anchor="middle" data-lang-th>วงจรหยุดฉุกเฉิน</text>
+            <text class="dg-text-sm" x="606" y="102" text-anchor="middle" data-lang-en>E-stop circuit</text>
+
+            <rect x="692" y="56" width="120" height="64" rx="8" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="752" y="82" text-anchor="middle" data-lang-th>เบรกเกอร์ย่อย</text>
+            <text class="dg-text-sm" x="752" y="82" text-anchor="middle" data-lang-en>branch MCBs</text>
+
+            <!-- DIN rail 2: the PLC itself -->
+            <rect x="48" y="150" width="620" height="110" rx="10" class="dg-fill-green dg-stroke-green" stroke-width="2.5"/>
+            <rect x="64" y="166" width="120" height="78" rx="6" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+            <text class="dg-text-b" x="124" y="200" text-anchor="middle">CPU</text>
+            <text class="dg-text-sm" x="124" y="222" text-anchor="middle" data-lang-th>+ หน่วยความจำ</text>
+            <text class="dg-text-sm" x="124" y="222" text-anchor="middle" data-lang-en>+ memory</text>
+
+            <rect x="196" y="166" width="110" height="78" rx="6" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="251" y="196" text-anchor="middle" data-lang-th>อินพุตดิจิทัล</text>
+            <text class="dg-text-sm" x="251" y="196" text-anchor="middle" data-lang-en>digital in</text>
+            <text class="dg-text-sm" x="251" y="218" text-anchor="middle">24 VDC × 14</text>
+
+            <rect x="318" y="166" width="110" height="78" rx="6" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="373" y="196" text-anchor="middle" data-lang-th>เอาต์พุตดิจิทัล</text>
+            <text class="dg-text-sm" x="373" y="196" text-anchor="middle" data-lang-en>digital out</text>
+            <text class="dg-text-sm" x="373" y="218" text-anchor="middle" data-lang-th>รีเลย์ × 10</text>
+            <text class="dg-text-sm" x="373" y="218" text-anchor="middle" data-lang-en>relay × 10</text>
+
+            <rect x="440" y="166" width="110" height="78" rx="6" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="495" y="196" text-anchor="middle" data-lang-th>โมดูลอนาล็อก</text>
+            <text class="dg-text-sm" x="495" y="196" text-anchor="middle" data-lang-en>analogue module</text>
+            <text class="dg-text-sm" x="495" y="218" text-anchor="middle">4 AI / 2 AO</text>
+
+            <rect x="562" y="166" width="94" height="78" rx="6" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="609" y="196" text-anchor="middle" data-lang-th>โมดูลสื่อสาร</text>
+            <text class="dg-text-sm" x="609" y="196" text-anchor="middle" data-lang-en>comms</text>
+            <text class="dg-text-sm" x="609" y="218" text-anchor="middle">RS-485</text>
+
+            <!-- HMI -->
+            <rect x="692" y="150" width="120" height="110" rx="10" class="dg-fill-steel dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="752" y="196" text-anchor="middle">HMI</text>
+            <text class="dg-text-sm" x="752" y="218" text-anchor="middle" data-lang-th>จอหน้าตู้</text>
+            <text class="dg-text-sm" x="752" y="218" text-anchor="middle" data-lang-en>door-mounted</text>
+
+            <!-- DIN rail 3: field terminals -->
+            <rect x="48" y="288" width="764" height="66" rx="10" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <g class="dg-stroke" stroke-width="2">
+              <line x1="80" y1="300" x2="80" y2="342"/><line x1="110" y1="300" x2="110" y2="342"/>
+              <line x1="140" y1="300" x2="140" y2="342"/><line x1="170" y1="300" x2="170" y2="342"/>
+              <line x1="200" y1="300" x2="200" y2="342"/><line x1="230" y1="300" x2="230" y2="342"/>
+            </g>
+            <text class="dg-text-sm" x="430" y="326" text-anchor="middle" data-lang-th>เทอร์มินัลบล็อกสำหรับสายที่ออกไปหน้างาน พร้อมหมายเลขกำกับทุกเส้น</text>
+            <text class="dg-text-sm" x="430" y="326" text-anchor="middle" data-lang-en>field terminal blocks, every wire numbered to match the drawing</text>
+
+            <text class="dg-text-sm" x="430" y="382" text-anchor="middle" data-lang-th>แยกรางของวงจรกำลังออกจากรางของวงจรควบคุม และเดินสายคนละช่อง</text>
+            <text class="dg-text-sm" x="430" y="382" text-anchor="middle" data-lang-en>power and control circuits sit on separate rails, in separate trunking</text>
+          </svg>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 5.1</span><span data-lang-en>Figure 5.1</span></b>
+          <span data-lang-th> ผังตู้ควบคุมขนาดเล็กสำหรับโรงเรือน รางบนคือวงจรกำลังและความปลอดภัย รางกลางคือ PLC และโมดูล รางล่างคือเทอร์มินัลที่สายจากหน้างานมาต่อ สังเกตว่ารีเลย์นิรภัยอยู่ <em>นอก</em> PLC เพราะมาตรฐานความปลอดภัยไม่อนุญาตให้วงจรหยุดฉุกเฉินพึ่งซอฟต์แวร์เพียงอย่างเดียว</span>
+          <span data-lang-en> Layout of a small greenhouse cabinet: power and safety on the top rail, the PLC and its modules in the middle, field terminals at the bottom. Note that the safety relay sits <em>outside</em> the PLC, because the standards do not allow an emergency-stop circuit to depend on software alone.</span>
+        </figcaption>
+      </figure>
+
+      <h3><span data-lang-th>5.1.1 เลือกชนิดของเอาต์พุตให้ตรงกับโหลด</span><span data-lang-en>5.1.1 Matching the output type to the load</span></h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ชนิดเอาต์พุต</span><span data-lang-en>Output type</span></th>
+              <th><span data-lang-th>ขับโหลดแบบใด</span><span data-lang-en>Drives</span></th>
+              <th><span data-lang-th>ความเร็วในการสลับ</span><span data-lang-en>Switching speed</span></th>
+              <th><span data-lang-th>งานในฟาร์มที่เหมาะ</span><span data-lang-en>Where it fits on a farm</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>รีเลย์</span><span data-lang-en>Relay</span></td>
+              <td><span data-lang-th>AC หรือ DC ก็ได้ กระแสสูงถึงราว 2 A</span><span data-lang-en>AC or DC, up to about 2 A</span></td>
+              <td><span data-lang-th>ช้า ราว 10 ms และหน้าสัมผัสสึก</span><span data-lang-en>slow, about 10 ms, and the contacts wear</span></td>
+              <td><span data-lang-th>ปั๊มน้ำ ฮีตเตอร์ มอเตอร์ผ่านคอนแทกเตอร์</span><span data-lang-en>pumps, heaters, motors via a contactor</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ทรานซิสเตอร์</span><span data-lang-en>Transistor</span></td>
+              <td><span data-lang-th>DC เท่านั้น กระแสราว 0.5 A ต่อจุด</span><span data-lang-en>DC only, about 0.5 A per point</span></td>
+              <td><span data-lang-th>เร็วมาก ใช้ PWM และพัลส์ได้</span><span data-lang-en>very fast; PWM and pulse trains possible</span></td>
+              <td><span data-lang-th>สั่งไดรเวอร์สเต็ปเปอร์ วาล์วสัดส่วน ไฟสัญญาณ</span><span data-lang-en>stepper drivers, proportional valves, indicators</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ไทรแอก</span><span data-lang-en>Triac</span></td>
+              <td><span data-lang-th>AC เท่านั้น</span><span data-lang-en>AC only</span></td>
+              <td><span data-lang-th>ปานกลาง ไม่มีชิ้นส่วนเคลื่อนไหว</span><span data-lang-en>moderate, with no moving parts</span></td>
+              <td><span data-lang-th>โหลด AC ที่ต้องสลับบ่อยมาก เช่น ไฟปลูกพืช</span><span data-lang-en>AC loads switched very often, such as grow lights</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>อย่าให้ PLC ขับมอเตอร์โดยตรง</span><span data-lang-en>Never let the PLC switch a motor directly</span></div>
+        <p class="mb-0">
+          <span data-lang-th>เอาต์พุตรีเลย์ของ PLC รับได้ราว 2 A แต่กระแสเริ่มเดินของมอเตอร์สูงถึง 6–8 เท่าของกระแสพิกัด ปั๊มน้ำ 1.5 kW ที่กินกระแสปกติ 7 A จะดึงกระแสตอนสตาร์ตได้ถึง 50 A ซึ่งทำให้หน้าสัมผัสของ PLC ละลายติดกันในครั้งเดียว วิธีที่ถูกต้องคือให้ PLC ขับคอยล์ของคอนแทกเตอร์ซึ่งกินกระแสเพียงไม่กี่สิบมิลลิแอมป์ แล้วให้คอนแทกเตอร์เป็นตัวรับกระแสมอเตอร์</span>
+          <span data-lang-en>A PLC relay output takes about 2 A, but a motor&rsquo;s starting current is six to eight times its rated value: a 1.5 kW pump drawing 7 A normally can pull 50 A at start, enough to weld the PLC contacts shut on the first attempt. The correct arrangement is for the PLC to energise a contactor coil, drawing only tens of milliamps, and let the contactor carry the motor current.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 5.2 --------- -->
+    <section id="wiring">
+      <h2><span data-lang-th>5.2 การเดินสาย I/O แบบ sinking และ sourcing</span><span data-lang-en>5.2 Wiring the I/O: sinking and sourcing</span></h2>
+
+      <p>
+        <span data-lang-th>นี่คือหัวข้อที่ทำให้นักศึกษาเสียเวลาในห้องปฏิบัติการมากที่สุด และเป็นสาเหตุอันดับหนึ่งของอาการ “ต่อครบแล้วแต่ไฟอินพุตไม่ติด” ปัญหาอยู่ที่ว่าเซนเซอร์อุตสาหกรรมมีสองตระกูลที่หน้าตาเหมือนกันแต่จ่ายสัญญาณกลับด้านกัน</span>
+        <span data-lang-en>This is where students lose the most laboratory time, and the leading cause of “everything is connected but the input light stays off”. The trouble is that industrial sensors come in two families that look identical but deliver their signal in opposite directions.</span>
+      </p>
+
+      <div class="compare">
+        <div class="compare__col compare__col--a">
+          <h4><i class="fa-solid fa-plus" style="color:var(--green-500)"></i> <span data-lang-th>เซนเซอร์ PNP (sourcing)</span><span data-lang-en>PNP sensor (sourcing)</span></h4>
+          <ul>
+            <li><span data-lang-th>เมื่อทำงาน จะ <strong>จ่ายแรงดันบวก</strong> ออกมาที่สายสัญญาณ</span><span data-lang-en>When it triggers it <strong>supplies +24 V</strong> onto the signal wire.</span></li>
+            <li><span data-lang-th>ต่อเข้าอินพุตที่คอมมอนเป็น <strong>0 V</strong> (เรียกว่าอินพุตแบบ sinking)</span><span data-lang-en>Goes to an input whose common is tied to <strong>0 V</strong>, a sinking input.</span></li>
+            <li><span data-lang-th>กระแสไหล จากเซนเซอร์ → เข้าขั้วอินพุต → ออกทางคอมมอน</span><span data-lang-en>Current flows from the sensor into the input terminal and out through the common.</span></li>
+            <li><span data-lang-th>เป็นมาตรฐานที่พบมากที่สุดในยุโรปและในเครื่องจักรที่นำเข้าส่วนใหญ่</span><span data-lang-en>The commonest standard in Europe and on most imported machinery.</span></li>
+          </ul>
+        </div>
+        <div class="compare__col compare__col--b">
+          <h4><i class="fa-solid fa-minus" style="color:var(--sky-500)"></i> <span data-lang-th>เซนเซอร์ NPN (sinking)</span><span data-lang-en>NPN sensor (sinking)</span></h4>
+          <ul>
+            <li><span data-lang-th>เมื่อทำงาน จะ <strong>ดึงสายสัญญาณลงกราวด์</strong> ไม่ได้จ่ายแรงดันออกมา</span><span data-lang-en>When it triggers it <strong>pulls the signal wire to 0 V</strong> rather than supplying anything.</span></li>
+            <li><span data-lang-th>ต่อเข้าอินพุตที่คอมมอนเป็น <strong>+24 V</strong> (เรียกว่าอินพุตแบบ sourcing)</span><span data-lang-en>Goes to an input whose common is tied to <strong>+24 V</strong>, a sourcing input.</span></li>
+            <li><span data-lang-th>กระแสไหล จากคอมมอน → เข้าขั้วอินพุต → ออกทางเซนเซอร์ลงกราวด์</span><span data-lang-en>Current flows from the common into the input and out through the sensor to 0 V.</span></li>
+            <li><span data-lang-th>พบมากในเครื่องจักรจากญี่ปุ่นและในอุปกรณ์ราคาประหยัดจากจีน</span><span data-lang-en>Common on Japanese machinery and on low-cost equipment from China.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>ต่อสลับกันแล้วเกิดอะไรขึ้น</span><span data-lang-en>What happens if they are swapped</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ถ้าเอาเซนเซอร์ PNP ไปต่อกับอินพุตที่ตั้งคอมมอนไว้ที่ +24 V ทั้งสองฝั่งจะพยายามจ่ายแรงดันบวกเข้าหากัน จึงไม่มีความต่างศักย์คร่อมวงจรอินพุต ผลคือ <em>ไม่มีอะไรเกิดขึ้นเลย</em> ไฟอินพุตไม่ติดแม้เซนเซอร์จะทำงานถูกต้อง ซึ่งเป็นอาการที่หลอกให้คิดว่าเซนเซอร์เสียหรือโปรแกรมผิด อาการนี้ไม่ทำให้อุปกรณ์เสียหาย แต่กินเวลาไล่ปัญหาได้ทั้งบ่าย ให้ตรวจที่ขั้วคอมมอนก่อนเสมอ</span>
+          <span data-lang-en>Connect a PNP sensor to an input whose common sits at +24 V and both ends try to push positive at each other, so no potential difference appears across the input circuit. The result is that <em>nothing happens at all</em>: the input light stays dark even though the sensor is working perfectly, which fools people into suspecting the sensor or the program. It damages nothing, but it can swallow an entire afternoon. Always check the common terminal first.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 5.1 ===================== -->
+      <figure class="anim" data-anim="ch05-wiring">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 5.1 — ต่อ PNP กับ NPN ให้ถูกขั้ว แล้วลองต่อผิดดู</span>
+          <span data-lang-en>Animation 5.1 — Wire PNP and NPN correctly, then try getting it wrong</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 330" role="img" aria-label="Current path from a sensor through a PLC input, for PNP and NPN wiring">
+            <!-- supply rails -->
+            <line x1="60" y1="52" x2="800" y2="52" class="dg-stroke-gold" stroke-width="3"/>
+            <line x1="60" y1="288" x2="800" y2="288" class="dg-stroke" stroke-width="3"/>
+            <text class="dg-text-sm" x="46" y="56" text-anchor="end">+24 V</text>
+            <text class="dg-text-sm" x="46" y="292" text-anchor="end">0 V</text>
+
+            <!-- the sensor -->
+            <rect x="120" y="128" width="150" height="86" rx="10" class="dg-fill-sky dg-stroke" stroke-width="2.5"/>
+            <text class="dg-text-b" id="w5-type" x="195" y="162" text-anchor="middle">PNP</text>
+            <text class="dg-text-sm" x="195" y="186" text-anchor="middle" data-lang-th>เซนเซอร์พร็อกซิมิตี</text>
+            <text class="dg-text-sm" x="195" y="186" text-anchor="middle" data-lang-en>proximity sensor</text>
+            <text class="dg-text-sm" x="195" y="206" text-anchor="middle" data-lang-th>สายน้ำตาล / น้ำเงิน / ดำ</text>
+            <text class="dg-text-sm" x="195" y="206" text-anchor="middle" data-lang-en>brown / blue / black</text>
+
+            <!-- sensor supply legs -->
+            <path id="w5-brown" d="M 150 128 L 150 52" class="dg-stroke-gold" stroke-width="3" fill="none"/>
+            <path id="w5-blue" d="M 240 214 L 240 288" class="dg-stroke" stroke-width="3" fill="none"/>
+
+            <!-- signal wire to the input terminal -->
+            <path id="w5-signal" d="M 270 171 L 470 171" class="dg-stroke" stroke-width="3.5" fill="none"/>
+            <circle id="w5-flow" r="7" class="dg-fill-gold dg-stroke" stroke-width="1.5" opacity="0"/>
+
+            <!-- the PLC input card -->
+            <rect x="470" y="104" width="300" height="134" rx="12" class="dg-fill-surface dg-stroke" stroke-width="2.5"/>
+            <text class="dg-text-b" x="620" y="130" text-anchor="middle" data-lang-th>การ์ดอินพุตของ PLC</text>
+            <text class="dg-text-b" x="620" y="130" text-anchor="middle" data-lang-en>PLC input card</text>
+
+            <!-- input terminal + opto-isolator -->
+            <circle cx="492" cy="171" r="8" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="492" y="200" text-anchor="middle">X0</text>
+            <rect x="540" y="150" width="96" height="42" rx="6" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="588" y="176" text-anchor="middle" data-lang-th>ออปโตคัปเปลอร์</text>
+            <text class="dg-text-sm" x="588" y="176" text-anchor="middle" data-lang-en>opto-isolator</text>
+            <path id="w5-inwire" d="M 500 171 L 540 171" class="dg-stroke" stroke-width="3" fill="none"/>
+            <path id="w5-outwire" d="M 636 171 L 700 171" class="dg-stroke" stroke-width="3" fill="none"/>
+
+            <!-- the common terminal, which the student can move -->
+            <circle cx="700" cy="171" r="8" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="712" y="166" data-lang-th>คอมมอน</text>
+            <text class="dg-text-sm" x="712" y="166" data-lang-en>common</text>
+            <path id="w5-common" d="M 700 179 L 700 288" class="dg-stroke" stroke-width="3" fill="none"/>
+
+            <!-- the resulting state lamp -->
+            <circle id="w5-lamp" cx="620" cy="256" r="16" class="dg-fill-soft dg-stroke" stroke-width="2.5"/>
+            <text class="dg-text-sm" x="620" y="226" text-anchor="middle" data-lang-th>ไฟแสดงสถานะ X0</text>
+            <text class="dg-text-sm" x="620" y="226" text-anchor="middle" data-lang-en>X0 status lamp</text>
+
+            <text id="w5-verdict" class="dg-text-b" x="430" y="320" text-anchor="middle"></text>
+          </svg>
+
+          <span class="fig-label fig-label--muted" style="left:27.0%;top:44%">\( I_{\text{in}} \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-toggle="npn" aria-pressed="false"><i class="fa-solid fa-right-left"></i><span data-lang-th>สลับเป็นเซนเซอร์ NPN</span><span data-lang-en>Switch to an NPN sensor</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="commonHigh" aria-pressed="false"><i class="fa-solid fa-plug"></i><span data-lang-th>ย้ายคอมมอนไปที่ +24 V</span><span data-lang-en>Move the common to +24 V</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="target" aria-pressed="false"><i class="fa-solid fa-hand-pointer"></i><span data-lang-th>นำวัตถุเข้าใกล้เซนเซอร์</span><span data-lang-en>Bring a target near the sensor</span></button>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 5.1</span><span data-lang-en>Animation 5.1</span></b>
+          <span data-lang-th> เริ่มจากเซนเซอร์ PNP กับคอมมอนที่ 0 V ซึ่งถูกต้อง กดนำวัตถุเข้าใกล้แล้วจะเห็นกระแสไหลและไฟ X0 ติด จากนั้นลองย้ายคอมมอนไปที่ +24 V โดยไม่เปลี่ยนเซนเซอร์ — กระแสหยุดไหลและไฟดับ ทั้งที่เซนเซอร์ยังทำงานปกติ นี่คืออาการที่เจอจริงในห้องปฏิบัติการ ลองสลับให้ครบทั้งสี่กรณีแล้วสังเกตว่ามีเพียงสองกรณีเท่านั้นที่ใช้งานได้</span>
+          <span data-lang-en> Start with a PNP sensor and the common at 0 V, which is correct: bring a target near and current flows, lighting X0. Now move the common to +24 V without changing the sensor — current stops and the lamp goes out, although the sensor is working perfectly. That is the symptom you will meet in the laboratory. Work through all four combinations and notice that only two of them function.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>โรงคัดบรรจุที่ทยอยซื้ออุปกรณ์มาหลายรอบมักมีเซนเซอร์ทั้งสองตระกูลปนกันอยู่ในตู้เดียว ทางปฏิบัติที่ดีคือเลือกมาตรฐานเดียวทั้งโรงงาน (ส่วนใหญ่เลือก PNP) แล้วระบุไว้ในแบบ ถ้าจำเป็นต้องใช้เซนเซอร์ NPN ที่มีอยู่เดิม ให้ใส่รีเลย์อินเทอร์เฟซคั่นหนึ่งตัวแทนการแยกคอมมอนของการ์ดอินพุตออกเป็นสองกลุ่ม เพราะการมีคอมมอนสองแบบในการ์ดเดียวกันทำให้คนที่มาซ่อมต่อสับสนและเดินสายผิดในภายหลัง</span>
+          <span data-lang-en>A packhouse that bought equipment in several waves usually ends up with both families in one cabinet. Good practice is to pick one standard for the whole plant — usually PNP — and state it on the drawings. Where an existing NPN sensor must be kept, insert an interface relay rather than splitting the input card&rsquo;s commons into two groups: two different commons on one card is exactly what misleads the next person to work on it.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 5.3 --------- -->
+    <section id="addressing">
+      <h2><span data-lang-th>5.3 การกำหนดแอดเดรสและตารางสัญลักษณ์</span><span data-lang-en>5.3 Addressing and the symbol table</span></h2>
+
+      <p>
+        <span data-lang-th>ทุกจุดต่อทางกายภาพมีชื่อเรียกในโปรแกรม รูปแบบการตั้งชื่อต่างกันไปตามผู้ผลิต แต่แนวคิดเหมือนกันหมด คือบอกว่าเป็นอินพุตหรือเอาต์พุต อยู่ที่โมดูลใด และบิตที่เท่าไร</span>
+        <span data-lang-en>Every physical terminal has a name in the program. The notation differs by vendor, but the idea is identical: say whether it is an input or an output, which module it is on, and which bit.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>สิ่งที่อ้างถึง</span><span data-lang-en>What is referenced</span></th>
+              <th>Siemens S7-1200</th>
+              <th>Mitsubishi FX</th>
+              <th>Delta DVP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span data-lang-th>อินพุตดิจิทัลจุดแรก</span><span data-lang-en>First digital input</span></td><td>%I0.0</td><td>X0</td><td>X0</td></tr>
+            <tr><td><span data-lang-th>เอาต์พุตดิจิทัลจุดแรก</span><span data-lang-en>First digital output</span></td><td>%Q0.0</td><td>Y0</td><td>Y0</td></tr>
+            <tr><td><span data-lang-th>บิตหน่วยความจำภายใน</span><span data-lang-en>Internal memory bit</span></td><td>%M0.0</td><td>M0</td><td>M0</td></tr>
+            <tr><td><span data-lang-th>รีจิสเตอร์ข้อมูล 16 บิต</span><span data-lang-en>16-bit data register</span></td><td>%MW10</td><td>D0</td><td>D0</td></tr>
+            <tr><td><span data-lang-th>ไทเมอร์</span><span data-lang-en>Timer</span></td><td>IEC_Timer</td><td>T0</td><td>T0</td></tr>
+            <tr><td><span data-lang-th>เคาน์เตอร์</span><span data-lang-en>Counter</span></td><td>IEC_Counter</td><td>C0</td><td>C0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-tags"></i> <span data-lang-th>ตารางสัญลักษณ์คือเอกสารที่สำคัญที่สุดของโครงการ</span><span data-lang-en>The symbol table is a project&rsquo;s most valuable document</span></div>
+        <p>
+          <span data-lang-th>โปรแกรมที่เขียนว่า <code>X3</code> กับ <code>Y7</code> ล้วน ๆ จะอ่านไม่ออกภายในสามเดือน แม้แต่โดยคนที่เขียนเอง การตั้งชื่อเชิงความหมายตั้งแต่ต้นจึงเป็นการลงทุนที่คุ้มที่สุดในโครงการ</span>
+          <span data-lang-en>A program written purely as <code>X3</code> and <code>Y7</code> becomes unreadable within three months, even to its author. Naming things meaningfully from the start is the cheapest investment in the whole project.</span>
+        </p>
+        <div class="table-wrap" style="margin-bottom:0">
+          <table>
+            <thead>
+              <tr>
+                <th><span data-lang-th>แอดเดรส</span><span data-lang-en>Address</span></th>
+                <th><span data-lang-th>ชื่อสัญลักษณ์</span><span data-lang-en>Symbol</span></th>
+                <th><span data-lang-th>อุปกรณ์จริง</span><span data-lang-en>Field device</span></th>
+                <th><span data-lang-th>ชนิด</span><span data-lang-en>Type</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>X0</td><td><code>ES_OK</code></td><td><span data-lang-th>วงจรหยุดฉุกเฉินปกติดี</span><span data-lang-en>E-stop chain healthy</span></td><td>NC</td></tr>
+              <tr><td>X1</td><td><code>GUARD_CLOSED</code></td><td><span data-lang-th>สวิตช์ฝาครอบนิรภัย</span><span data-lang-en>safety guard switch</span></td><td>NC</td></tr>
+              <tr><td>X2</td><td><code>FRUIT_PRESENT</code></td><td><span data-lang-th>พร็อกซิมิตีที่ฮอปเปอร์</span><span data-lang-en>hopper proximity, PNP</span></td><td>NO</td></tr>
+              <tr><td>X3</td><td><code>TANK_LOW</code></td><td><span data-lang-th>ลูกลอยระดับต่ำในถังปุ๋ย</span><span data-lang-en>low float, fertiliser tank</span></td><td>NC</td></tr>
+              <tr><td>Y0</td><td><code>CONV_RUN</code></td><td><span data-lang-th>คอยล์คอนแทกเตอร์สายพาน</span><span data-lang-en>conveyor contactor coil</span></td><td>—</td></tr>
+              <tr><td>Y1</td><td><code>ALARM_LAMP</code></td><td><span data-lang-th>ไฟสัญญาณเตือนหน้าตู้</span><span data-lang-en>cabinet alarm lamp</span></td><td>—</td></tr>
+              <tr><td>D10</td><td><code>EC_RAW</code></td><td><span data-lang-th>ค่าดิบจากหัววัด EC</span><span data-lang-en>raw count from the EC probe</span></td><td>AI</td></tr>
+              <tr><td>D11</td><td><code>EC_SCALED</code></td><td><span data-lang-th>ค่า EC หน่วย µS/cm</span><span data-lang-en>EC in µS/cm</span></td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-code-compare"></i> <span data-lang-th>ชื่อที่ดีบอกสถานะ ไม่ใช่บอกอุปกรณ์</span><span data-lang-en>A good name states a condition, not a device</span></div>
+        <p class="mb-0">
+          <span data-lang-th>สังเกตว่าเราตั้งชื่อ X0 ว่า <code>ES_OK</code> ไม่ใช่ <code>E_STOP</code> เพราะอุปกรณ์เดินสายแบบปกติปิด บิตนี้จึงเป็น 1 เมื่อ <em>ยังปลอดภัยอยู่</em> ถ้าตั้งชื่อว่า <code>E_STOP</code> คนอ่านจะเข้าใจว่า 1 แปลว่า “ถูกกดแล้ว” ซึ่งกลับด้านกับความจริง และนำไปสู่การเขียนตรรกะผิดในบรรทัดถัดไป ชื่อที่สื่อสถานะจริงของบิตช่วยกันความผิดพลาดชนิดนี้ได้ตั้งแต่ต้น</span>
+          <span data-lang-en>Notice that X0 is named <code>ES_OK</code> rather than <code>E_STOP</code>. The device is wired normally closed, so the bit is 1 while things are <em>still safe</em>. Named <code>E_STOP</code>, a reader would take 1 to mean “pressed”, the exact inverse of the truth, and would write the next rung backwards. A name that states the bit&rsquo;s real condition heads off that class of mistake entirely.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 5.4 --------- -->
+    <section id="registers">
+      <h2><span data-lang-th>5.4 รีจิสเตอร์ข้อมูล</span><span data-lang-en>5.4 Data registers</span></h2>
+
+      <p>
+        <span data-lang-th>บิตเก็บได้เพียงจริงหรือเท็จ แต่งานเกษตรเต็มไปด้วยตัวเลข เช่น อุณหภูมิ 28.4 °C น้ำหนัก 2,350 g หรือจำนวนลังที่บรรจุไปแล้ว 147 ลัง ตัวเลขเหล่านี้เก็บใน <strong>รีจิสเตอร์ข้อมูล</strong> ซึ่งโดยทั่วไปกว้าง 16 บิต</span>
+        <span data-lang-en>A bit holds only true or false, but agriculture is full of numbers: 28.4 °C, 2,350 g, 147 crates packed so far. These live in <strong>data registers</strong>, normally 16 bits wide.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ -32\,768 \;\le\; D_n \;\le\; 32\,767 \qquad\text{(16-bit signed)} $$</div>
+        <div class="eq__num">(5.1)</div>
+      </div>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>การล้นของรีจิสเตอร์ไม่มีสัญญาณเตือน</span><span data-lang-en>Register overflow announces itself to nobody</span></div>
+        <p class="mb-0">
+          <span data-lang-th>เครื่องบรรจุที่นับจำนวนถุงสะสมในรีจิสเตอร์ 16 บิต จะนับได้ถึง 32,767 ถุง หลังจากนั้นค่าจะพลิกเป็น −32,768 ทันทีโดยไม่มีการแจ้งเตือนใด ๆ ถ้าโรงงานบรรจุ 2,000 ถุงต่อวัน เหตุนี้จะเกิดขึ้นในสัปดาห์ที่สาม และรายงานผลผลิตจะติดลบ วิธีแก้คือใช้รีจิสเตอร์ 32 บิต (double word) สำหรับค่าสะสม หรือรีเซ็ตเป็นรอบและเก็บผลรวมไว้ที่ระบบบันทึกข้อมูลแทน</span>
+          <span data-lang-en>A bagging machine totalising into a 16-bit register counts to 32,767, then flips straight to −32,768 with no warning at all. At 2,000 bags a day that happens in the third week, and the production report goes negative. The fixes are a 32-bit double word for accumulated values, or resetting per shift and keeping the running total in the data-logging system instead.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>5.4.1 รีจิสเตอร์ที่ค่าไม่หายเมื่อปิดเครื่อง</span><span data-lang-en>5.4.1 Registers that survive a power cut</span></h3>
+      <p>
+        <span data-lang-th>PLC แบ่งหน่วยความจำเป็นสองกลุ่ม กลุ่มธรรมดาจะถูกล้างเป็นศูนย์ทุกครั้งที่จ่ายไฟใหม่ ส่วนกลุ่ม <strong>retentive</strong> จะคงค่าไว้ด้วยแบตเตอรี่หรือหน่วยความจำถาวร การเลือกใช้ให้ถูกกลุ่มสำคัญมากในฟาร์มที่ไฟตกบ่อย</span>
+        <span data-lang-en>PLC memory divides in two. Ordinary areas clear to zero on every power-up; <strong>retentive</strong> areas hold their value through a battery or non-volatile memory. Choosing correctly matters a great deal on a farm where the supply dips often.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ข้อมูล</span><span data-lang-en>Data</span></th>
+              <th><span data-lang-th>ควรเก็บแบบใด</span><span data-lang-en>Which area</span></th>
+              <th><span data-lang-th>เหตุผล</span><span data-lang-en>Why</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span data-lang-th>จำนวนลังที่บรรจุแล้วในกะนี้</span><span data-lang-en>Crates packed this shift</span></td>
+              <td><span data-lang-th>retentive</span><span data-lang-en>retentive</span></td>
+              <td><span data-lang-th>ไฟตกห้านาทีไม่ควรทำให้ยอดของทั้งกะหายไป</span><span data-lang-en>a five-minute outage must not erase the shift&rsquo;s tally</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ค่าอุณหภูมิที่อ่านได้ล่าสุด</span><span data-lang-en>The latest temperature reading</span></td>
+              <td><span data-lang-th>ธรรมดา</span><span data-lang-en>ordinary</span></td>
+              <td><span data-lang-th>ค่าเก่าจากเมื่อวานไม่มีประโยชน์และอาจทำให้ตัดสินใจผิด</span><span data-lang-en>yesterday&rsquo;s value is useless and could drive a wrong decision</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>ค่าตั้งที่ผู้ใช้ป้อนผ่านหน้าจอ</span><span data-lang-en>Setpoints entered on the HMI</span></td>
+              <td><span data-lang-th>retentive</span><span data-lang-en>retentive</span></td>
+              <td><span data-lang-th>ไม่ควรให้ผู้ใช้ต้องตั้งค่าใหม่ทุกเช้าหลังไฟดับ</span><span data-lang-en>nobody should re-enter every setting each morning</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>สถานะขั้นปัจจุบันของลำดับการทำงาน</span><span data-lang-en>The sequence&rsquo;s current step</span></td>
+              <td><span data-lang-th>ธรรมดา</span><span data-lang-en>ordinary</span></td>
+              <td><span data-lang-th>หลังไฟดับต้องเริ่มจากสถานะปลอดภัยเสมอ ไม่ใช่กลับไปขั้นกลางคัน</span><span data-lang-en>after an outage it must restart from a safe state, not resume mid-cycle</span></td>
+            </tr>
+            <tr>
+              <td><span data-lang-th>จำนวนรอบการทำงานสะสมของกระบอกลม</span><span data-lang-en>Lifetime stroke count of a cylinder</span></td>
+              <td><span data-lang-th>retentive 32 บิต</span><span data-lang-en>retentive, 32-bit</span></td>
+              <td><span data-lang-th>ใช้เตือนเปลี่ยนซีลตามอายุ และโตเกิน 32,767 แน่นอน</span><span data-lang-en>it drives seal-change alerts and will certainly pass 32,767</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-bolt"></i> <span data-lang-th>แถวสุดท้ายคือกับดักด้านความปลอดภัย</span><span data-lang-en>The fourth row is a safety trap</span></div>
+        <p class="mb-0">
+          <span data-lang-th>นักศึกษาหลายคนคิดว่าการเก็บสถานะขั้นไว้แบบ retentive เป็นเรื่องดี เพราะเครื่องจะ “ทำงานต่อจากที่ค้างไว้” ได้หลังไฟมา แต่ลองนึกภาพเครื่องที่ไฟดับตอนกระบอกลมยืดออกครึ่งทางพร้อมถุงที่เติมไปแล้วครึ่งถุง เมื่อไฟมาแล้วเครื่องเดินต่อทันทีโดยไม่มีใครอยู่ข้าง ๆ นั่นคืออุบัติเหตุ มาตรฐานความปลอดภัยเครื่องจักรกำหนดให้การกลับมาทำงานหลังไฟดับต้องเป็นการกระทำโดยเจตนาของผู้ปฏิบัติงานเสมอ</span>
+          <span data-lang-en>Many students assume retaining the step is desirable, since the machine can “carry on where it left off”. Picture instead a machine that lost power with its cylinder half-extended and a bag half-filled: power returns and it moves immediately, with nobody standing by. That is an accident. Machine-safety standards require restart after a power loss to be a deliberate act by an operator.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 5.5 --------- -->
+    <section id="math">
+      <h2><span data-lang-th>5.5 ฟังก์ชันคณิตศาสตร์และการสเกลสัญญาณอนาล็อก</span><span data-lang-en>5.5 Arithmetic and scaling an analogue signal</span></h2>
+
+      <p>
+        <span data-lang-th>โมดูลอนาล็อกไม่ได้ส่งค่าเป็นองศาเซลเซียสหรือ mS/cm มาให้ แต่ส่งเป็น <em>ตัวเลขดิบ</em> ที่สะท้อนตำแหน่งของสัญญาณภายในพิสัยของ ADC หน้าที่ของเราคือแปลงมันกลับเป็นหน่วยทางวิศวกรรม ซึ่งเป็นงานที่ต้องทำในทุกโครงการที่มีเซนเซอร์อนาล็อก</span>
+        <span data-lang-en>An analogue module does not deliver degrees Celsius or mS/cm; it delivers a <em>raw count</em> representing where the signal sits in the ADC&rsquo;s range. Converting that back into engineering units is work every project with an analogue sensor must do.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ y \;=\; y_{\min} \;+\; \left( x_{\text{raw}} - x_{\min} \right)
+                              \frac{\,y_{\max} - y_{\min}\,}{\,x_{\max} - x_{\min}\,} $$</div>
+        <div class="eq__num">(5.2)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( x_{\text{raw}} \) — <span data-lang-th>ค่าดิบที่อ่านได้จากโมดูล</span><span data-lang-en>the raw count read from the module</span></li>
+          <li>\( x_{\min}, x_{\max} \) — <span data-lang-th>ค่าดิบที่ปลายล่างและปลายบนของพิสัย เช่น 0 ถึง 27,648 ของ Siemens หรือ 0 ถึง 4,000 ของ Delta</span><span data-lang-en>the raw counts at each end of the range, say 0–27,648 on Siemens or 0–4,000 on Delta</span></li>
+          <li>\( y_{\min}, y_{\max} \) — <span data-lang-th>ค่าทางวิศวกรรมที่ปลายทั้งสองของพิสัยเซนเซอร์</span><span data-lang-en>the engineering values at the two ends of the sensor&rsquo;s range</span></li>
+        </ul>
+      </div>
+
+      <h3><span data-lang-th>5.5.1 กับดักการหารจำนวนเต็ม</span><span data-lang-en>5.5.1 The integer-division trap</span></h3>
+
+      <p>
+        <span data-lang-th>คำสั่งคณิตศาสตร์ของ PLC ส่วนใหญ่ทำงานกับจำนวนเต็ม การหารจะ <em>ตัดเศษทิ้ง</em> ไม่ใช่ปัดเศษ ลำดับของการคูณและหารจึงเปลี่ยนคำตอบได้อย่างมาก</span>
+        <span data-lang-en>Most PLC arithmetic works on integers, and division <em>truncates</em> rather than rounds, so the order of multiply and divide changes the answer substantially.</span>
+      </p>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 5.1 — เซนเซอร์อุณหภูมิในโรงเรือน</span><span data-lang-en>Worked example 5.1 — A greenhouse temperature input</span></div>
+        <p>
+          <span data-lang-th>ทรานสมิตเตอร์ส่งสัญญาณ 4–20 mA แทนช่วง 0–50 °C เข้าโมดูลที่ให้ค่าดิบ 0–4,000 ขณะหนึ่งอ่านค่าดิบได้ 1,640 จงหาอุณหภูมิ และเขียนเป็นลำดับคำสั่งที่ปลอดภัยจากการตัดเศษ</span>
+          <span data-lang-en>A 4–20 mA transmitter spans 0–50 °C into a module reading 0–4,000 raw. At one moment the raw value is 1,640. Find the temperature, and write it as an instruction order safe from truncation.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ y \;=\; 0 + 1640 \times \frac{50 - 0}{4000 - 0} \;=\; \frac{1640 \times 50}{4000} \;=\; 20.5\ ^\circ\text{C} $$</div>
+          <div class="eq__num">(5.3)</div>
+        </div>
+        <p>
+          <span data-lang-th>ถ้าเขียนโปรแกรมโดย <strong>หารก่อนคูณ</strong> จะได้ \( 1640/4000 = 0 \) เพราะเศษถูกตัดทิ้ง แล้วคูณ 50 ได้ 0 °C ซึ่งผิดสิ้นเชิง ลำดับที่ถูกต้องคือคูณก่อนเสมอ</span>
+          <span data-lang-en>Program it <strong>divide-first</strong> and \( 1640/4000 = 0 \) after truncation, which times 50 gives 0 °C — completely wrong. Always multiply first.</span>
+        </p>
+        <p class="mb-0">
+          <span data-lang-th>และเพื่อเก็บทศนิยมหนึ่งตำแหน่งโดยไม่ต้องใช้เลขทศนิยม ให้คูณด้วย 10 เพิ่ม แล้วเก็บค่า 205 ไว้ในรีจิสเตอร์ โดยตกลงกันว่าหน่วยคือ 0.1 °C ซึ่งเป็นวิธีที่ใช้กันทั่วไปในงานอุตสาหกรรม</span>
+          <span data-lang-en>To keep one decimal place without floating point, scale by a further ten and store 205, agreeing that the unit is 0.1 °C — the usual industrial practice.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 5.2 ===================== -->
+      <figure class="anim" data-anim="ch05-scale">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 5.2 — จากกระแสในสาย ถึงตัวเลขบนหน้าจอ</span>
+          <span data-lang-en>Animation 5.2 — From loop current to the number on the screen</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 300" role="img" aria-label="A 4-20 mA signal converted to a raw count and scaled into engineering units">
+            <defs>
+              <marker id="ar52" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" class="dg-arrow"/>
+              </marker>
+            </defs>
+
+            <!-- stage 1: the physical quantity -->
+            <rect x="24" y="60" width="150" height="90" rx="10" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <text class="dg-text-sm" x="99" y="88" text-anchor="middle" data-lang-th>อุณหภูมิจริง</text>
+            <text class="dg-text-sm" x="99" y="88" text-anchor="middle" data-lang-en>true temperature</text>
+            <text class="dg-text-b" id="s8-temp" x="99" y="122" text-anchor="middle">20.5</text>
+            <text class="dg-text-sm" x="99" y="142" text-anchor="middle">°C</text>
+
+            <line x1="174" y1="105" x2="212" y2="105" class="dg-stroke" stroke-width="2" marker-end="url(#ar52)"/>
+
+            <!-- stage 2: the loop current -->
+            <rect x="214" y="60" width="150" height="90" rx="10" class="dg-fill-gold dg-stroke-gold" stroke-width="2"/>
+            <text class="dg-text-sm" x="289" y="88" text-anchor="middle" data-lang-th>กระแสในลูป</text>
+            <text class="dg-text-sm" x="289" y="88" text-anchor="middle" data-lang-en>loop current</text>
+            <text class="dg-text-b" id="s8-ma" x="289" y="122" text-anchor="middle">10.56</text>
+            <text class="dg-text-sm" x="289" y="142" text-anchor="middle">mA</text>
+
+            <line x1="364" y1="105" x2="402" y2="105" class="dg-stroke" stroke-width="2" marker-end="url(#ar52)"/>
+
+            <!-- stage 3: the raw count -->
+            <rect x="404" y="60" width="150" height="90" rx="10" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="479" y="88" text-anchor="middle" data-lang-th>ค่าดิบในรีจิสเตอร์</text>
+            <text class="dg-text-sm" x="479" y="88" text-anchor="middle" data-lang-en>raw count in D10</text>
+            <text class="dg-text-b" id="s8-raw" x="479" y="122" text-anchor="middle">1640</text>
+            <text class="dg-text-sm" x="479" y="142" text-anchor="middle" data-lang-th>นับ</text>
+            <text class="dg-text-sm" x="479" y="142" text-anchor="middle" data-lang-en>counts</text>
+
+            <line x1="554" y1="105" x2="592" y2="105" class="dg-stroke" stroke-width="2" marker-end="url(#ar52)"/>
+
+            <!-- stage 4: the scaled value -->
+            <rect x="594" y="60" width="180" height="90" rx="10" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+            <text class="dg-text-sm" x="684" y="88" text-anchor="middle" data-lang-th>ค่าที่สเกลแล้วใน D11</text>
+            <text class="dg-text-sm" x="684" y="88" text-anchor="middle" data-lang-en>scaled value in D11</text>
+            <text class="dg-text-b" id="s8-out" x="684" y="122" text-anchor="middle">205</text>
+            <text class="dg-text-sm" x="684" y="142" text-anchor="middle" data-lang-th>หน่วย 0.1 °C</text>
+            <text class="dg-text-sm" x="684" y="142" text-anchor="middle" data-lang-en>units of 0.1 °C</text>
+
+            <!-- the two instruction orders, compared -->
+            <rect x="24" y="186" width="370" height="96" rx="10" class="dg-fill-surface dg-stroke-green" stroke-width="2.5"/>
+            <text class="dg-text-b" x="209" y="212" text-anchor="middle" data-lang-th>คูณก่อนหาร — ถูกต้อง</text>
+            <text class="dg-text-b" x="209" y="212" text-anchor="middle" data-lang-en>multiply first — correct</text>
+            <text class="dg-text-sm" id="s8-good1" x="209" y="240" text-anchor="middle">MUL D10 500 → D20</text>
+            <text class="dg-text-sm" id="s8-good2" x="209" y="264" text-anchor="middle">DIV D20 4000 → D11</text>
+
+            <rect x="414" y="186" width="370" height="96" rx="10" class="dg-fill-surface dg-stroke" stroke-width="2.5" stroke-dasharray="6 4"/>
+            <text class="dg-text-b" x="599" y="212" text-anchor="middle" data-lang-th>หารก่อนคูณ — ผิด</text>
+            <text class="dg-text-b" x="599" y="212" text-anchor="middle" data-lang-en>divide first — wrong</text>
+            <text class="dg-text-sm" id="s8-bad1" x="599" y="240" text-anchor="middle">DIV D10 4000 → D21</text>
+            <text class="dg-text-sm" id="s8-bad2" x="599" y="264" text-anchor="middle">MUL D21 500 → D12</text>
+          </svg>
+
+          <span class="fig-label fig-label--muted" style="left:50.0%;top:12%">\( x_{\text{raw}} \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>อุณหภูมิจริง</span><span data-lang-en>True temperature</span>
+            <input type="range" data-anim-param="temp" data-unit="°C" min="0" max="50" step="0.5" value="20.5">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 5.2</span><span data-lang-en>Animation 5.2</span></b>
+          <span data-lang-th> เลื่อนอุณหภูมิจริงแล้วดูค่าวิ่งไปตามห่วงโซ่: องศา → มิลลิแอมป์ → ค่าดิบ → ค่าที่สเกลแล้ว กล่องล่างซ้ายคือลำดับคำสั่งที่ถูกต้อง ส่วนกล่องล่างขวาคือลำดับที่หารก่อน สังเกตว่าผลลัพธ์ของฝั่งขวาเป็นศูนย์เกือบตลอดช่วง และกระโดดเป็นขั้นหยาบ ๆ เมื่ออุณหภูมิสูงพอ นี่คือกับดักการตัดเศษของจำนวนเต็มที่สมการ (5.3) เตือนไว้</span>
+          <span data-lang-en> Move the true temperature and watch the value travel the chain: degrees → milliamps → raw count → scaled value. The lower-left box is the correct instruction order; the lower-right divides first. Notice that the right-hand result is zero over most of the range and then jumps in coarse steps once the temperature is high enough — the integer truncation trap that equation (5.3) warns about.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ระบบผสมปุ๋ยอัตโนมัติต้องสเกลสัญญาณสามเส้นพร้อมกัน คือ EC (0–5 mS/cm), pH (0–14) และอัตราการไหล (0–50 L/min) โดยทั้งสามใช้สมการ (5.2) เหมือนกันแต่คนละค่าปลายพิสัย วิธีที่ทำให้โปรแกรมสะอาดคือเขียนบล็อกฟังก์ชันสเกลหนึ่งอันแล้วเรียกใช้สามครั้งด้วยพารามิเตอร์ต่างกัน แทนที่จะคัดลอกบรรทัดคำสั่งไปวางสามชุด ซึ่งเมื่อต้องแก้ค่าปลายพิสัยภายหลังจะลืมแก้ชุดใดชุดหนึ่งเสมอ</span>
+          <span data-lang-en>An automated fertigation skid must scale three signals at once — EC (0–5 mS/cm), pH (0–14) and flow (0–50 L/min) — all through equation (5.2) but with different endpoints. The clean way is one scaling function block called three times with different parameters, rather than three copied-and-pasted instruction sets: when an endpoint changes later, someone always forgets one of the copies.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 5.6 --------- -->
+    <section id="compare">
+      <h2><span data-lang-th>5.6 การเปรียบเทียบและการตัดสินใจจากค่าตัวเลข</span><span data-lang-en>5.6 Comparison, and deciding from a number</span></h2>
+
+      <p>
+        <span data-lang-th>เมื่อมีค่าที่สเกลแล้วในรีจิสเตอร์ ขั้นถัดไปคือเอาไปตัดสินใจ คำสั่งเปรียบเทียบจะคืนค่าเป็นบิต ซึ่งนำไปใช้เป็นหน้าสัมผัสในแลดเดอร์ได้ตามปกติ</span>
+        <span data-lang-en>With a scaled value in a register, the next step is to decide from it. Comparison instructions return a bit, which is then used as an ordinary ladder contact.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>คำสั่ง</span><span data-lang-en>Instruction</span></th>
+              <th><span data-lang-th>เป็นจริงเมื่อ</span><span data-lang-en>True when</span></th>
+              <th><span data-lang-th>ตัวอย่างการใช้ในฟาร์ม</span><span data-lang-en>Farm example</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&gt;</code> / <code>&gt;=</code></td><td>\( D_a &gt; D_b \)</td><td><span data-lang-th>เปิดพัดลมเมื่ออุณหภูมิเกิน 32 °C</span><span data-lang-en>start the fan above 32 °C</span></td></tr>
+            <tr><td><code>&lt;</code> / <code>&lt;=</code></td><td>\( D_a &lt; D_b \)</td><td><span data-lang-th>สั่งรดน้ำเมื่อความชื้นดินต่ำกว่า 55 %VWC</span><span data-lang-en>irrigate below 55 %VWC</span></td></tr>
+            <tr><td><code>=</code> / <code>&lt;&gt;</code></td><td><span data-lang-th>เท่ากัน / ไม่เท่ากัน</span><span data-lang-en>equal / not equal</span></td><td><span data-lang-th>ตรวจว่าหมายเลขสูตรปุ๋ยตรงกับที่เลือกไว้</span><span data-lang-en>check the selected recipe number matches</span></td></tr>
+            <tr><td><span data-lang-th>ช่วงค่า</span><span data-lang-en>In-range</span></td><td>\( D_{\min} \le D_a \le D_{\max} \)</td><td><span data-lang-th>ยืนยันว่าค่า pH อยู่ในช่วงที่ปลอดภัยก่อนเริ่มจ่าย</span><span data-lang-en>confirm pH is inside a safe band before dosing</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-arrows-left-right"></i> <span data-lang-th>อย่าเปรียบเทียบด้วยค่าเดียวกับสองทิศทาง</span><span data-lang-en>Never switch both ways on one threshold</span></div>
+        <p>
+          <span data-lang-th>ถ้าเขียนว่า “เปิดพัดลมเมื่อ \( T &gt; 32 \) และปิดเมื่อ \( T \le 32 \)” พัดลมจะกระพริบเปิด–ปิดถี่มากเมื่ออุณหภูมิวนอยู่รอบ ๆ 32 °C เพราะการเปิดพัดลมเองทำให้อุณหภูมิตกลงมาต่ำกว่าเกณฑ์ทันที วิธีแก้คือใส่แถบตายเข้าไป</span>
+          <span data-lang-en>Write “start the fan above \( T &gt; 32 \) and stop it at \( T \le 32 \)” and the fan chatters whenever the temperature hovers near 32 °C, because running the fan itself pushes the reading straight back below the threshold. The fix is a deadband.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ \text{ON: } T \ge T_{\text{on}}, \qquad
+                                \text{OFF: } T \le T_{\text{off}}, \qquad
+                                T_{\text{on}} - T_{\text{off}} = \Delta_{\text{db}} > 0 $$</div>
+          <div class="eq__num">(5.4)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>เช่น เปิดที่ 32 °C และปิดที่ 30 °C ได้แถบตาย 2 °C ซึ่งนี่คือการ <em>จงใจใส่ฮิสเทอรีซิส</em> ตามที่กล่าวไว้ในบทที่ 3 และจะวิเคราะห์เชิงปริมาณในบทที่ 7</span>
+          <span data-lang-en>Start at 32 °C and stop at 30 °C gives a 2 °C deadband — the <em>deliberate hysteresis</em> mentioned in Chapter 3, analysed quantitatively in Chapter 7.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 5.3 ===================== -->
+      <figure class="anim" data-anim="ch05-deadband">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 5.3 — แถบตายกว้างเท่าใด พัดลมจึงไม่กระพริบ</span>
+          <span data-lang-en>Animation 5.3 — How wide must the deadband be to stop the chatter?</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <canvas class="anim__scope" id="db-scope" style="height:210px" aria-label="Greenhouse temperature against the on and off thresholds, with the fan state"></canvas>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--sky-500)"><i></i><span data-lang-th>อุณหภูมิในโรงเรือน</span><span data-lang-en>greenhouse temperature</span></span>
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>สถานะพัดลม</span><span data-lang-en>fan state</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>เกณฑ์เปิดและเกณฑ์ปิด</span><span data-lang-en>on and off thresholds</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ความกว้างแถบตาย</span><span data-lang-en>Deadband</span> \( \Delta_{\text{db}} \)
+            <input type="range" data-anim-param="db" data-unit="°C" min="0" max="4" step="0.25" value="0">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 5.3</span><span data-lang-en>Animation 5.3</span></b>
+          <span data-lang-th> เริ่มที่แถบตาย 0 °C ซึ่งคือการใช้เกณฑ์เดียวทั้งเปิดและปิด สังเกตตัวนับจำนวนครั้งการสลับที่พุ่งขึ้นอย่างรวดเร็ว จากนั้นค่อย ๆ เพิ่มแถบตายแล้วดูว่าจำนวนครั้งลดลงเร็วเพียงใด แต่ช่วงที่อุณหภูมิแกว่งก็กว้างขึ้นตาม นี่คือข้อแลกเปลี่ยนที่ต้องตัดสินใจทุกครั้ง ระหว่างอายุของรีเลย์กับความนิ่งของอุณหภูมิ</span>
+          <span data-lang-en> Start with a 0 °C deadband, meaning one threshold for both on and off, and watch the switch counter climb alarmingly. Widen it gradually and see how fast the count falls — but the temperature now swings over a wider band. That trade-off, relay life against temperature steadiness, has to be decided on every job.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 5.7 --------- -->
+    <section id="practice">
+      <h2><span data-lang-th>5.7 แบบฝึกปฏิบัติ</span><span data-lang-en>5.7 Practical exercises</span></h2>
+
+      <p>
+        <span data-lang-th>แบบฝึกต่อไปนี้ไล่จากง่ายไปยาก ทำบนชุดฝึกในห้องปฏิบัติการหรือบนโปรแกรมจำลองของผู้ผลิตก็ได้ ทุกข้อให้เขียนตารางสัญลักษณ์ก่อนเขียนโปรแกรมเสมอ</span>
+        <span data-lang-en>These run from easy to hard and can be done on the trainers or in the vendor&rsquo;s simulator. In every case, write the symbol table before writing any logic.</span>
+      </p>
+
+      <ol class="steps">
+        <li><b><span data-lang-th>แบบฝึกที่ 1 — ไฟแสดงสถานะถังปุ๋ย</span><span data-lang-en>Exercise 1 — Fertiliser tank indicator</span></b><br>
+          <span data-lang-th>ลูกลอยสองระดับบอกสถานะถัง ให้ไฟเขียวติดเมื่อระดับปกติ ไฟเหลืองติดเมื่อต่ำ และไฟแดงกะพริบทุก 1 วินาทีเมื่อถังว่าง ใช้ไทเมอร์สองตัวสร้างการกะพริบ</span>
+          <span data-lang-en>Two floats report the tank. Light green when normal, amber when low, and flash red once a second when empty. Build the flasher from two timers.</span></li>
+
+        <li><b><span data-lang-th>แบบฝึกที่ 2 — นับผลไม้ลงลังพร้อมสลับลัง</span><span data-lang-en>Exercise 2 — Count fruit into crates, with changeover</span></b><br>
+          <span data-lang-th>นับผลไม้ที่ผ่านเซนเซอร์ให้ครบ 24 ผลต่อลัง แล้วหยุดสายพานและติดไฟเรียกพนักงาน เมื่อกดปุ่มยืนยันให้รีเซ็ตตัวนับและเดินต่อ พร้อมเพิ่มตัวนับลังสะสมที่ไม่หายเมื่อปิดเครื่อง</span>
+          <span data-lang-en>Count 24 fruit per crate, then stop the belt and call the operator. On the acknowledge button, reset the count and resume, incrementing a retentive crate total.</span></li>
+
+        <li><b><span data-lang-th>แบบฝึกที่ 3 — สเกลสัญญาณอนาล็อกและแสดงผล</span><span data-lang-en>Exercise 3 — Scale an analogue input and display it</span></b><br>
+          <span data-lang-th>อ่านค่าดิบจากเซนเซอร์ความชื้นดิน (0–4,000 แทน 0–100 %VWC) แปลงเป็นหน่วย 0.1 %VWC เก็บใน D11 แล้วแสดงบน HMI ระวังลำดับคูณหารตามหัวข้อ 5.5</span>
+          <span data-lang-en>Read the raw soil-moisture count (0–4,000 for 0–100 %VWC), convert to units of 0.1 %VWC in D11 and show it on the HMI, watching the operation order of §5.5.</span></li>
+
+        <li><b><span data-lang-th>แบบฝึกที่ 4 — ควบคุมการให้น้ำด้วยแถบตาย</span><span data-lang-en>Exercise 4 — Irrigate with a deadband</span></b><br>
+          <span data-lang-th>เปิดวาล์วเมื่อความชื้นต่ำกว่า 55 %VWC และปิดเมื่อถึง 65 %VWC พร้อมจำกัดเวลาเปิดต่อเนื่องไม่เกิน 20 นาทีเพื่อกันกรณีเซนเซอร์เสีย และนับจำนวนครั้งการรดน้ำต่อวัน</span>
+          <span data-lang-en>Open the valve below 55 %VWC and close it at 65 %VWC, cap any single run at 20 minutes in case the sensor fails, and count waterings per day.</span></li>
+
+        <li><b><span data-lang-th>แบบฝึกที่ 5 — เลือกสูตรปุ๋ยจากหน้าจอ</span><span data-lang-en>Exercise 5 — Select a fertiliser recipe from the HMI</span></b><br>
+          <span data-lang-th>ให้ผู้ใช้เลือกสูตร 1–3 จากหน้าจอ แต่ละสูตรมีค่าเป้าหมาย EC ต่างกัน เก็บค่าเป้าหมายไว้ในรีจิสเตอร์แบบ retentive แล้วใช้คำสั่งเปรียบเทียบสั่งปั๊มจ่ายสารเข้มข้นให้ EC เข้าเป้า</span>
+          <span data-lang-en>Let the operator pick recipe 1–3 on the HMI, each with its own EC target held in retentive memory, then use comparisons to drive the dosing pump toward that target.</span></li>
+      </ol>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-shield-halved"></i> <span data-lang-th>ข้อกำหนดร่วมของทุกแบบฝึก</span><span data-lang-en>A requirement common to every exercise</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ทุกข้อต้องมีเงื่อนไขนิรภัยคูณอยู่นอกวงเล็บเสมอตามหลักในบทที่ 4 คือ <code>ES_OK</code> และ <code>GUARD_CLOSED</code> ต้องเป็นจริงก่อนที่เอาต์พุตใดจะทำงานได้ และต้องทดสอบด้วยการถอดสายอินพุตนิรภัยออกจริง ไม่ใช่เพียงบังคับค่าบิตในโปรแกรม เพราะการบังคับค่าจะข้ามการทดสอบส่วนที่สำคัญที่สุดไป</span>
+          <span data-lang-en>Every exercise must carry its safety terms as factors outside the bracket, per Chapter 4: <code>ES_OK</code> and <code>GUARD_CLOSED</code> true before any output acts. Test it by physically unplugging the safety input, not by forcing the bit in software — forcing skips exactly the part that matters most.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 5.8 --------- -->
+    <section id="activity">
+      <h2><span data-lang-th>5.8 กิจกรรมในชั้นเรียน</span><span data-lang-en>5.8 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 5.1 — ไล่ปัญหาจากใบแจ้งซ่อม</span><span data-lang-en>Activity 5.1 — Fault-find from a service report</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3 คน &middot; 35 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Groups of 3 &middot; 35 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>สถานการณ์</span><span data-lang-en>The scenario</span></h4>
+          <p>
+            <span data-lang-th>เจ้าของโรงคัดบรรจุโทรมาแจ้งสี่อาการพร้อมกัน แต่ละกลุ่มได้รับอาการหนึ่งข้อ ต้องเสนอลำดับการตรวจสอบที่ <em>ตรวจจุดที่เป็นไปได้มากที่สุดก่อน</em> พร้อมบอกว่าจะวัดอะไรด้วยเครื่องมืออะไร</span>
+            <span data-lang-en>A packhouse owner reports four symptoms at once. Each group takes one and must propose a checking order that <em>tests the most likely cause first</em>, saying what to measure and with what instrument.</span>
+          </p>
+          <ol>
+            <li><span data-lang-th>“เซนเซอร์นับผลไม้ตัวใหม่ที่เพิ่งเปลี่ยน ไฟที่ตัวเซนเซอร์ติดปกติ แต่ไฟอินพุตที่ PLC ไม่ติดเลย”</span><span data-lang-en>“The newly replaced counting sensor lights up on its own body, but the PLC input light never comes on.”</span></li>
+            <li><span data-lang-th>“อุณหภูมิบนหน้าจอขึ้น 0 องศาตลอด ทั้งที่วัดด้วยเทอร์โมมิเตอร์ได้ 24 องศา และสายไม่ได้ขาด”</span><span data-lang-en>“The screen shows 0 degrees all the time, though a thermometer reads 24, and no wire is broken.”</span></li>
+            <li><span data-lang-th>“ยอดจำนวนลังสะสมที่หน้าจอติดลบตั้งแต่สัปดาห์ที่แล้ว แต่เครื่องยังทำงานปกติทุกอย่าง”</span><span data-lang-en>“The accumulated crate total has read negative since last week, although the machine itself runs fine.”</span></li>
+            <li><span data-lang-th>“พัดลมห้องเย็นเปิดปิดถี่มากจนได้ยินเสียงคอนแทกเตอร์ตลอดเวลา และเพิ่งต้องเปลี่ยนคอนแทกเตอร์ไปสองตัว”</span><span data-lang-en>“The cold-room fan cycles so often you hear the contactor constantly, and two contactors have already been replaced.”</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ลำดับการตรวจสอบ 4–6 ขั้น เรียงจากสาเหตุที่น่าจะเป็นมากที่สุด พร้อมเหตุผลของลำดับ</span><span data-lang-en>A checking order of four to six steps, most likely cause first, with the reasoning for that order.</span></li>
+            <li><span data-lang-th>สิ่งที่ต้องวัดในแต่ละขั้น และค่าที่คาดว่าจะเห็นถ้าสมมติฐานนั้นถูก</span><span data-lang-en>What to measure at each step, and the reading expected if that hypothesis is right.</span></li>
+            <li><span data-lang-th>ข้อเสนอการแก้ไขถาวร ไม่ใช่เพียงทำให้กลับมาใช้งานได้</span><span data-lang-en>A permanent fix, not merely a way to get it running again.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 5.9 --------- -->
+    <section id="lab">
+      <h2><span data-lang-th>5.9 ปฏิบัติการที่ 5</span><span data-lang-en>5.9 Laboratory 5</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <h3><span data-lang-th>ปฏิบัติการที่ 5 — เดินสาย I/O และสเกลสัญญาณอนาล็อกบน PLC จริง</span><span data-lang-en>Laboratory 5 — Wiring I/O and scaling an analogue input on a real PLC</span></h3>
+            <p><span data-lang-th>กลุ่มละ 2–3 คน &middot; 4 ชั่วโมง (2 คาบ) &middot; ห้องปฏิบัติการระบบอัตโนมัติ</span><span data-lang-en>Groups of 2–3 &middot; 4 hours across two sessions &middot; Automation laboratory</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ข้อ 2–6</span><span data-lang-en>Maps to objectives 2–6</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 9% ของคะแนนรวม</span><span data-lang-en>9% of the course total</span></span>
+          </div>
+
+          <h4><span data-lang-th>อุปกรณ์</span><span data-lang-en>Equipment</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ชุดฝึก PLC พร้อมโมดูลอนาล็อกอินพุตอย่างน้อย 2 ช่อง</span><span data-lang-en>A PLC trainer with an analogue input module of at least two channels</span></li>
+            <li><span data-lang-th>เซนเซอร์พร็อกซิมิตีแบบ PNP หนึ่งตัว และแบบ NPN หนึ่งตัว</span><span data-lang-en>One PNP and one NPN proximity sensor</span></li>
+            <li><span data-lang-th>เครื่องจำลองสัญญาณ 4–20 mA หรือโพเทนชิโอมิเตอร์พร้อมแหล่งจ่าย</span><span data-lang-en>A 4–20 mA signal simulator, or a potentiometer with a supply</span></li>
+            <li><span data-lang-th>เซนเซอร์ความชื้นดินที่สอบเทียบแล้วจากปฏิบัติการที่ 3</span><span data-lang-en>The soil-moisture probe calibrated in Laboratory 3</span></li>
+            <li><span data-lang-th>มัลติมิเตอร์ และหน้าจอ HMI หรือซอฟต์แวร์มอนิเตอร์ของผู้ผลิต</span><span data-lang-en>A multimeter, and an HMI or the vendor&rsquo;s monitoring software</span></li>
+          </ul>
+
+          <h4><span data-lang-th>ขั้นตอนการทดลอง</span><span data-lang-en>Procedure</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>เดินสายเซนเซอร์ทั้งสองแบบ</span><span data-lang-en>Wire both sensor types</span></b><br>
+              <span data-lang-th>ต่อเซนเซอร์ PNP เข้าอินพุต X0 ให้ถูกขั้ว ทดสอบจนไฟติด จากนั้นต่อเซนเซอร์ NPN เข้า X1 บันทึกว่าต้องเปลี่ยนอะไรที่ขั้วคอมมอน และวัดแรงดันที่ขั้ว X ทั้งสองกรณีด้วยมัลติมิเตอร์</span>
+              <span data-lang-en>Wire the PNP sensor to X0 correctly and prove the light comes on, then the NPN sensor to X1. Record what had to change at the common terminal, and measure the terminal voltage in both cases.</span></li>
+            <li><b><span data-lang-th>ทดลองต่อผิดโดยเจตนา</span><span data-lang-en>Get it deliberately wrong</span></b><br>
+              <span data-lang-th>สลับคอมมอนของ X0 ให้ผิดชนิด บันทึกอาการที่สังเกตได้และแรงดันที่วัดได้ที่ขั้วอินพุต อธิบายด้วยทิศทางการไหลของกระแสว่าทำไมจึงไม่มีอะไรเกิดขึ้น</span>
+              <span data-lang-en>Move X0&rsquo;s common to the wrong polarity. Record the symptom and the measured terminal voltage, and explain from the direction of current flow why nothing happens.</span></li>
+            <li><b><span data-lang-th>สเกลสัญญาณ 4–20 mA</span><span data-lang-en>Scale the 4–20 mA input</span></b><br>
+              <span data-lang-th>ป้อนสัญญาณที่ 4, 8, 12, 16 และ 20 mA บันทึกค่าดิบที่อ่านได้ในรีจิสเตอร์ พล็อตกราฟค่าดิบเทียบกระแส แล้วหาค่า \( x_{\min} \) และ \( x_{\max} \) จริงของโมดูล</span>
+              <span data-lang-en>Inject 4, 8, 12, 16 and 20 mA, record the raw register value at each, plot raw against current, and determine the module&rsquo;s actual \( x_{\min} \) and \( x_{\max} \).</span></li>
+            <li><b><span data-lang-th>เขียนตรรกะการสเกลสองแบบ</span><span data-lang-en>Write both scaling orders</span></b><br>
+              <span data-lang-th>เขียนทั้งแบบคูณก่อนหารและแบบหารก่อนคูณลงในโปรแกรมเดียวกัน โดยเก็บผลลัพธ์ไว้คนละรีจิสเตอร์ บันทึกค่าทั้งสองที่ทุกจุดทดสอบลงตารางที่ 5.1</span>
+              <span data-lang-en>Implement both the multiply-first and divide-first orders in one program, results in separate registers, and record both at every test point in data sheet 5.1.</span></li>
+            <li><b><span data-lang-th>ควบคุมด้วยแถบตาย</span><span data-lang-en>Control with a deadband</span></b><br>
+              <span data-lang-th>ใช้เซนเซอร์ความชื้นดินจากปฏิบัติการที่ 3 สั่งไฟแสดงผลแทนวาล์ว โดยเปิดที่ต่ำกว่า 55 %VWC และปิดที่ 65 %VWC นับจำนวนครั้งการสลับใน 10 นาที จากนั้นลดแถบตายเหลือ 0 แล้วนับใหม่</span>
+              <span data-lang-en>Using the Laboratory 3 probe, drive a lamp in place of a valve: on below 55 %VWC, off at 65 %VWC. Count switching events over ten minutes, then collapse the deadband to zero and count again.</span></li>
+            <li><b><span data-lang-th>ทดสอบการคงค่าในหน่วยความจำ</span><span data-lang-en>Test memory retention</span></b><br>
+              <span data-lang-th>ตั้งตัวนับไว้สองตัว ตัวหนึ่งเป็น retentive อีกตัวเป็นธรรมดา นับให้ได้ค่าหนึ่ง แล้วตัดไฟ PLC 30 วินาที จ่ายไฟใหม่และบันทึกค่าของทั้งสองตัว</span>
+              <span data-lang-en>Set up two counters, one retentive and one ordinary, count them up, remove power for 30 s, restore it and record both values.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 5.1</span><span data-lang-en>Data sheet 5.1</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>กระแสที่ป้อน (mA)</span><span data-lang-en>Injected current (mA)</span></th>
+                  <th><span data-lang-th>ค่าดิบที่อ่านได้</span><span data-lang-en>Raw count</span></th>
+                  <th><span data-lang-th>ค่าที่คาดจากสมการ (5.2)</span><span data-lang-en>Predicted by (5.2)</span></th>
+                  <th><span data-lang-th>ผลแบบคูณก่อน</span><span data-lang-en>Multiply-first result</span></th>
+                  <th><span data-lang-th>ผลแบบหารก่อน</span><span data-lang-en>Divide-first result</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>4</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>8</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>12</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>16</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>20</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>การวิเคราะห์ผล</span><span data-lang-en>Analysis</span></h4>
+          <ol>
+            <li><span data-lang-th>กราฟค่าดิบเทียบกระแสเป็นเส้นตรงหรือไม่ และค่า \( x_{\min} \) ที่วัดได้ตรงกับที่คู่มือระบุหรือไม่ ถ้าไม่ตรงจะกระทบผลการสเกลอย่างไร</span><span data-lang-en>Is raw against current linear, and does the measured \( x_{\min} \) match the manual? If not, how does that affect the scaled result?</span></li>
+            <li><span data-lang-th>ที่จุดทดสอบใดที่ผลแบบหารก่อนให้ค่าผิดมากที่สุด และเพราะเหตุใดจึงเป็นจุดนั้น</span><span data-lang-en>At which test point is the divide-first result worst, and why that point in particular?</span></li>
+            <li><span data-lang-th>จำนวนครั้งการสลับลดลงกี่เท่าเมื่อใส่แถบตาย 10 %VWC และถ้ารีเลย์มีอายุหนึ่งล้านครั้ง อายุใช้งานต่างกันกี่ปี</span><span data-lang-en>By what factor did switching fall with a 10 %VWC deadband, and at a one-million-operation relay life, how many years does that difference represent?</span></li>
+            <li><span data-lang-th>จากการทดลองตัดไฟ ตัวนับใดคงค่าไว้ได้ และเหตุใดจึงไม่ควรเก็บสถานะขั้นของลำดับการทำงานไว้แบบ retentive</span><span data-lang-en>Which counter survived the outage, and why should a sequence&rsquo;s step state nevertheless not be retentive?</span></li>
+            <li><span data-lang-th>ถ้าต้องวัดอุณหภูมิช่วง −10 ถึง 60 °C ด้วยโมดูลเดิม สมการ (5.2) จะเปลี่ยนไปอย่างไร และต้องระวังอะไรเป็นพิเศษเรื่องค่าติดลบในรีจิสเตอร์</span><span data-lang-en>If the range became −10 to 60 °C on the same module, how does equation (5.2) change, and what needs care about negative values in a register?</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>Deliverables</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานปฏิบัติการไม่เกิน 6 หน้า ส่งภายใน 1 สัปดาห์</span><span data-lang-en>A report of at most six pages, due within one week.</span></li>
+            <li><span data-lang-th>ตารางสัญลักษณ์ของโปรแกรมทั้งหมด พร้อมระบุชนิดหน้าสัมผัสของทุกอินพุต</span><span data-lang-en>The full symbol table, stating the contact type of every input.</span></li>
+            <li><span data-lang-th>แผนผังการเดินสายของอินพุตทั้งสองแบบ แสดงทิศทางการไหลของกระแสอย่างชัดเจน</span><span data-lang-en>Wiring diagrams for both input types, with the current direction shown clearly.</span></li>
+            <li><span data-lang-th>กราฟค่าดิบเทียบกระแส และตารางเปรียบเทียบผลการสเกลสองแบบ</span><span data-lang-en>The raw-versus-current plot and the table comparing the two scaling orders.</span></li>
+            <li><span data-lang-th>ไฟล์โปรแกรม PLC พร้อมคอมเมนต์ทุกบรรทัดที่ทำการคำนวณ</span><span data-lang-en>The PLC project with every arithmetic rung commented.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>เดินสาย PNP และ NPN ได้ถูกต้อง และอธิบายอาการตอนต่อผิดได้ด้วยทิศทางกระแส</span><span data-lang-en>Both sensor types wired correctly, with the mis-wired symptom explained by current direction</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>คุณภาพข้อมูลการสเกลและการหาค่าปลายพิสัยจริงของโมดูล</span><span data-lang-en>Quality of the scaling data and of the module&rsquo;s measured endpoints</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การเปรียบเทียบลำดับคำสั่งสองแบบและการอธิบายการตัดเศษ</span><span data-lang-en>Comparison of the two instruction orders and the truncation explanation</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การทดลองแถบตายและการเชื่อมโยงกับอายุของรีเลย์</span><span data-lang-en>The deadband experiment and its link to relay life</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ตารางสัญลักษณ์ ความเป็นระเบียบของโปรแกรม และความปลอดภัยในการปฏิบัติงาน</span><span data-lang-en>Symbol table, program tidiness and safe working</span></td><td>15</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--danger" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></div>
+            <p class="mb-0">
+              <span data-lang-th>ขั้นตอนที่ 6 ต้องตัดไฟให้ PLC ซึ่งต้องทำที่เบรกเกอร์ของชุดฝึกเท่านั้น ห้ามถอดขั้วต่อขณะจ่ายไฟ เพราะอาจเกิดอาร์กที่ขั้วและทำให้โมดูลเสียหาย ก่อนต่อเครื่องจำลองสัญญาณ 4–20 mA ให้ตรวจสอบว่าตั้งโหมดถูกต้อง เพราะการป้อนแรงดันเข้าช่องที่ตั้งไว้รับกระแสจะทำให้โมดูลอนาล็อกเสียหายถาวร และต้องตรวจขั้วบวกลบก่อนจ่ายไฟทุกครั้ง</span>
+              <span data-lang-en>Step 6 removes power from the PLC, which must be done at the trainer&rsquo;s breaker only — never unplug a connector while energised, as arcing at the pins can destroy a module. Before connecting the 4–20 mA simulator, confirm its mode: feeding voltage into a channel configured for current permanently damages an analogue module. Check polarity every time before applying power.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>ปัญหาหน้างานส่วนใหญ่อยู่ที่สายและแหล่งจ่ายไฟ ไม่ใช่ในโปรแกรม จึงควรไล่จากฮาร์ดแวร์ก่อนเสมอ</span><span data-lang-en>Most problems on site are in wiring and supplies, not the program, so check the hardware first.</span></li>
+        <li><span data-lang-th>วงจรหยุดฉุกเฉินต้องใช้รีเลย์นิรภัยภายนอก PLC ไม่พึ่งซอฟต์แวร์เพียงอย่างเดียว</span><span data-lang-en>The emergency-stop circuit needs a safety relay outside the PLC; software alone is not acceptable.</span></li>
+        <li><span data-lang-th>เซนเซอร์ PNP คู่กับอินพุตที่คอมมอนเป็น 0 V ส่วน NPN คู่กับคอมมอนที่ +24 V ต่อสลับกันแล้วจะเงียบสนิทโดยไม่มีอะไรเสียหาย</span><span data-lang-en>A PNP sensor pairs with a 0 V common, an NPN with a +24 V common; swap them and everything goes silent without anything breaking.</span></li>
+        <li><span data-lang-th>PLC ขับคอยล์ของคอนแทกเตอร์ ไม่ใช่ขับมอเตอร์โดยตรง เพราะกระแสเริ่มเดินสูงกว่าพิกัดหลายเท่า</span><span data-lang-en>A PLC drives a contactor coil, never the motor itself, because starting current is many times the rating.</span></li>
+        <li><span data-lang-th>ชื่อสัญลักษณ์ที่ดีบอก <em>สถานะของบิต</em> ไม่ใช่ชื่ออุปกรณ์ เช่น <code>ES_OK</code> ไม่ใช่ <code>E_STOP</code></span><span data-lang-en>A good symbol states the <em>bit&rsquo;s condition</em>, not the device: <code>ES_OK</code>, not <code>E_STOP</code>.</span></li>
+        <li><span data-lang-th>รีจิสเตอร์ 16 บิตล้นที่ 32,767 โดยไม่มีสัญญาณเตือน ค่าสะสมจึงต้องใช้ 32 บิต</span><span data-lang-en>A 16-bit register overflows silently at 32,767, so accumulated totals need 32 bits.</span></li>
+        <li><span data-lang-th>ค่าตั้งและยอดสะสมควรเป็น retentive แต่สถานะขั้นของลำดับต้องไม่เป็น เพื่อให้เริ่มใหม่อย่างปลอดภัยเสมอ</span><span data-lang-en>Setpoints and totals should be retentive; a sequence&rsquo;s step must not be, so restarts are always safe.</span></li>
+        <li><span data-lang-th>การสเกลใช้สมการ (5.2) และต้อง <strong>คูณก่อนหาร</strong> เสมอ เพราะการหารจำนวนเต็มตัดเศษทิ้ง</span><span data-lang-en>Scaling follows equation (5.2) and must always <strong>multiply before dividing</strong>, since integer division truncates.</span></li>
+        <li><span data-lang-th>การเปรียบเทียบด้วยเกณฑ์เดียวทั้งเปิดและปิดทำให้เอาต์พุตกระพริบ ต้องใส่แถบตายตามสมการ (5.4)</span><span data-lang-en>One threshold for both on and off makes an output chatter; add the deadband of equation (5.4).</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term">Sinking / sourcing</div>
+          <div class="deflist__def"><span data-lang-th>ทิศทางที่กระแสไหลเข้าหรือออกจากขั้ว ซึ่งกำหนดว่าเซนเซอร์ PNP หรือ NPN จะเข้ากันได้</span><span data-lang-en>The direction current flows at a terminal, which decides whether a PNP or NPN sensor fits</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Common terminal</div>
+          <div class="deflist__def"><span data-lang-th>ขั้วร่วมของกลุ่มอินพุต ซึ่งต่อไว้ที่ 0 V หรือ +24 V และเป็นจุดแรกที่ต้องตรวจเมื่ออินพุตไม่ทำงาน</span><span data-lang-en>The shared terminal of an input group, tied to 0 V or +24 V, and the first thing to check when an input is dead</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Symbol table</div>
+          <div class="deflist__def"><span data-lang-th>ตารางจับคู่แอดเดรสกับชื่อที่สื่อความหมาย เป็นเอกสารที่ทำให้โปรแกรมยังอ่านได้ในอีกหนึ่งปี</span><span data-lang-en>The map from addresses to meaningful names — what keeps a program readable a year later</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Retentive memory</div>
+          <div class="deflist__def"><span data-lang-th>หน่วยความจำที่คงค่าไว้เมื่อไฟดับ ใช้กับค่าตั้งและยอดสะสม ไม่ใช้กับสถานะขั้นของลำดับ</span><span data-lang-en>Memory that survives a power cut: for setpoints and totals, never for a sequence step</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Scaling</div>
+          <div class="deflist__def"><span data-lang-th>การแปลงค่าดิบจาก ADC เป็นหน่วยทางวิศวกรรมด้วยความสัมพันธ์เชิงเส้นสองจุด</span><span data-lang-en>Converting a raw ADC count into engineering units through a two-point linear relation</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Deadband</div>
+          <div class="deflist__def"><span data-lang-th>ช่องว่างระหว่างเกณฑ์เปิดกับเกณฑ์ปิด ที่ใส่เข้าไปเพื่อไม่ให้เอาต์พุตสลับถี่เกินไป</span><span data-lang-en>The gap between the on and off thresholds, added so an output does not switch too often</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>สิบข้อ เน้นการวินิจฉัยอาการจากหน้างาน การคำนวณการสเกล และการตัดสินใจเชิงออกแบบ เกณฑ์ผ่าน 70%</span>
+        <span data-lang-en>Ten items on diagnosing site symptoms, computing a scaling and judging a design. Pass mark 70%.</span>
+      </p>
+      <div data-quiz="ch05-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>Bolton, W. (2015). <em>Programmable Logic Controllers</em> (6th ed.). Newnes. <span data-lang-th>— บทว่าด้วย I/O อนาล็อกและการประมวลผลข้อมูล</span><span data-lang-en>— the chapters on analogue I/O and data handling.</span></li>
+        <li>Petruzella, F. D. (2016). <em>Programmable Logic Controllers</em> (5th ed.). McGraw-Hill. <span data-lang-th>— การเดินสาย sinking และ sourcing พร้อมแผนภาพครบถ้วน</span><span data-lang-en>— sinking and sourcing wiring, fully illustrated.</span></li>
+        <li>International Electrotechnical Commission. (2017). <em>IEC 61131-2: Programmable controllers — Part 2: Equipment requirements and tests</em>. IEC. <span data-lang-th>— ข้อกำหนดของอินพุตและเอาต์พุตแบบดิจิทัลและอนาล็อก</span><span data-lang-en>— the requirements for digital and analogue I/O.</span></li>
+        <li>International Electrotechnical Commission. (2013). <em>IEC 61131-3: Programmable controllers — Part 3: Programming languages</em> (3rd ed.). IEC.</li>
+        <li>International Electrotechnical Commission. (2016). <em>IEC 60204-1: Safety of machinery — Electrical equipment of machines — Part 1: General requirements</em>. IEC. <span data-lang-th>— การแยกวงจรกำลังกับวงจรควบคุม และข้อกำหนดการเริ่มทำงานใหม่หลังไฟดับ</span><span data-lang-en>— separating power from control, and restart requirements after a supply interruption.</span></li>
+        <li>International Organization for Standardization. (2015). <em>ISO 13849-1: Safety of machinery — Safety-related parts of control systems — Part 1: General principles for design</em>. ISO.</li>
+        <li>Siemens AG. (2023). <em>SIMATIC S7-1200 Programmable Controller System Manual</em>. Siemens. <span data-lang-th>— ค่าปลายพิสัยของโมดูลอนาล็อกและการสเกล</span><span data-lang-en>— analogue module endpoints and scaling.</span></li>
+        <li>Mitsubishi Electric. (2016). <em>MELSEC FX Series Programming Manual</em>. Mitsubishi Electric.</li>
+        <li>Delta Electronics. (2021). <em>DVP-ES2/EX2/SS2 Series Programmable Logic Controller Operation Manual</em>. Delta Electronics.</li>
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press.</li>
+        <li>Shamshiri, R. R., Kalantari, F., Ting, K. C., Thorp, K. R., Hameed, I. A., Weltzien, C., Ahmad, D., &amp; Shad, Z. M. (2018). Advances in greenhouse automation and controlled environment agriculture: A transition to plant factories and urban agriculture. <em>International Journal of Agricultural and Biological Engineering, 11</em>(1), 1–22.</li>
+        <li>Nikolaou, G., Neocleous, D., Katsoulas, N., &amp; Kittas, C. (2019). Irrigation of greenhouse crops. <em>Horticulturae, 5</em>(1), 7.</li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="ch04.html">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>บทก่อนหน้า</span><span data-lang-en>Previous chapter</span></small>
+        <b><span data-lang-th>บทที่ 4 · การควบคุมลำดับและ PLC</span><span data-lang-en>Chapter 4 · Sequence Control and PLC</span></b>
+      </a>
+      <a class="is-next" href="ch06.html">
+        <small><span data-lang-th>บทถัดไป</span><span data-lang-en>Next chapter</span> <i class="fa-solid fa-arrow-right"></i></small>
+        <b><span data-lang-th>บทที่ 6 · การควบคุมกระบวนการ</span><span data-lang-en>Chapter 6 · Process Control</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#wiring"><span data-lang-th>การเดินสาย I/O</span><span data-lang-en>Wiring the I/O</span></a></li>
+          <li><a href="#math"><span data-lang-th>การสเกลสัญญาณ</span><span data-lang-en>Scaling</span></a></li>
+          <li><a href="#lab"><span data-lang-th>ปฏิบัติการที่ 5</span><span data-lang-en>Laboratory 5</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script src="../js/ch05-quiz.js"></script>
+<script src="../js/ch05-anim.js"></script>
+</body>
+</html>

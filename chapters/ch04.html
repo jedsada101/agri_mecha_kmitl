@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 4 · การควบคุมลำดับและ PLC" data-title-en="Chapter 4 · Sequence Control and PLC">Chapter 4 · Sequence Control and PLC</title>
+<meta name="description" content="Chapter 4: sequence control concepts, Boolean logic and K-maps, SFC, the PLC scan cycle, ladder diagrams, timers and counters, with agricultural machinery examples.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="ch01.html"><span data-lang-th>บทที่ 1</span><span data-lang-en>Ch 1</span></a>
+      <a href="ch02.html"><span data-lang-th>บทที่ 2</span><span data-lang-en>Ch 2</span></a>
+      <a href="ch03.html"><span data-lang-th>บทที่ 3</span><span data-lang-en>Ch 3</span></a>
+      <a href="ch04.html" class="is-active"><span data-lang-th>บทที่ 4</span><span data-lang-en>Ch 4</span></a>
+      <a href="ch05.html"><span data-lang-th>บทที่ 5</span><span data-lang-en>Ch 5</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 4</span><span data-lang-en>Chapter 4</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 5–6</span><span data-lang-en>Weeks 5–6</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 4 ชม. + ปฏิบัติ 4 ชม.</span><span data-lang-en>4 h lecture + 4 h laboratory</span></span>
+      <span class="badge badge--sky"><i class="fa-solid fa-film"></i> <span data-lang-th>แอนิเมชัน 4 ชุด</span><span data-lang-en>4 animations</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 4 · การควบคุมลำดับและ PLC</span>
+      <span data-lang-en>Chapter 4 · Sequence Control and PLC</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>เครื่องจักรเกษตรส่วนใหญ่ไม่ได้ทำงานด้วยสมการต่อเนื่อง แต่ทำงานเป็น “ขั้นตอน” ที่มีเงื่อนไขกำกับ บทนี้สอนวิธีคิดงานแบบนั้นให้เป็นระบบ ตั้งแต่พีชคณิตบูลีนและ K-map ไปจนถึง SFC แลดเดอร์ไดอะแกรม ไทเมอร์ และเคาน์เตอร์ บนเครื่องมือที่อุตสาหกรรมใช้จริงคือ PLC</span>
+      <span data-lang-en>Most agricultural machines do not run on continuous equations; they run as <em>steps</em> gated by conditions. This chapter teaches that way of thinking properly — Boolean algebra and K-maps, SFC, ladder diagrams, timers and counters — on the tool industry actually uses: the PLC.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#concept"><span data-lang-th>4.1 แนวคิดการควบคุมลำดับ</span><span data-lang-en>4.1 The sequence idea</span></a></li>
+      <li><a href="#boolean"><span data-lang-th>4.2 พีชคณิตบูลีน</span><span data-lang-en>4.2 Boolean algebra</span></a></li>
+      <li><a href="#sfc"><span data-lang-th>4.3 แผนภาพ SFC</span><span data-lang-en>4.3 Sequential function charts</span></a></li>
+      <li><a href="#kmap"><span data-lang-th>4.4 การลดรูปด้วย K-map</span><span data-lang-en>4.4 Simplifying with K-maps</span></a></li>
+      <li><a href="#plc"><span data-lang-th>4.5 PLC และรอบสแกน</span><span data-lang-en>4.5 The PLC and its scan</span></a></li>
+      <li><a href="#ladder"><span data-lang-th>4.6 แลดเดอร์ไดอะแกรม</span><span data-lang-en>4.6 Ladder diagrams</span></a></li>
+      <li><a href="#timer"><span data-lang-th>4.7 ไทเมอร์</span><span data-lang-en>4.7 Timers</span></a></li>
+      <li><a href="#counter"><span data-lang-th>4.8 เคาน์เตอร์</span><span data-lang-en>4.8 Counters</span></a></li>
+      <li><a href="#activity"><span data-lang-th>4.9 กิจกรรมในชั้นเรียน</span><span data-lang-en>4.9 In-class activity</span></a></li>
+      <li><a href="#lab"><span data-lang-th>4.10 ปฏิบัติการที่ 4</span><span data-lang-en>4.10 Laboratory 4</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>แปลงคำบรรยายการทำงานของเครื่องจักรเกษตรให้เป็นตารางค่าความจริงและนิพจน์บูลีน</span><span data-lang-en>Turn a verbal description of an agricultural machine into a truth table and a Boolean expression.</span></li>
+        <li><span data-lang-th>เขียน SFC ของลำดับการทำงานที่มีหลายขั้นตอนและมีทางแยกเงื่อนไข</span><span data-lang-en>Draw an SFC for a multi-step sequence that includes a conditional branch.</span></li>
+        <li><span data-lang-th>ลดรูปนิพจน์บูลีนด้วย K-map รวมถึงการใช้กฎการพันขอบ และอธิบายว่าการลดรูปช่วยอะไรในทางปฏิบัติ</span><span data-lang-en>Minimise a Boolean expression with a K-map, including the wrap-around rule, and explain what minimisation buys in practice.</span></li>
+        <li><span data-lang-th>อธิบายรอบสแกนของ PLC และคาดการณ์ความหน่วงที่แย่ที่สุดของการตอบสนอง</span><span data-lang-en>Explain the PLC scan cycle and predict the worst-case response delay.</span></li>
+        <li><span data-lang-th>เขียนแลดเดอร์ไดอะแกรมสำหรับวงจรเริ่ม–หยุดแบบมีหน่วงความจำ และวงจรอินเตอร์ล็อก</span><span data-lang-en>Write ladder logic for a latched start–stop circuit and for an interlock.</span></li>
+        <li><span data-lang-th>เลือกใช้ไทเมอร์ TON/TOF และเคาน์เตอร์ CTU ให้ตรงกับโจทย์ และคำนวณค่าตั้ง</span><span data-lang-en>Select TON, TOF and CTU blocks correctly and compute their preset values.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ตอบก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิม ระบบเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer before reading. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch04-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 4.1 --------- -->
+    <section id="concept">
+      <h2><span data-lang-th>4.1 แนวคิดการควบคุมลำดับ</span><span data-lang-en>4.1 The sequence idea</span></h2>
+
+      <p>
+        <span data-lang-th>ลองนึกถึงเครื่องบรรจุเมล็ดพันธุ์ที่เราเห็นในแอนิเมชัน 2.1 เครื่องนี้ไม่ได้ถามว่า “ควรเติมเมล็ดเร็วแค่ไหน” แต่ถามว่า <strong>“ตอนนี้อยู่ขั้นไหน และเงื่อนไขอะไรจะพาไปขั้นถัดไป”</strong> นี่คือหัวใจของการควบคุมลำดับ</span>
+        <span data-lang-en>Think back to the seed-bagging machine of Animation 2.1. It never asks “how fast should I fill?” It asks <strong>“which step am I on, and what condition takes me to the next?”</strong> That is the whole of sequence control.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>ระบบแบบนี้เรียกว่า <strong>ระบบขับเคลื่อนด้วยเหตุการณ์</strong> (event-driven) และอธิบายได้ครบด้วยสามสิ่ง</span>
+        <span data-lang-en>Such a system is <strong>event-driven</strong>, and three things describe it completely:</span>
+      </p>
+
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>สถานะ (State / Step)</span><span data-lang-en>State or step</span></div>
+          <div class="deflist__def"><span data-lang-th>สิ่งที่เครื่องกำลังทำอยู่ ณ ขณะนั้น เช่น “กำลังเติม” มีจำนวนจำกัดและนับได้ชัดเจน</span><span data-lang-en>What the machine is doing right now — “filling”, say. The set of states is finite and countable.</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>เงื่อนไขเปลี่ยนสถานะ (Transition)</span><span data-lang-en>Transition</span></div>
+          <div class="deflist__def"><span data-lang-th>นิพจน์บูลีนที่ต้องเป็นจริงก่อนจะย้ายขั้น เช่น “น้ำหนักถึง 5 kg AND ฝาไม่ได้เปิด”</span><span data-lang-en>A Boolean expression that must be true before the step advances: “weight reached 5 kg AND lid not open”.</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>การกระทำ (Action)</span><span data-lang-en>Action</span></div>
+          <div class="deflist__def"><span data-lang-th>เอาต์พุตที่ถูกสั่งขณะอยู่ในสถานะนั้น เช่น “เปิดวาล์วเติม” และต้องระบุว่าสั่งค้างหรือสั่งชั่วขณะ</span><span data-lang-en>The outputs commanded while that step is active — “open the fill valve” — stating whether the command is held or momentary.</span></div>
+        </div>
+      </div>
+
+      <p>
+        <span data-lang-th>การเปลี่ยนสถานะเขียนในรูปทั่วไปได้ว่า</span>
+        <span data-lang-en>A state change can be written in general form as</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ S_{k+1} \;=\; f\!\left( S_k,\; X \right), \qquad Y \;=\; g\!\left( S_k,\; X \right) $$</div>
+        <div class="eq__num">(4.1)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( S_k \) — <span data-lang-th>สถานะปัจจุบัน</span><span data-lang-en>the present state</span></li>
+          <li>\( X \) — <span data-lang-th>เวกเตอร์ของอินพุตทั้งหมด (สวิตช์ เซนเซอร์ ปุ่มกด)</span><span data-lang-en>the vector of all inputs: switches, sensors, push-buttons</span></li>
+          <li>\( Y \) — <span data-lang-th>เอาต์พุตที่สั่งออกไป (วาล์ว มอเตอร์ ไฟสัญญาณ)</span><span data-lang-en>the commanded outputs: valves, motors, indicator lamps</span></li>
+          <li>\( f, g \) — <span data-lang-th>ฟังก์ชันตรรกะที่เราต้องออกแบบ ซึ่งก็คือ “โปรแกรม” นั่นเอง</span><span data-lang-en>the logic functions we must design — which is exactly what “the program” is</span></li>
+        </ul>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>โรงเพาะเห็ดที่ควบคุมอัตโนมัติมีทั้งสองโลกอยู่ด้วยกัน: การรักษาอุณหภูมิ 25 °C และ CO₂ ไม่เกิน 1,000 ppm เป็นงานควบคุมกระบวนการ แต่ <em>รอบการพ่นหมอก</em> ซึ่งต้องพ่น 30 วินาที หยุด 10 นาที และต้องไม่พ่นขณะพัดลมดูดอากาศทำงาน เป็นงานควบคุมลำดับล้วน ๆ เพราะทุกเงื่อนไขเป็นจริงหรือเท็จ ไม่มีค่ากลาง</span>
+          <span data-lang-en>An automated mushroom house contains both worlds. Holding 25 °C and CO₂ below 1,000 ppm is process control. But the <em>misting cycle</em> — 30 s on, 10 min off, and never while the extraction fan runs — is pure sequence control, because every condition is simply true or false with nothing in between.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 4.2 --------- -->
+    <section id="boolean">
+      <h2><span data-lang-th>4.2 พีชคณิตบูลีน เครื่องมือเขียนเงื่อนไข</span><span data-lang-en>4.2 Boolean algebra, the language of conditions</span></h2>
+
+      <p>
+        <span data-lang-th>เงื่อนไขทุกอย่างในเครื่องจักรเขียนได้ด้วยตัวดำเนินการสามตัวเท่านั้น และตัวดำเนินการที่สี่ซึ่งสะดวกเวลาใช้งาน</span>
+        <span data-lang-en>Every condition in a machine can be written with just three operators, plus a fourth that is convenient in practice.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ตัวดำเนินการ</span><span data-lang-en>Operator</span></th>
+              <th><span data-lang-th>สัญลักษณ์</span><span data-lang-en>Notation</span></th>
+              <th><span data-lang-th>อ่านว่า</span><span data-lang-en>Reads as</span></th>
+              <th><span data-lang-th>ตัวอย่างเงื่อนไขในเครื่องจักรเกษตร</span><span data-lang-en>Example condition on a farm machine</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AND</td>
+              <td>\( A \cdot B \)</td>
+              <td><span data-lang-th>จริงเมื่อจริงทั้งคู่</span><span data-lang-en>true only if both are true</span></td>
+              <td><span data-lang-th>เดินสายพานได้เมื่อ ฝาครอบปิด AND ไม่มีการกดหยุดฉุกเฉิน</span><span data-lang-en>run the conveyor when the guard is closed AND no E-stop is pressed</span></td>
+            </tr>
+            <tr>
+              <td>OR</td>
+              <td>\( A + B \)</td>
+              <td><span data-lang-th>จริงเมื่อจริงอย่างน้อยหนึ่ง</span><span data-lang-en>true if at least one is true</span></td>
+              <td><span data-lang-th>สั่งรดน้ำเมื่อ ดินแห้ง OR ผู้ใช้กดรดน้ำด้วยมือ</span><span data-lang-en>irrigate when the soil is dry OR the operator presses manual water</span></td>
+            </tr>
+            <tr>
+              <td>NOT</td>
+              <td>\( \overline{A} \)</td>
+              <td><span data-lang-th>กลับค่า</span><span data-lang-en>inverts the value</span></td>
+              <td><span data-lang-th>พ่นหมอกได้เมื่อ NOT (พัดลมดูดอากาศทำงาน)</span><span data-lang-en>mist only when NOT (the extraction fan is running)</span></td>
+            </tr>
+            <tr>
+              <td>XOR</td>
+              <td>\( A \oplus B \)</td>
+              <td><span data-lang-th>จริงเมื่อต่างกัน</span><span data-lang-en>true when they differ</span></td>
+              <td><span data-lang-th>แจ้งเตือนเมื่อ เซนเซอร์สองตัวที่ควรตรงกันกลับไม่ตรงกัน</span><span data-lang-en>alarm when two sensors that should agree disagree</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3><span data-lang-th>4.2.1 จากคำบรรยายงาน สู่ตารางค่าความจริง</span><span data-lang-en>4.2.1 From a job description to a truth table</span></h3>
+
+      <p>
+        <span data-lang-th>นี่คือทักษะที่ใช้มากที่สุดในงานจริง ลองดูโจทย์ของเครื่องคัดขนาดผลไม้</span>
+        <span data-lang-en>This is the skill used most often in practice. Take the brief for a fruit grader:</span>
+      </p>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-clipboard-list"></i> <span data-lang-th>โจทย์ — วงจรอนุญาตให้เดินเครื่อง (permissive)</span><span data-lang-en>Brief — a run permissive circuit</span></div>
+        <p class="mb-0">
+          <span data-lang-th>“สายพานคัดผลไม้จะเดินได้เมื่อฝาครอบนิรภัยปิดอยู่ และมีผลไม้อยู่ในฮอปเปอร์ และต้องไม่มีการกดปุ่มหยุดฉุกเฉิน ยกเว้นกรณีช่างเปิดโหมดบำรุงรักษาไว้ ซึ่งจะเดินเครื่องได้แม้ฮอปเปอร์ว่าง แต่ยังต้องปิดฝาครอบและไม่กดหยุดฉุกเฉินเสมอ”</span>
+          <span data-lang-en>“The grading conveyor may run when the safety guard is closed, there is fruit in the hopper, and no E-stop is pressed. The exception is maintenance mode, in which it may run with an empty hopper — but the guard must still be closed and the E-stop still clear.”</span>
+        </p>
+      </div>
+
+      <p>
+        <span data-lang-th>กำหนดตัวแปร \( G \) = ฝาครอบปิด, \( F \) = มีผลไม้ในฮอปเปอร์, \( M \) = โหมดบำรุงรักษาเปิด, \( E \) = ปุ่มหยุดฉุกเฉินถูกกด และ \( Y \) = อนุญาตให้สายพานเดิน จะได้</span>
+        <span data-lang-en>Let \( G \) = guard closed, \( F \) = fruit present, \( M \) = maintenance mode on, \( E \) = E-stop pressed, and \( Y \) = conveyor permitted. Then</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ Y \;=\; G \cdot \overline{E} \cdot \left( F + M \right) $$</div>
+        <div class="eq__num">(4.2)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>สังเกตว่าเงื่อนไขความปลอดภัย \( G \) และ \( \overline{E} \) ถูกคูณไว้ด้านนอกวงเล็บ แปลว่า <em>ไม่มีโหมดใดข้ามได้</em> ซึ่งเป็นวิธีเขียนที่ถูกต้องเสมอสำหรับเงื่อนไขนิรภัย</span>
+        <span data-lang-en>Notice that the safety terms \( G \) and \( \overline{E} \) sit outside the bracket as factors, meaning <em>no mode can bypass them</em>. That is always the correct way to write a safety condition.</span>
+      </p>
+
+      <h3><span data-lang-th>4.2.2 กฎที่ใช้บ่อยและทฤษฎีบทเดอมอร์แกน</span><span data-lang-en>4.2.2 Everyday laws, and De Morgan</span></h3>
+
+      <div class="eq">
+        <div class="eq__body">$$ \overline{A \cdot B} \;=\; \overline{A} + \overline{B}, \qquad
+                              \overline{A + B} \;=\; \overline{A} \cdot \overline{B} $$</div>
+        <div class="eq__num">(4.3)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ทฤษฎีบทเดอมอร์แกนไม่ใช่เรื่องวิชาการล้วน ๆ มันคือเครื่องมือที่ช่างใช้ทุกวัน เพราะอุปกรณ์นิรภัยในอุตสาหกรรมเดินสายแบบ <strong>normally closed</strong> (ปกติปิด) เสมอ สัญญาณที่เข้า PLC จึงเป็น “ยังปลอดภัยอยู่” ไม่ใช่ “ถูกกดแล้ว” การแปลงไปมาระหว่างสองมุมมองนี้ต้องใช้เดอมอร์แกน</span>
+          <span data-lang-en>De Morgan is not an academic curiosity; it is a daily tool, because industrial safety devices are always wired <strong>normally closed</strong>. The signal arriving at the PLC therefore means “still safe”, not “has been pressed”, and converting between those two views is exactly what De Morgan does.</span>
+      </p>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>เหตุใดปุ่มหยุดฉุกเฉินต้องเป็นหน้าสัมผัสปกติปิด</span><span data-lang-en>Why an E-stop must be a normally-closed contact</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ถ้าเดินสายแบบปกติเปิด เมื่อสายขาดหรือขั้วหลวม PLC จะเห็นสัญญาณเหมือน “ไม่มีใครกดปุ่ม” และเครื่องจะเดินต่อได้ทั้งที่ระบบนิรภัยใช้การไม่ได้แล้ว แต่ถ้าเดินแบบปกติปิด สายขาดจะทำให้สัญญาณหายไปซึ่งเท่ากับ “ถูกกด” เครื่องจึงหยุดเอง หลักคิดนี้เรียกว่า <strong>fail-safe</strong> และเป็นข้อกำหนดในมาตรฐานความปลอดภัยเครื่องจักร</span>
+          <span data-lang-en>Wired normally open, a broken wire or loose terminal looks to the PLC exactly like “nobody pressed the button”, so the machine keeps running while the safety system is in fact dead. Wired normally closed, a broken wire removes the signal, which reads as “pressed”, and the machine stops itself. This principle is called <strong>fail-safe</strong>, and machine-safety standards require it.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 4.3 --------- -->
+    <section id="sfc">
+      <h2><span data-lang-th>4.3 แผนภาพลำดับการทำงาน SFC</span><span data-lang-en>4.3 The sequential function chart</span></h2>
+
+      <p>
+        <span data-lang-th>พีชคณิตบูลีนบอกเงื่อนไขได้ แต่ไม่บอกลำดับ เมื่อเครื่องจักรมีหลายขั้นตอน เราต้องการภาษาที่แสดง “ลำดับ” โดยตรง ซึ่งก็คือ <strong>SFC</strong> หนึ่งในห้าภาษาตามมาตรฐาน IEC 61131-3</span>
+        <span data-lang-en>Boolean algebra states conditions but says nothing about order. For a multi-step machine we want a language that shows order directly: the <strong>SFC</strong>, one of the five languages of IEC 61131-3.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>SFC มีองค์ประกอบเพียงสามอย่าง: <strong>ขั้น</strong> (step) วาดเป็นสี่เหลี่ยม, <strong>เงื่อนไขเปลี่ยนขั้น</strong> (transition) วาดเป็นขีดขวางเส้น และ <strong>การกระทำ</strong> (action) วาดเป็นกล่องต่อข้างขั้น กฎสำคัญคือมีเพียงขั้นที่ “แอ็กทีฟ” เท่านั้นที่สั่งงาน และการเปลี่ยนขั้นจะเกิดเมื่อขั้นก่อนหน้าแอ็กทีฟ <em>และ</em> เงื่อนไขเป็นจริง</span>
+        <span data-lang-en>An SFC has only three elements: <strong>steps</strong> as rectangles, <strong>transitions</strong> as bars across the link, and <strong>actions</strong> as boxes beside a step. The governing rule is that only an <em>active</em> step commands anything, and a transition fires when the step above it is active <em>and</em> its condition is true.</span>
+      </p>
+
+      <!-- ===================== Animation 4.1 ===================== -->
+      <figure class="anim" data-anim="ch04-sfc">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 4.1 — SFC ของเครื่องบรรจุเมล็ดพันธุ์ ทำงานจริง</span>
+          <span data-lang-en>Animation 4.1 — The seed-bagging SFC, running</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 420" role="img" aria-label="An SFC with four steps beside the machine it controls">
+            <defs>
+              <marker id="ar41" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" class="dg-arrow"/>
+              </marker>
+            </defs>
+
+            <!-- ============ left: the SFC itself ============ -->
+            <text class="dg-text-b" x="150" y="28" text-anchor="middle" data-lang-th>แผนภาพ SFC</text>
+            <text class="dg-text-b" x="150" y="28" text-anchor="middle" data-lang-en>The SFC</text>
+
+            <!-- step 1 (initial step: double border) -->
+            <rect x="96" y="44" width="108" height="42" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <rect x="100" y="48" width="100" height="34" id="s4-step0" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="150" y="70" text-anchor="middle">S1</text>
+            <line x1="150" y1="86" x2="150" y2="110" class="dg-stroke" stroke-width="2"/>
+            <line x1="132" y1="110" x2="168" y2="110" class="dg-stroke" stroke-width="2.5"/>
+            <text class="dg-text-sm" x="178" y="108">t1</text>
+            <line x1="150" y1="110" x2="150" y2="130" class="dg-stroke" stroke-width="2" marker-end="url(#ar41)"/>
+
+            <rect x="100" y="132" width="100" height="34" id="s4-step1" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="150" y="154" text-anchor="middle">S2</text>
+            <line x1="150" y1="166" x2="150" y2="186" class="dg-stroke" stroke-width="2"/>
+            <line x1="132" y1="186" x2="168" y2="186" class="dg-stroke" stroke-width="2.5"/>
+            <text class="dg-text-sm" x="178" y="184">t2</text>
+            <line x1="150" y1="186" x2="150" y2="206" class="dg-stroke" stroke-width="2" marker-end="url(#ar41)"/>
+
+            <rect x="100" y="208" width="100" height="34" id="s4-step2" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="150" y="230" text-anchor="middle">S3</text>
+            <line x1="150" y1="242" x2="150" y2="262" class="dg-stroke" stroke-width="2"/>
+            <line x1="132" y1="262" x2="168" y2="262" class="dg-stroke" stroke-width="2.5"/>
+            <text class="dg-text-sm" x="178" y="260">t3</text>
+            <line x1="150" y1="262" x2="150" y2="282" class="dg-stroke" stroke-width="2" marker-end="url(#ar41)"/>
+
+            <rect x="100" y="284" width="100" height="34" id="s4-step3" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="150" y="306" text-anchor="middle">S4</text>
+            <line x1="150" y1="318" x2="150" y2="338" class="dg-stroke" stroke-width="2"/>
+            <line x1="132" y1="338" x2="168" y2="338" class="dg-stroke" stroke-width="2.5"/>
+            <text class="dg-text-sm" x="178" y="336">t4</text>
+            <!-- loop back to S1 -->
+            <path d="M 150 338 L 150 360 L 54 360 L 54 65 L 96 65" class="dg-stroke" stroke-width="2" fill="none" marker-end="url(#ar41)"/>
+
+            <!-- action boxes -->
+            <g class="dg-text-sm">
+              <rect x="216" y="132" width="128" height="34" class="dg-fill-surface dg-stroke" stroke-width="1.5"/>
+              <text x="280" y="154" text-anchor="middle" data-lang-th>เปิดวาล์วเติม</text>
+              <text x="280" y="154" text-anchor="middle" data-lang-en>open fill valve</text>
+              <rect x="216" y="208" width="128" height="34" class="dg-fill-surface dg-stroke" stroke-width="1.5"/>
+              <text x="280" y="230" text-anchor="middle" data-lang-th>สั่งปิดผนึก</text>
+              <text x="280" y="230" text-anchor="middle" data-lang-en>run the sealer</text>
+              <rect x="216" y="284" width="128" height="34" class="dg-fill-surface dg-stroke" stroke-width="1.5"/>
+              <text x="280" y="306" text-anchor="middle" data-lang-th>เดินสายพานออก</text>
+              <text x="280" y="306" text-anchor="middle" data-lang-en>run out conveyor</text>
+              <rect x="216" y="48" width="128" height="34" class="dg-fill-surface dg-stroke" stroke-width="1.5"/>
+              <text x="280" y="70" text-anchor="middle" data-lang-th>รอถุงเข้าตำแหน่ง</text>
+              <text x="280" y="70" text-anchor="middle" data-lang-en>wait for a bag</text>
+            </g>
+
+            <!-- ============ right: the machine ============ -->
+            <text class="dg-text-b" x="620" y="28" text-anchor="middle" data-lang-th>เครื่องจักรที่ถูกสั่ง</text>
+            <text class="dg-text-b" x="620" y="28" text-anchor="middle" data-lang-en>The machine it commands</text>
+
+            <path d="M 560 60 L 680 60 L 652 112 L 588 112 Z" class="dg-fill-gold dg-stroke" stroke-width="2"/>
+            <rect id="s4-valve" x="610" y="112" width="20" height="14" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <line id="s4-stream" x1="620" y1="126" x2="620" y2="176" class="dg-stroke-gold" stroke-width="7" stroke-linecap="round" opacity="0"/>
+
+            <g id="s4-bag">
+              <rect x="-30" y="-56" width="60" height="56" rx="4" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+              <rect id="s4-fill" x="-26" y="-4" width="52" height="0" class="dg-fill-gold"/>
+              <rect id="s4-cap" x="-33" y="-64" width="66" height="9" rx="3" class="dg-fill-steel dg-stroke" stroke-width="1.5" opacity="0"/>
+            </g>
+            <rect x="452" y="238" width="356" height="14" rx="7" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+
+            <!-- sealer jaws -->
+            <g id="s4-sealer">
+              <rect x="586" y="186" width="30" height="12" rx="3" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+              <rect x="624" y="186" width="30" height="12" rx="3" class="dg-fill-steel dg-stroke" stroke-width="1.5"/>
+            </g>
+
+            <text class="dg-text-sm" x="620" y="286" text-anchor="middle" data-lang-th>มีเพียงขั้นที่แอ็กทีฟเท่านั้นที่สั่งงาน</text>
+            <text class="dg-text-sm" x="620" y="286" text-anchor="middle" data-lang-en>only the active step commands anything</text>
+
+            <!-- transition condition legend -->
+            <rect x="452" y="306" width="356" height="98" rx="10" class="dg-fill-green dg-stroke-green" stroke-width="1.5" opacity="0.9"/>
+            <g class="dg-text-sm">
+              <text x="470" y="330" data-lang-th>t1 : เซนเซอร์พบถุงในตำแหน่ง</text>
+              <text x="470" y="330" data-lang-en>t1 : bag-present sensor made</text>
+              <text x="470" y="352" data-lang-th>t2 : น้ำหนักถึงค่าตั้ง</text>
+              <text x="470" y="352" data-lang-en>t2 : weight reached its preset</text>
+              <text x="470" y="374" data-lang-th>t3 : ไทเมอร์ปิดผนึกครบเวลา</text>
+              <text x="470" y="374" data-lang-en>t3 : sealing timer has elapsed</text>
+              <text x="470" y="396" data-lang-th>t4 : ถุงออกพ้นเซนเซอร์ปลายสายพาน</text>
+              <text x="470" y="396" data-lang-en>t4 : bag clear of the exit sensor</text>
+            </g>
+          </svg>
+
+          <span class="fig-label fig-label--muted" style="left:21.0%;top:81%">\( t_4 = \overline{X_{\text{exit}}} \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="jam" aria-pressed="false"><i class="fa-solid fa-ban"></i><span data-lang-th>ถุงติดขัดที่ทางออก</span><span data-lang-en>Jam the exit</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ความเร็ว</span><span data-lang-en>Speed</span>
+            <input type="range" data-anim-param="speed" data-unit="×" min="0.4" max="2.2" step="0.2" value="1">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 4.1</span><span data-lang-en>Animation 4.1</span></b>
+          <span data-lang-th> ขั้นที่แอ็กทีฟจะสว่างขึ้น และกล่องการกระทำข้างขั้นนั้นจะมีผลกับเครื่องจักรฝั่งขวาทันที ลองกด “ถุงติดขัดที่ทางออก” เพื่อทำให้เงื่อนไข \( t_4 \) เป็นเท็จค้างไว้ — ลำดับจะหยุดนิ่งอยู่ที่ S4 ไม่วนกลับไป S1 ซึ่งเป็นพฤติกรรมที่ถูกต้องของ SFC และเป็นเหตุผลที่โปรแกรมจริงต้องมี <em>ไทเมอร์เฝ้าระวัง</em> คอยจับว่าขั้นใดค้างนานเกินกำหนด</span>
+          <span data-lang-en> The active step lights up, and the action box beside it takes effect on the machine at once. Press “Jam the exit” to hold \( t_4 \) false: the sequence simply stops at S4 and never returns to S1. That is correct SFC behaviour, and exactly why real programs add a <em>watchdog timer</em> to catch a step that stays active too long.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>กับดักที่พบบ่อยในงานจริง</span><span data-lang-en>The trap that catches real projects</span></div>
+        <p class="mb-0">
+          <span data-lang-th>SFC ที่ออกแบบโดยนึกถึงเฉพาะ “เมื่อทุกอย่างเป็นไปตามปกติ” จะค้างทันทีที่มีอะไรผิดปกติ และผู้ปฏิบัติงานจะไม่รู้ว่าค้างเพราะอะไร การออกแบบที่ดีต้องตอบสามคำถามทุกขั้น: ถ้าเงื่อนไขไม่มาภายในเวลาที่ควรจะเป็น ต้องทำอะไร? ผู้ใช้จะเห็นสถานะอย่างไร? และถ้ากดหยุดฉุกเฉินตอนอยู่ขั้นนี้ เครื่องจะกลับมาเริ่มใหม่อย่างปลอดภัยได้อย่างไร?</span>
+          <span data-lang-en>An SFC designed only for the happy path freezes the moment anything is wrong, and the operator has no idea why. Good design answers three questions at every step: what happens if the condition never arrives in the time it should; how does the operator see the state; and if someone hits the E-stop here, how does the machine restart safely?</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 4.4 --------- -->
+    <section id="kmap">
+      <h2><span data-lang-th>4.4 การลดรูปด้วยแผนที่คาร์โนห์ (K-map)</span><span data-lang-en>4.4 Simplifying with a Karnaugh map</span></h2>
+
+      <p>
+        <span data-lang-th>นิพจน์ที่ได้จากตารางค่าความจริงมักยาวเกินจำเป็น K-map คือวิธีจัดเรียงตารางค่าความจริงใหม่ให้พจน์ที่ยุบรวมกันได้มาอยู่ติดกัน เพื่อให้เห็นการลดรูปด้วยตาเปล่า</span>
+        <span data-lang-en>The expression that falls out of a truth table is usually longer than it needs to be. A K-map rearranges that table so the terms that can merge end up adjacent, making the simplification visible by eye.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>หัวใจอยู่ที่การเรียงหัวตารางแบบ <strong>รหัสเกรย์</strong> (00, 01, 11, 10) ซึ่งทำให้ช่องที่อยู่ติดกันต่างกันเพียงตัวแปรเดียว เมื่อสองช่องติดกันเป็น 1 ทั้งคู่ ตัวแปรที่ต่างกันนั้นจะถูกตัดออกได้</span>
+        <span data-lang-en>The trick is labelling the axes in <strong>Gray code</strong> (00, 01, 11, 10) so that neighbouring cells differ in only one variable. When two neighbours are both 1, that differing variable drops out.</span>
+      </p>
+
+      <h3><span data-lang-th>4.4.1 ตัวอย่าง — วงจรเตือนระดับน้ำในถังผสมปุ๋ย</span><span data-lang-en>4.4.1 Worked example — a tank-level alarm on a fertigation mixer</span></h3>
+
+      <p>
+        <span data-lang-th>ถังผสมปุ๋ยมีสวิตช์ลูกลอยสามระดับ \( L_1 \) (ต่ำสุด), \( L_2 \) (กลาง), \( L_3 \) (สูงสุด) ซึ่งจะเป็น 1 เมื่อน้ำท่วมถึงระดับนั้น ต้องการให้สัญญาณเตือน \( Y \) ทำงานเมื่อ <em>สภาพของลูกลอยขัดแย้งกันเอง</em> เพราะนั่นหมายถึงมีลูกลอยเสียหรือติดค้าง เช่น \( L_3 \) เป็น 1 แต่ \( L_1 \) เป็น 0 ซึ่งเป็นไปไม่ได้ทางกายภาพ</span>
+        <span data-lang-en>A fertigation tank has three float switches \( L_1 \) (low), \( L_2 \) (mid) and \( L_3 \) (high), each reading 1 when the water has reached it. An alarm \( Y \) must fire whenever the floats <em>contradict each other</em>, since that means one has failed or jammed — \( L_3 \) reading 1 while \( L_1 \) reads 0 is physically impossible.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางค่าความจริงของวงจรเตือนความขัดแย้งของลูกลอย</span><span data-lang-en>Truth table for the float-contradiction alarm</span></caption>
+          <thead>
+            <tr>
+              <th>\( L_3 \)</th><th>\( L_2 \)</th><th>\( L_1 \)</th>
+              <th><span data-lang-th>ความหมายทางกายภาพ</span><span data-lang-en>Physical meaning</span></th>
+              <th>\( Y \)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>0</td><td>0</td><td><span data-lang-th>ถังว่าง — ปกติ</span><span data-lang-en>tank empty — valid</span></td><td>0</td></tr>
+            <tr><td>0</td><td>0</td><td>1</td><td><span data-lang-th>น้ำถึงระดับต่ำ — ปกติ</span><span data-lang-en>water at low level — valid</span></td><td>0</td></tr>
+            <tr><td>0</td><td>1</td><td>0</td><td><span data-lang-th>กลางเป็น 1 แต่ต่ำเป็น 0 — ขัดแย้ง</span><span data-lang-en>mid on, low off — contradiction</span></td><td>1</td></tr>
+            <tr><td>0</td><td>1</td><td>1</td><td><span data-lang-th>น้ำถึงระดับกลาง — ปกติ</span><span data-lang-en>water at mid level — valid</span></td><td>0</td></tr>
+            <tr><td>1</td><td>0</td><td>0</td><td><span data-lang-th>สูงเป็น 1 แต่อีกสองตัวเป็น 0 — ขัดแย้ง</span><span data-lang-en>high on, others off — contradiction</span></td><td>1</td></tr>
+            <tr><td>1</td><td>0</td><td>1</td><td><span data-lang-th>สูงเป็น 1 แต่กลางเป็น 0 — ขัดแย้ง</span><span data-lang-en>high on but mid off — contradiction</span></td><td>1</td></tr>
+            <tr><td>1</td><td>1</td><td>0</td><td><span data-lang-th>ต่ำเป็น 0 ทั้งที่น้ำท่วมถึงสูง — ขัดแย้ง</span><span data-lang-en>low off although water reached high — contradiction</span></td><td>1</td></tr>
+            <tr><td>1</td><td>1</td><td>1</td><td><span data-lang-th>ถังเต็ม — ปกติ</span><span data-lang-en>tank full — valid</span></td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <span data-lang-th>เขียนตรง ๆ จากแถวที่ \( Y = 1 \) จะได้สี่พจน์</span>
+        <span data-lang-en>Read straight off the rows where \( Y = 1 \), that is four terms:</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ Y \;=\; \overline{L_3} L_2 \overline{L_1} \;+\; L_3 \overline{L_2} \, \overline{L_1} \;+\; L_3 \overline{L_2} L_1 \;+\; L_3 L_2 \overline{L_1} $$</div>
+        <div class="eq__num">(4.4)</div>
+      </div>
+
+      <figure class="figure">
+        <div class="fig-stage">
+          <svg viewBox="0 0 860 300" role="img" aria-labelledby="fig41-title">
+            <title id="fig41-title">A three-variable Karnaugh map with its three prime implicants grouped</title>
+
+            <!-- ---- grid: rows are L3 (0,1), columns are L2L1 in Gray code ---- -->
+            <g class="dg-stroke" stroke-width="2">
+              <rect x="190" y="86" width="120" height="62" class="dg-fill-surface"/>
+              <rect x="310" y="86" width="120" height="62" class="dg-fill-surface"/>
+              <rect x="430" y="86" width="120" height="62" class="dg-fill-surface"/>
+              <rect x="550" y="86" width="120" height="62" class="dg-fill-gold"/>
+              <rect x="190" y="148" width="120" height="62" class="dg-fill-gold"/>
+              <rect x="310" y="148" width="120" height="62" class="dg-fill-gold"/>
+              <rect x="430" y="148" width="120" height="62" class="dg-fill-surface"/>
+              <rect x="550" y="148" width="120" height="62" class="dg-fill-gold"/>
+            </g>
+
+            <!-- ---- the cell values, straight from the truth table ---- -->
+            <g class="dg-text-b" text-anchor="middle" style="font-size:17px">
+              <text x="250" y="124">0</text>
+              <text x="370" y="124">0</text>
+              <text x="490" y="124">0</text>
+              <text x="610" y="124">1</text>
+              <text x="250" y="186">1</text>
+              <text x="370" y="186">1</text>
+              <text x="490" y="186">0</text>
+              <text x="610" y="186">1</text>
+            </g>
+
+            <!-- ---- headers ---- -->
+            <g class="dg-text-sm" text-anchor="middle">
+              <text x="250" y="76">00</text>
+              <text x="370" y="76">01</text>
+              <text x="490" y="76">11</text>
+              <text x="610" y="76">10</text>
+            </g>
+            <g class="dg-text-sm">
+              <text x="176" y="124" text-anchor="end">0</text>
+              <text x="176" y="186" text-anchor="end">1</text>
+            </g>
+
+            <!-- ---- group A: the column 10 pair, L3 drops out ---- -->
+            <rect x="558" y="78" width="104" height="140" rx="16" class="dg-stroke-green" stroke-width="3" fill="none"/>
+            <!-- ---- group B: the lower-row pair 00 and 01, L1 drops out ---- -->
+            <rect x="198" y="156" width="224" height="46" rx="16" class="dg-stroke-gold" stroke-width="3" fill="none"/>
+            <!-- ---- group C: wraps the left and right edges, L2 drops out ---- -->
+            <path d="M 214 222 L 198 222 A 14 14 0 0 1 198 194 L 214 194" class="dg-stroke" stroke-width="3" fill="none" stroke-dasharray="7 5"/>
+            <path d="M 646 222 L 662 222 A 14 14 0 0 0 662 194 L 646 194" class="dg-stroke" stroke-width="3" fill="none" stroke-dasharray="7 5"/>
+            <path d="M 214 222 L 286 222 M 214 194 L 286 194" class="dg-stroke" stroke-width="3" stroke-dasharray="7 5"/>
+            <path d="M 574 222 L 646 222 M 574 194 L 646 194" class="dg-stroke" stroke-width="3" stroke-dasharray="7 5"/>
+
+            <text class="dg-text-sm" x="610" y="56" text-anchor="middle" data-lang-th>กลุ่ม A — คู่แนวตั้ง</text>
+            <text class="dg-text-sm" x="610" y="56" text-anchor="middle" data-lang-en>group A — vertical pair</text>
+            <text class="dg-text-sm" x="310" y="248" text-anchor="middle" data-lang-th>กลุ่ม B — คู่แนวนอน</text>
+            <text class="dg-text-sm" x="310" y="248" text-anchor="middle" data-lang-en>group B — horizontal pair</text>
+            <text class="dg-text-sm" x="430" y="284" text-anchor="middle" data-lang-th>กลุ่ม C — คู่ที่พันขอบซ้ายไปบรรจบขอบขวา</text>
+            <text class="dg-text-sm" x="430" y="284" text-anchor="middle" data-lang-en>group C — a pair wrapping the left edge round to the right</text>
+          </svg>
+
+          <span class="fig-label fig-label--bare" style="left:17.5%;top:21%">\( L_3 \)</span>
+          <span class="fig-label fig-label--bare" style="left:30.0%;top:9%">\( L_2 L_1 \)</span>
+          <span class="fig-label fig-label--muted" style="left:81.5%;top:26%">\( L_2\overline{L_1} \)</span>
+          <span class="fig-label fig-label--muted" style="left:36.0%;top:60%">\( L_3\overline{L_2} \)</span>
+          <span class="fig-label fig-label--muted" style="left:63.0%;top:79%">\( L_3\overline{L_1} \)</span>
+        </div>
+        <figcaption>
+          <b><span data-lang-th>รูปที่ 4.1</span><span data-lang-en>Figure 4.1</span></b>
+          <span data-lang-th> ช่องที่ระบายสีคือช่องที่ \( Y = 1 \) ทั้งสี่ช่อง ซึ่งตรงกับสี่พจน์ในสมการ (4.4) พอดี กลุ่ม A จับสองช่องในคอลัมน์ \( L_2L_1 = 10 \) ซึ่งต่างกันที่ \( L_3 \) เท่านั้น จึงตัด \( L_3 \) ออกเหลือ \( L_2\overline{L_1} \) กลุ่ม B จับคอลัมน์ 00 กับ 01 ในแถวล่าง ซึ่งต่างกันที่ \( L_1 \) จึงเหลือ \( L_3\overline{L_2} \) ส่วนกลุ่ม C อาศัยกฎที่ว่าแผนที่พันรอบตัวเอง ขอบซ้ายจึงติดกับขอบขวา คอลัมน์ 00 กับ 10 ในแถวล่างต่างกันที่ \( L_2 \) เท่านั้น จึงเหลือ \( L_3\overline{L_1} \)</span>
+          <span data-lang-en> The shaded cells are the four where \( Y = 1 \), matching the four terms of equation (4.4) exactly. Group A takes the two cells of column \( L_2L_1 = 10 \), which differ only in \( L_3 \), so \( L_3 \) drops out leaving \( L_2\overline{L_1} \). Group B takes columns 00 and 01 of the lower row, which differ in \( L_1 \), leaving \( L_3\overline{L_2} \). Group C uses the rule that the map wraps round on itself, so the left edge adjoins the right: columns 00 and 10 of the lower row differ only in \( L_2 \), leaving \( L_3\overline{L_1} \).</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        <span data-lang-th>สามกลุ่มในรูปที่ 4.1 ให้สามพจน์ รวมกันด้วย OR ได้ผลลัพธ์ที่สั้นลงมาก</span>
+        <span data-lang-en>The three groups of Figure 4.1 give three terms, which OR together into a far shorter result:</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ Y \;=\; L_2 \overline{L_1} \;+\; L_3 \overline{L_1} \;+\; L_3 \overline{L_2} $$</div>
+        <div class="eq__num">(4.5)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>จากสี่พจน์ที่มีสามตัวแปรต่อพจน์ เหลือสามพจน์ที่มีสองตัวแปรต่อพจน์ ในแลดเดอร์ไดอะแกรมนี่คือการลดจากหน้าสัมผัส 12 ตัว เหลือ 6 ตัว ซึ่งหมายถึงเวลาสแกนที่สั้นลง โอกาสผิดพลาดน้อยลง และคนที่มาซ่อมต่อจากเราอ่านเข้าใจง่ายขึ้น</span>
+        <span data-lang-en>Four three-variable terms become three two-variable terms. In a ladder diagram that is twelve contacts reduced to six — a shorter scan, fewer places to make a mistake, and a program the next person to service the machine can actually read.</span>
+      </p>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-lightbulb"></i> <span data-lang-th>ข้อควรจำเวลาจับกลุ่ม</span><span data-lang-en>Rules for grouping</span></div>
+        <ul class="mb-0">
+          <li><span data-lang-th>กลุ่มต้องมีขนาดเป็นกำลังของสองเท่านั้น คือ 1, 2, 4, 8 ช่อง</span><span data-lang-en>A group's size must be a power of two: 1, 2, 4 or 8 cells.</span></li>
+          <li><span data-lang-th>กลุ่มใหญ่กว่าดีกว่า เพราะตัดตัวแปรออกได้มากกว่า</span><span data-lang-en>Bigger groups are better, because they eliminate more variables.</span></li>
+          <li><span data-lang-th>กลุ่มทับกันได้ และควรทับถ้าช่วยให้กลุ่มใหญ่ขึ้น</span><span data-lang-en>Groups may overlap, and should when that makes a group larger.</span></li>
+          <li><span data-lang-th>ขอบซ้ายติดกับขอบขวา และขอบบนติดกับขอบล่าง เพราะแผนที่พันรอบตัวเอง</span><span data-lang-en>Left edge wraps to right, and top to bottom: the map is toroidal.</span></li>
+          <li><span data-lang-th>สภาวะที่เกิดขึ้นไม่ได้ทางกายภาพใส่เป็น “don't care” (X) ได้ ซึ่งมักช่วยให้กลุ่มใหญ่ขึ้นอีก</span><span data-lang-en>Physically impossible combinations can be marked “don't care” (X), which often enlarges a group further.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 4.5 --------- -->
+    <section id="plc">
+      <h2><span data-lang-th>4.5 PLC และรอบสแกน</span><span data-lang-en>4.5 The PLC and its scan cycle</span></h2>
+
+      <p>
+        <span data-lang-th><strong>Programmable Logic Controller</strong> คือคอมพิวเตอร์ที่ออกแบบมาเพื่องานควบคุมเครื่องจักรโดยเฉพาะ สิ่งที่ทำให้มันต่างจากไมโครคอนโทรลเลอร์ไม่ใช่ความเร็ว แต่คือ <em>วิธีทำงาน</em> ที่คาดการณ์ได้ทุกรอบ</span>
+        <span data-lang-en>A <strong>programmable logic controller</strong> is a computer built specifically to control machines. What separates it from a microcontroller is not speed but a <em>way of working</em> that is predictable on every cycle.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>PLC ไม่ได้อ่านอินพุตตอนที่โปรแกรมต้องใช้ แต่ทำงานเป็นสามจังหวะวนซ้ำไม่หยุด</span>
+        <span data-lang-en>A PLC does not read an input at the moment the program needs it. It repeats three beats forever:</span>
+      </p>
+
+      <ol class="steps">
+        <li><b><span data-lang-th>อ่านอินพุตทั้งหมดพร้อมกัน</span><span data-lang-en>Read every input at once</span></b><br>
+          <span data-lang-th>สถานะของอินพุตทุกช่องถูกคัดลอกไปเก็บในหน่วยความจำที่เรียกว่า <strong>input image</strong> แล้วโปรแกรมจะอ่านจากสำเนานี้เท่านั้น</span>
+          <span data-lang-en>The state of all input channels is copied into memory — the <strong>input image</strong> — and the program then reads only that copy.</span></li>
+        <li><b><span data-lang-th>ประมวลผลโปรแกรมจากบนลงล่าง</span><span data-lang-en>Execute the program top to bottom</span></b><br>
+          <span data-lang-th>ทุกบรรทัดถูกคำนวณตามลำดับ ผลลัพธ์เขียนลง <strong>output image</strong> ไม่ได้ออกไปที่อุปกรณ์จริงทันที</span>
+          <span data-lang-en>Every rung is evaluated in order, and results are written to the <strong>output image</strong>, not yet to the real devices.</span></li>
+        <li><b><span data-lang-th>ส่งเอาต์พุตทั้งหมดพร้อมกัน</span><span data-lang-en>Write every output at once</span></b><br>
+          <span data-lang-th>ค่าใน output image ถูกส่งออกไปที่ขั้วต่อจริงทั้งหมดในจังหวะเดียว แล้ววนกลับไปจังหวะที่ 1</span>
+          <span data-lang-en>The output image is pushed to the physical terminals in a single beat, and the cycle returns to beat 1.</span></li>
+      </ol>
+
+      <p>
+        <span data-lang-th>โครงสร้างนี้ให้ประโยชน์ใหญ่สองข้อ คือ <em>ความคงเส้นคงวา</em> เพราะทุกบรรทัดในรอบเดียวกันเห็นค่าอินพุตชุดเดียวกันหมด และ <em>ความคาดการณ์ได้</em> เพราะเวลาที่ใช้ต่อรอบใกล้เคียงกันทุกรอบ แต่ก็มีราคาที่ต้องจ่าย คือความหน่วง</span>
+        <span data-lang-en>This structure buys two things: <em>consistency</em>, since every rung in one cycle sees the same snapshot of inputs, and <em>predictability</em>, since each cycle takes about the same time. The price is latency.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ t_{\text{scan}} \;=\; t_{\text{in}} + t_{\text{prog}} + t_{\text{out}}, \qquad
+                              t_{\text{response}}^{\max} \;\approx\; 2\,t_{\text{scan}} $$</div>
+        <div class="eq__num">(4.6)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li><span data-lang-th>ตัวประกอบ 2 มาจากกรณีที่แย่ที่สุด คือ อินพุตเปลี่ยนค่า <em>หลัง</em> จังหวะอ่านไปแล้วเพียงเสี้ยววินาที จึงต้องรอรอบถัดไปจึงจะถูกอ่าน แล้วรออีกจนจบรอบนั้นจึงจะส่งเอาต์พุตออก</span><span data-lang-en>the factor of 2 is the worst case: the input changes just <em>after</em> the read beat, so it waits a whole cycle to be seen and then the rest of that cycle to reach the output</span></li>
+          <li><span data-lang-th>PLC ขนาดเล็กทั่วไปมี \( t_{\text{scan}} \) ราว 1–10 ms</span><span data-lang-en>a typical compact PLC has \( t_{\text{scan}} \) of roughly 1–10 ms</span></li>
+        </ul>
+      </div>
+
+      <!-- ===================== Animation 4.2 ===================== -->
+      <figure class="anim" data-anim="ch04-scan">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 4.2 — รอบสแกน และความหน่วงที่ตามมา</span>
+          <span data-lang-en>Animation 4.2 — The scan cycle, and the delay it creates</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 300" role="img" aria-label="The three beats of a PLC scan, with an input change and the delayed output">
+            <!-- the three beats as a ring -->
+            <text class="dg-text-b" x="150" y="26" text-anchor="middle" data-lang-th>สามจังหวะของหนึ่งรอบสแกน</text>
+            <text class="dg-text-b" x="150" y="26" text-anchor="middle" data-lang-en>three beats of one scan</text>
+
+            <rect id="s5-beat0" x="40" y="46" width="220" height="48" rx="10" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="150" y="76" text-anchor="middle" data-lang-th>1 · อ่านอินพุตทั้งหมด</text>
+            <text class="dg-text-sm" x="150" y="76" text-anchor="middle" data-lang-en>1 · read all inputs</text>
+
+            <rect id="s5-beat1" x="40" y="104" width="220" height="48" rx="10" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="150" y="134" text-anchor="middle" data-lang-th>2 · ประมวลผลโปรแกรม</text>
+            <text class="dg-text-sm" x="150" y="134" text-anchor="middle" data-lang-en>2 · execute the program</text>
+
+            <rect id="s5-beat2" x="40" y="162" width="220" height="48" rx="10" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <text class="dg-text-sm" x="150" y="192" text-anchor="middle" data-lang-th>3 · ส่งเอาต์พุตทั้งหมด</text>
+            <text class="dg-text-sm" x="150" y="192" text-anchor="middle" data-lang-en>3 · write all outputs</text>
+
+            <path d="M 40 186 L 20 186 L 20 70 L 40 70" class="dg-stroke" stroke-width="2" fill="none"/>
+
+            <!-- the physical input button -->
+            <circle id="s5-btn" cx="150" cy="252" r="22" class="dg-fill-soft dg-stroke" stroke-width="2.5"/>
+            <text class="dg-text-sm" x="150" y="292" text-anchor="middle" data-lang-th>อินพุตจริงที่ขั้วต่อ</text>
+            <text class="dg-text-sm" x="150" y="292" text-anchor="middle" data-lang-en>the real input terminal</text>
+
+            <!-- timing diagram -->
+            <text class="dg-text-b" x="580" y="26" text-anchor="middle" data-lang-th>ไดอะแกรมเวลา</text>
+            <text class="dg-text-b" x="580" y="26" text-anchor="middle" data-lang-en>timing diagram</text>
+
+            <g class="dg-stroke" stroke-width="1.5" opacity="0.5">
+              <line x1="330" y1="110" x2="840" y2="110"/>
+              <line x1="330" y1="190" x2="840" y2="190"/>
+              <line x1="330" y1="258" x2="840" y2="258"/>
+            </g>
+            <!-- scan boundaries, drawn by script -->
+            <g id="s5-bounds"></g>
+            <path id="s5-trace-in" class="dg-stroke-gold" stroke-width="2.5" fill="none"/>
+            <path id="s5-trace-img" class="dg-stroke" stroke-width="2.5" fill="none" stroke-dasharray="5 4"/>
+            <path id="s5-trace-out" class="dg-stroke-green" stroke-width="3" fill="none"/>
+
+            <text class="dg-text-sm" x="326" y="86" text-anchor="end" data-lang-th>อินพุตจริง</text>
+            <text class="dg-text-sm" x="326" y="86" text-anchor="end" data-lang-en>real input</text>
+            <text class="dg-text-sm" x="326" y="166" text-anchor="end" data-lang-th>สำเนาในหน่วยความจำ</text>
+            <text class="dg-text-sm" x="326" y="166" text-anchor="end" data-lang-en>input image</text>
+            <text class="dg-text-sm" x="326" y="234" text-anchor="end" data-lang-th>เอาต์พุตจริง</text>
+            <text class="dg-text-sm" x="326" y="234" text-anchor="end" data-lang-en>real output</text>
+          </svg>
+
+          <span class="fig-label fig-label--muted" style="left:63.0%;top:95%">\( t_{\text{response}} \le 2 t_{\text{scan}} \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="press" aria-pressed="false"><i class="fa-solid fa-hand-pointer"></i><span data-lang-th>กดอินพุตค้างไว้</span><span data-lang-en>Hold the input on</span></button>
+          <label class="anim__param">
+            <span data-lang-th>เวลาต่อรอบ</span><span data-lang-en>Scan time</span> \( t_{\text{scan}} \)
+            <input type="range" data-anim-param="tscan" data-unit="ms" min="2" max="20" step="1" value="8">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 4.2</span><span data-lang-en>Animation 4.2</span></b>
+          <span data-lang-th> กดปุ่มอินพุตค้างไว้ในจังหวะใดก็ได้ แล้วสังเกตสามเส้นในไดอะแกรม: เส้นทองคือสัญญาณจริงที่ขั้วต่อ เส้นประคือสำเนาในหน่วยความจำซึ่งขยับเฉพาะตอนจังหวะที่ 1 และเส้นเขียวคือเอาต์พุตจริงซึ่งขยับเฉพาะตอนจังหวะที่ 3 ช่องว่างระหว่างเส้นทองกับเส้นเขียวคือความหน่วงตามสมการ (4.6) ลองเพิ่ม \( t_{\text{scan}} \) แล้วจะเห็นช่องว่างนี้กว้างขึ้นตามตัว</span>
+          <span data-lang-en> Press and hold the input at any moment, then watch the three traces: gold is the real terminal, the dashed line is the memory copy which only moves during beat 1, and green is the real output which only moves during beat 3. The gap between gold and green is the latency of equation (4.6) — widen \( t_{\text{scan}} \) and the gap widens with it.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ความหน่วงระดับ 16 ms ไม่มีความหมายเลยสำหรับอุณหภูมิโรงเรือน แต่มีความหมายมากกับเครื่องคัดผลไม้ความเร็วสูง ถ้าสายพานวิ่ง 0.5 m/s ความหน่วงสองรอบสแกนที่ 8 ms จะทำให้ผลไม้เคลื่อนไป \( 0.5 \times 0.016 = 8 \) mm ก่อนที่กระบอกลมจะเริ่มทำงาน ซึ่งมากพอจะผลักพลาดหรือผลักโดนผลถัดไป ทางแก้คือใช้อินพุตแบบอินเทอร์รัปต์ หรือชดเชยด้วยการเลื่อนตำแหน่งที่สั่งงานให้เร็วขึ้นตามความเร็วสายพาน</span>
+          <span data-lang-en>A 16 ms delay means nothing to a greenhouse temperature, but a great deal to a fast fruit grader. At a belt speed of 0.5 m/s, two 8 ms scans let the fruit travel \( 0.5 \times 0.016 = 8 \) mm before the cylinder even starts — enough to miss it, or to hit the next one. The fixes are an interrupt input, or trimming the trigger position forward in proportion to belt speed.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 4.6 --------- -->
+    <section id="ladder">
+      <h2><span data-lang-th>4.6 แลดเดอร์ไดอะแกรม</span><span data-lang-en>4.6 Ladder diagrams</span></h2>
+
+      <p>
+        <span data-lang-th>แลดเดอร์ไดอะแกรมถือกำเนิดจากการวาดวงจรรีเลย์ จึงอ่านเหมือนวงจรไฟฟ้า: มีรางจ่ายไฟซ้าย–ขวา และแต่ละ “ขั้นบันได” (rung) คือเส้นทางที่กระแสจะไหลจากซ้ายไปขวาได้ถ้าเงื่อนไขครบ</span>
+        <span data-lang-en>Ladder logic descends from relay schematics, so it reads like a circuit: two power rails, and each <em>rung</em> is a path along which current can flow from left to right if the conditions allow.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>สัญลักษณ์</span><span data-lang-en>Symbol</span></th>
+              <th><span data-lang-th>ชื่อ</span><span data-lang-en>Name</span></th>
+              <th><span data-lang-th>ความหมาย</span><span data-lang-en>Meaning</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--| |--</code></td>
+              <td><span data-lang-th>หน้าสัมผัสปกติเปิด (NO)</span><span data-lang-en>normally open contact</span></td>
+              <td><span data-lang-th>ยอมให้ผ่านเมื่อบิตที่อ้างถึงเป็น 1</span><span data-lang-en>passes when the referenced bit is 1</span></td>
+            </tr>
+            <tr>
+              <td><code>--|/|--</code></td>
+              <td><span data-lang-th>หน้าสัมผัสปกติปิด (NC)</span><span data-lang-en>normally closed contact</span></td>
+              <td><span data-lang-th>ยอมให้ผ่านเมื่อบิตที่อ้างถึงเป็น 0</span><span data-lang-en>passes when the referenced bit is 0</span></td>
+            </tr>
+            <tr>
+              <td><code>--( )--</code></td>
+              <td><span data-lang-th>คอยล์เอาต์พุต</span><span data-lang-en>output coil</span></td>
+              <td><span data-lang-th>เขียนค่า 1 ลงบิตนั้นเมื่อมีทางผ่านมาถึง</span><span data-lang-en>writes 1 to that bit when power reaches it</span></td>
+            </tr>
+            <tr>
+              <td><code>--(S)--</code> / <code>--(R)--</code></td>
+              <td><span data-lang-th>เซ็ต / รีเซ็ต</span><span data-lang-en>set / reset</span></td>
+              <td><span data-lang-th>เขียน 1 หรือ 0 ค้างไว้ แม้เงื่อนไขจะหายไปแล้ว</span><span data-lang-en>latches 1 or 0 even after the condition goes away</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3><span data-lang-th>4.6.1 วงจรเริ่ม–หยุด แบบมีหน่วงความจำ</span><span data-lang-en>4.6.1 The latched start–stop rung</span></h3>
+
+      <p>
+        <span data-lang-th>นี่คือวงจรที่พบมากที่สุดในงานควบคุมเครื่องจักร ปัญหาคือปุ่มกดจะสัมผัสเพียงเสี้ยววินาที แต่เราต้องการให้มอเตอร์เดินต่อไป ทางแก้คือใช้หน้าสัมผัสของตัวมันเองมาต่อขนานกับปุ่มเริ่ม เรียกว่า <strong>seal-in</strong> หรือ <strong>holding contact</strong></span>
+        <span data-lang-en>This is the commonest rung in machine control. The problem is that a push-button closes for only a moment while the motor must keep running. The answer is to parallel the output's own contact across the start button — the <strong>seal-in</strong> or holding contact.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ Y \;=\; \left( X_{\text{start}} + Y \right) \cdot \overline{X_{\text{stop}}} \cdot \overline{X_{\text{estop}}} $$</div>
+        <div class="eq__num">(4.7)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>สังเกตว่า \( Y \) ปรากฏอยู่ทั้งสองข้างของสมการ ซึ่งในทางคณิตศาสตร์ดูแปลก แต่ในแลดเดอร์หมายถึง “ค่าที่คำนวณได้รอบนี้ ขึ้นกับค่าที่ค้างไว้จากรอบก่อน” นั่นคือมันเป็นหน่วยความจำหนึ่งบิต</span>
+        <span data-lang-en>Notice that \( Y \) appears on both sides. Mathematically that looks odd; in ladder it means “this cycle's value depends on the value held from the last cycle” — that is, it is a one-bit memory.</span>
+      </p>
+
+      <!-- ===================== Animation 4.3 ===================== -->
+      <figure class="anim" data-anim="ch04-ladder">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 4.3 — กดปุ่มในแลดเดอร์จริง ดูกระแสไหล</span>
+          <span data-lang-en>Animation 4.3 — Press the buttons and watch power flow</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 300" role="img" aria-label="A latched start-stop ladder rung with live power flow">
+            <!-- rails -->
+            <line x1="60" y1="40" x2="60" y2="250" class="dg-stroke" stroke-width="3"/>
+            <line x1="800" y1="40" x2="800" y2="250" class="dg-stroke" stroke-width="3"/>
+            <text class="dg-text-sm" x="60" y="274" text-anchor="middle">L+</text>
+            <text class="dg-text-sm" x="800" y="274" text-anchor="middle">L−</text>
+
+            <!-- rung 1 main line -->
+            <path id="s6-w1" d="M 60 90 L 180 90" class="dg-stroke" stroke-width="3"/>
+            <!-- start contact (NO) -->
+            <g id="s6-start">
+              <line x1="180" y1="74" x2="180" y2="106" class="dg-stroke" stroke-width="3"/>
+              <line x1="212" y1="74" x2="212" y2="106" class="dg-stroke" stroke-width="3"/>
+            </g>
+            <path id="s6-w2" d="M 212 90 L 360 90" class="dg-stroke" stroke-width="3"/>
+            <!-- stop contact (NC) -->
+            <g id="s6-stop">
+              <line x1="360" y1="74" x2="360" y2="106" class="dg-stroke" stroke-width="3"/>
+              <line x1="392" y1="74" x2="392" y2="106" class="dg-stroke" stroke-width="3"/>
+              <line x1="356" y1="106" x2="396" y2="74" class="dg-stroke" stroke-width="2.5"/>
+            </g>
+            <path id="s6-w3" d="M 392 90 L 540 90" class="dg-stroke" stroke-width="3"/>
+            <!-- estop contact (NC) -->
+            <g id="s6-estop">
+              <line x1="540" y1="74" x2="540" y2="106" class="dg-stroke" stroke-width="3"/>
+              <line x1="572" y1="74" x2="572" y2="106" class="dg-stroke" stroke-width="3"/>
+              <line x1="536" y1="106" x2="576" y2="74" class="dg-stroke" stroke-width="2.5"/>
+            </g>
+            <path id="s6-w4" d="M 572 90 L 680 90" class="dg-stroke" stroke-width="3"/>
+            <!-- coil -->
+            <g id="s6-coil">
+              <path d="M 680 90 A 18 18 0 0 1 716 90" class="dg-stroke" stroke-width="3" fill="none"/>
+              <path d="M 716 90 A 18 18 0 0 1 752 90" class="dg-stroke" stroke-width="3" fill="none"/>
+            </g>
+            <path id="s6-w5" d="M 752 90 L 800 90" class="dg-stroke" stroke-width="3"/>
+
+            <!-- seal-in branch -->
+            <path id="s6-w6" d="M 180 90 L 180 150 L 180 150" class="dg-stroke" stroke-width="3"/>
+            <path id="s6-w7" d="M 180 150 L 300 150" class="dg-stroke" stroke-width="3"/>
+            <g id="s6-seal">
+              <line x1="300" y1="134" x2="300" y2="166" class="dg-stroke" stroke-width="3"/>
+              <line x1="332" y1="134" x2="332" y2="166" class="dg-stroke" stroke-width="3"/>
+            </g>
+            <path id="s6-w8" d="M 332 150 L 360 150 L 360 90" class="dg-stroke" stroke-width="3"/>
+
+            <!-- labels -->
+            <g class="dg-text-sm" text-anchor="middle">
+              <text x="196" y="64" data-lang-th>ปุ่มเริ่ม (NO)</text>
+              <text x="196" y="64" data-lang-en>Start (NO)</text>
+              <text x="376" y="64" data-lang-th>ปุ่มหยุด (NC)</text>
+              <text x="376" y="64" data-lang-en>Stop (NC)</text>
+              <text x="556" y="64" data-lang-th>หยุดฉุกเฉิน (NC)</text>
+              <text x="556" y="64" data-lang-en>E-stop (NC)</text>
+              <text x="716" y="64" data-lang-th>คอยล์มอเตอร์</text>
+              <text x="716" y="64" data-lang-en>motor coil</text>
+              <text x="316" y="188" data-lang-th>หน้าสัมผัสของตัวเอง (seal-in)</text>
+              <text x="316" y="188" data-lang-en>its own contact (seal-in)</text>
+            </g>
+
+            <!-- the motor it drives -->
+            <rect x="630" y="196" width="100" height="52" rx="8" class="dg-fill-soft dg-stroke" stroke-width="2"/>
+            <circle cx="680" cy="222" r="18" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+            <g id="s6-rotor">
+              <line x1="-13" y1="0" x2="13" y2="0" class="dg-stroke-green" stroke-width="4" stroke-linecap="round"/>
+            </g>
+            <text class="dg-text-sm" x="680" y="268" text-anchor="middle" data-lang-th>สายพานลำเลียง</text>
+            <text class="dg-text-sm" x="680" y="268" text-anchor="middle" data-lang-en>the conveyor</text>
+          </svg>
+
+          <span class="fig-label fig-label--muted" style="left:9.0%;top:71%">\( Y = (X_{\text{st}} + Y)\cdot\overline{X_{\text{sp}}}\cdot\overline{X_{\text{es}}} \)</span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-toggle="start" aria-pressed="false"><i class="fa-solid fa-play"></i><span data-lang-th>กดปุ่มเริ่ม</span><span data-lang-en>Press Start</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="stop" aria-pressed="false"><i class="fa-solid fa-hand"></i><span data-lang-th>กดปุ่มหยุด</span><span data-lang-en>Press Stop</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="estop" aria-pressed="false"><i class="fa-solid fa-circle-exclamation"></i><span data-lang-th>กดหยุดฉุกเฉิน</span><span data-lang-en>Hit E-stop</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 4.3</span><span data-lang-en>Animation 4.3</span></b>
+          <span data-lang-th> ลองกดปุ่มเริ่มแล้วปล่อย (กดอีกครั้งเพื่อปล่อย) มอเตอร์ยังเดินต่อเพราะหน้าสัมผัสของตัวเองในกิ่งล่างรับช่วงเส้นทางกระแสไว้ นี่คือหน่วยความจำหนึ่งบิตตามสมการ (4.7) จากนั้นกดปุ่มหยุดดู ทางผ่านถูกตัดและ seal-in ก็หลุดตามไปด้วย สังเกตว่าปุ่มหยุดและปุ่มหยุดฉุกเฉินวาดเป็นหน้าสัมผัส <em>ปกติปิด</em> จึงยอมให้กระแสผ่านตอนที่ยังไม่ถูกกด</span>
+          <span data-lang-en> Press Start and release it (press again to release). The motor keeps running, because its own contact in the lower branch has taken over the current path — the one-bit memory of equation (4.7). Now press Stop: the path breaks and the seal-in drops out with it. Note that Stop and E-stop are drawn as <em>normally closed</em> contacts, so they conduct while nobody is pressing them.</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-arrow-down-long"></i> <span data-lang-th>ลำดับของบรรทัดมีความหมาย</span><span data-lang-en>Rung order matters</span></div>
+        <p class="mb-0">
+          <span data-lang-th>PLC ประมวลผลจากบรรทัดบนลงล่างภายในรอบเดียว ถ้าบรรทัดที่ 3 เขียนค่าลงบิตที่บรรทัดที่ 1 ใช้ไปแล้ว ผลของมันจะไปปรากฏในรอบถัดไป ไม่ใช่รอบนี้ การเขียนคอยล์ตัวเดียวกันซ้ำสองบรรทัดจึงเป็นข้อผิดพลาดที่อันตราย เพราะบรรทัดล่างจะชนะเสมอและผลคือพฤติกรรมที่ไล่หาสาเหตุได้ยากมาก</span>
+          <span data-lang-en>A PLC evaluates rungs top to bottom within one cycle. If rung 3 writes a bit that rung 1 already used, the effect appears on the <em>next</em> cycle, not this one. Writing the same coil on two rungs is therefore a dangerous mistake: the lower rung always wins, and the resulting behaviour is painful to trace.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 4.7 --------- -->
+    <section id="timer">
+      <h2><span data-lang-th>4.7 ไทเมอร์</span><span data-lang-en>4.7 Timers</span></h2>
+
+      <p>
+        <span data-lang-th>ลอจิกล้วน ๆ ตอบคำถาม “เมื่อไร” ไม่ได้ ถ้าต้องการ “พ่นหมอก 30 วินาที” หรือ “รอ 2 วินาทีให้กระบอกลมถึงปลายทางก่อน” เราต้องใช้ไทเมอร์ มาตรฐาน IEC 61131-3 กำหนดไทเมอร์ไว้สามชนิด</span>
+        <span data-lang-en>Pure logic cannot answer “when”. To “mist for 30 seconds”, or to “wait 2 seconds for the cylinder to reach its end”, we need timers. IEC 61131-3 defines three.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ชนิด</span><span data-lang-en>Type</span></th>
+              <th><span data-lang-th>พฤติกรรม</span><span data-lang-en>Behaviour</span></th>
+              <th><span data-lang-th>ใช้เมื่อ</span><span data-lang-en>Use it when</span></th>
+              <th><span data-lang-th>ตัวอย่างในฟาร์ม</span><span data-lang-en>Farm example</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TON<br><span data-lang-th>(หน่วงตอนติด)</span><span data-lang-en>(on-delay)</span></td>
+              <td><span data-lang-th>อินพุตติดค้างครบเวลาตั้งไว้ เอาต์พุตจึงติด และดับทันทีเมื่ออินพุตดับ</span><span data-lang-en>output turns on only after the input has stayed on for the preset, and drops instantly when the input drops</span></td>
+              <td><span data-lang-th>ต้องการยืนยันว่าเงื่อนไขเป็นจริงจริง ไม่ใช่สัญญาณรบกวนชั่วขณะ</span><span data-lang-en>you must confirm a condition is genuine, not a momentary glitch</span></td>
+              <td><span data-lang-th>สั่งปั๊มเฉพาะเมื่อดินแห้งต่อเนื่องครบ 10 นาที</span><span data-lang-en>run the pump only after the soil has read dry for 10 min</span></td>
+            </tr>
+            <tr>
+              <td>TOF<br><span data-lang-th>(หน่วงตอนดับ)</span><span data-lang-en>(off-delay)</span></td>
+              <td><span data-lang-th>เอาต์พุตติดทันทีพร้อมอินพุต แต่ยังค้างต่ออีกตามเวลาที่ตั้งหลังอินพุตดับ</span><span data-lang-en>output follows the input on immediately, but holds on for the preset after the input drops</span></td>
+              <td><span data-lang-th>ต้องการให้อุปกรณ์ทำงานต่ออีกระยะหลังเงื่อนไขหมดไป</span><span data-lang-en>something must keep running for a while after its condition ends</span></td>
+              <td><span data-lang-th>พัดลมระบายอากาศเดินต่ออีก 60 วินาทีหลังฮีตเตอร์ดับ</span><span data-lang-en>the extraction fan runs 60 s after the heater stops</span></td>
+            </tr>
+            <tr>
+              <td>TP<br><span data-lang-th>(พัลส์)</span><span data-lang-en>(pulse)</span></td>
+              <td><span data-lang-th>เอาต์พุตติดเป็นช่วงเวลาคงที่ตามค่าตั้ง ไม่ว่าอินพุตจะค้างนานเท่าใด</span><span data-lang-en>output stays on for a fixed interval regardless of how long the input remains</span></td>
+              <td><span data-lang-th>ต้องการสั่งงานครั้งเดียวเป็นช่วงเวลาแน่นอน</span><span data-lang-en>you need one command of an exact duration</span></td>
+              <td><span data-lang-th>พ่นสารกำจัดวัชพืช 200 ms ต่อหนึ่งต้นที่ตรวจพบ</span><span data-lang-en>a 200 ms herbicide shot per weed detected</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 4.1 — รอบพ่นหมอกในโรงเพาะเห็ด</span><span data-lang-en>Worked example 4.1 — The misting cycle in a mushroom house</span></div>
+        <p>
+          <span data-lang-th>ต้องการพ่นหมอก 30 วินาที แล้วหยุด 10 นาที วนไปเรื่อย ๆ สร้างได้จาก TON สองตัวที่ป้อนกลับเข้าหากัน โดยตัวแรกตั้ง 30 s ตัวที่สองตั้ง 600 s จงหาสัดส่วนเวลาทำงาน (duty) และจำนวนครั้งที่พ่นต่อวัน</span>
+          <span data-lang-en>Mist for 30 s, pause 10 min, repeat forever — built from two TON blocks feeding each other, the first preset to 30 s and the second to 600 s. Find the duty fraction and the number of mist events per day.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ D = \frac{30}{30 + 600} = 4.8\%, \qquad
+                                 n_{\text{day}} = \frac{86\,400\ \text{s}}{630\ \text{s}} \approx 137 $$</div>
+          <div class="eq__num">(4.8)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ตัวเลข 137 ครั้งต่อวันมีความหมายทางวิศวกรรมมาก เพราะโซลินอยด์วาล์วมีอายุการสลับจำกัด ถ้าสเปกระบุ 1 ล้านครั้ง วาล์วตัวนี้จะอยู่ได้ราว \( 10^6/137 \approx 7\,300 \) วัน หรือราว 20 ปี ซึ่งยอมรับได้ แต่ถ้าเราลดเวลาหยุดลงเหลือ 1 นาทีเพื่อเพิ่มความชื้น จำนวนครั้งจะพุ่งเป็น 960 ครั้งต่อวัน และอายุวาล์วจะเหลือเพียง 3 ปี</span>
+          <span data-lang-en>That figure of 137 per day matters, because a solenoid valve has a finite switching life. Specified at one million operations, this valve lasts about \( 10^6/137 \approx 7\,300 \) days, some 20 years — acceptable. Shorten the pause to one minute to raise humidity and the count jumps to 960 per day, cutting valve life to roughly three years.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 4.8 --------- -->
+    <section id="counter">
+      <h2><span data-lang-th>4.8 เคาน์เตอร์</span><span data-lang-en>4.8 Counters</span></h2>
+
+      <p>
+        <span data-lang-th>เคาน์เตอร์นับ <em>ขอบขาขึ้น</em> ของสัญญาณ ไม่ได้นับว่าสัญญาณเป็น 1 นานเท่าใด ชนิดที่ใช้บ่อยคือ CTU (นับขึ้น) และ CTD (นับลง) ทั้งคู่มีค่าตั้ง (preset) และบิตแจ้งเมื่อถึงค่าตั้ง</span>
+        <span data-lang-en>A counter counts <em>rising edges</em>, not how long a signal stays at 1. The common types are CTU (count up) and CTD (count down), each with a preset and a done bit.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ Q \;=\; \begin{cases} 1, & CV \ge PV \\ 0, & CV < PV \end{cases}
+                              \qquad\text{โดย } CV \text{ เพิ่มขึ้นหนึ่งทุกขอบขาขึ้นของอินพุต} $$</div>
+        <div class="eq__num">(4.9)</div>
+      </div>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>กับดักเรื่องขอบสัญญาณกับรอบสแกน</span><span data-lang-en>The edge-versus-scan trap</span></div>
+        <p class="mb-0">
+          <span data-lang-th>เพราะ PLC อ่านอินพุตเพียงครั้งเดียวต่อรอบ พัลส์ที่สั้นกว่าหนึ่งรอบสแกนอาจหายไปทั้งพัลส์โดยไม่ถูกนับ ถ้าสายพานคัดผลไม้วิ่งเร็วจนเซนเซอร์สร้างพัลส์กว้างเพียง 3 ms บน PLC ที่สแกน 8 ms ผลไม้บางผลจะไม่ถูกนับเลย ทางแก้มีสองทาง คือใช้อินพุตความเร็วสูง (high-speed counter) ที่นับด้วยฮาร์ดแวร์โดยไม่พึ่งรอบสแกน หรือยืดพัลส์ด้วยวงจรให้กว้างกว่าสองเท่าของรอบสแกน</span>
+          <span data-lang-en>Because a PLC samples inputs once per cycle, a pulse shorter than one scan can vanish entirely, uncounted. If a fast grading belt gives the sensor only a 3 ms pulse on a PLC that scans in 8 ms, some fruit is never counted. There are two fixes: a high-speed counter input that counts in hardware independently of the scan, or stretching the pulse so it is wider than two scans.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 4.4 ===================== -->
+      <figure class="anim" data-anim="ch04-timer">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 4.4 — TON, TOF และเคาน์เตอร์นับผลไม้ลงลัง</span>
+          <span data-lang-en>Animation 4.4 — TON, TOF and a counter filling a crate</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <canvas class="anim__scope" id="tmr-scope" style="height:200px" aria-label="Timing diagram of the input, a TON output and a TOF output"></canvas>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>อินพุต</span><span data-lang-en>input</span></span>
+          <span style="color:var(--green-500)"><i></i>TON</span>
+          <span style="color:var(--sky-500)"><i></i>TOF</span>
+        </div>
+
+        <div class="anim__stage" style="padding-top:0">
+          <svg viewBox="0 0 860 150" role="img" aria-label="Fruit on a conveyor being counted into a crate">
+            <rect x="40" y="96" width="560" height="12" rx="6" class="dg-fill-soft dg-stroke" stroke-width="1.5"/>
+            <g id="s7-fruit"></g>
+            <!-- the counting sensor -->
+            <line x1="470" y1="40" x2="470" y2="92" class="dg-stroke-sky" stroke-width="2" stroke-dasharray="5 4"/>
+            <circle id="s7-eye" cx="470" cy="34" r="9" class="dg-fill-sky dg-stroke" stroke-width="1.5"/>
+            <text class="dg-text-sm" x="470" y="22" text-anchor="middle" data-lang-th>เซนเซอร์นับ</text>
+            <text class="dg-text-sm" x="470" y="22" text-anchor="middle" data-lang-en>count sensor</text>
+            <!-- the crate -->
+            <path d="M 630 60 L 630 130 L 790 130 L 790 60" class="dg-stroke" stroke-width="2.5" fill="none"/>
+            <rect id="s7-level" x="634" y="126" width="152" height="0" class="dg-fill-gold"/>
+            <text class="dg-text-sm" x="710" y="148" text-anchor="middle" data-lang-th>ลังบรรจุ</text>
+            <text class="dg-text-sm" x="710" y="148" text-anchor="middle" data-lang-en>crate</text>
+            <text id="s7-count" class="dg-text-b" x="710" y="46" text-anchor="middle">0 / 12</text>
+          </svg>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ค่าตั้งไทเมอร์</span><span data-lang-en>Timer preset</span> \( PT \)
+            <input type="range" data-anim-param="pt" data-unit="s" min="0.5" max="4" step="0.5" value="1.5">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ค่าตั้งเคาน์เตอร์</span><span data-lang-en>Counter preset</span> \( PV \)
+            <input type="range" data-anim-param="pv" min="4" max="16" step="2" value="12">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 4.4</span><span data-lang-en>Animation 4.4</span></b>
+          <span data-lang-th> ด้านบนคือไดอะแกรมเวลา: อินพุตสีทองติด–ดับเป็นช่วง ๆ เส้นเขียว TON ติดช้ากว่าอินพุต \( PT \) วินาที แต่ดับทันทีพร้อมอินพุต ส่วนเส้นฟ้า TOF ติดทันทีแต่ดับช้ากว่า \( PT \) วินาที ลองลด \( PT \) ลงจนสั้นกว่าช่วงที่อินพุตติด แล้วสังเกตว่า TON เริ่มทำงานได้ ส่วนถ้าตั้ง \( PT \) ยาวกว่าช่วงอินพุตติด TON จะไม่เคยติดเลย ด้านล่างคือเคาน์เตอร์ CTU ที่นับผลไม้ผ่านเซนเซอร์ลงลัง และรีเซ็ตตัวเองเมื่อครบ \( PV \)</span>
+          <span data-lang-en> Above is the timing diagram: the gold input pulses on and off, the green TON turns on \( PT \) seconds <em>later</em> but drops with the input, while the blue TOF rises with the input but lingers \( PT \) seconds after it. Shorten \( PT \) below the input's on-time and TON starts working; lengthen it beyond that on-time and TON never fires at all. Below, a CTU counts fruit past the sensor into the crate and resets itself at \( PV \).</span>
+        </figcaption>
+      </figure>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>เคาน์เตอร์ในเครื่องบรรจุไม่ได้ใช้แค่นับให้ครบลัง แต่ยังใช้เป็นเครื่องมือบำรุงรักษาเชิงป้องกันด้วย โดยนับจำนวนรอบการทำงานสะสมของกระบอกลมแต่ละตัวเก็บไว้ในรีจิสเตอร์ที่ไม่หายเมื่อปิดเครื่อง เมื่อถึงจำนวนที่ผู้ผลิตแนะนำ ระบบจะแจ้งให้เปลี่ยนซีล ก่อนที่มันจะรั่วกลางฤดูเก็บเกี่ยว ซึ่งเป็นช่วงที่หยุดเครื่องแพงที่สุด</span>
+          <span data-lang-en>Counters in a packing machine are not only for filling crates; they are a preventive-maintenance tool. Accumulating each cylinder's lifetime stroke count in retentive memory lets the system call for a seal change at the manufacturer's recommended figure — before it leaks in mid-harvest, when downtime costs the most.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 4.9 --------- -->
+    <section id="activity">
+      <h2><span data-lang-th>4.9 กิจกรรมในชั้นเรียน</span><span data-lang-en>4.9 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 4.1 — ออกแบบลำดับการทำงานของเครื่องล้างและคัดมะม่วง</span><span data-lang-en>Activity 4.1 — Design the sequence for a mango washer-grader</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 40 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Groups of 3–4 &middot; 40 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>โจทย์</span><span data-lang-en>The brief</span></h4>
+          <p>
+            <span data-lang-th>เครื่องล้างและคัดมะม่วงทำงานตามลำดับนี้: เมื่อกดปุ่มเริ่มและฝาครอบปิด ปั๊มน้ำล้างจะทำงานพร้อมสายพาน เมื่อมะม่วงผ่านเซนเซอร์ชั่งน้ำหนัก ระบบจะจำค่าไว้ ถ้าหนักเกิน 350 g ให้กระบอกลม A ผลักลงรางเกรดพรีเมียม ถ้าไม่ถึงให้ปล่อยไหลไปรางปกติ กระบอกลม A ต้องยืดค้าง 400 ms แล้วหุบกลับ และต้องนับจำนวนผลเกรดพรีเมียมให้ครบ 20 ผลต่อลัง เมื่อครบให้หยุดสายพานและเปิดไฟสัญญาณรอให้พนักงานเปลี่ยนลัง</span>
+            <span data-lang-en>A mango washer-grader works like this. On Start with the guard closed, the wash pump runs together with the conveyor. As a mango passes the weighing sensor the system latches its value; above 350 g, cylinder A pushes it into the premium chute, otherwise it flows on to the standard chute. Cylinder A must extend for 400 ms and then retract. Premium fruit is counted to 20 per crate, at which point the conveyor stops and a lamp asks the operator to change the crate.</span>
+          </p>
+
+          <h4><span data-lang-th>ขั้นตอน</span><span data-lang-en>Steps</span></h4>
+          <ol>
+            <li><span data-lang-th>แจกแจงอินพุตและเอาต์พุตทั้งหมด ตั้งชื่อตัวแปรให้สื่อความหมาย และระบุว่าอินพุตใดควรเดินสายแบบ NC</span><span data-lang-en>List every input and output, name the variables meaningfully, and state which inputs should be wired normally closed.</span></li>
+            <li><span data-lang-th>เขียน SFC ที่มี <em>ทางแยกเงื่อนไข</em> สำหรับการตัดสินใจเกรด และวนกลับเมื่อจบรอบ</span><span data-lang-en>Draw an SFC containing a <em>conditional branch</em> for the grade decision, looping back at the end of a cycle.</span></li>
+            <li><span data-lang-th>เขียนนิพจน์บูลีนของเงื่อนไขอนุญาตให้เดินเครื่อง โดยให้เงื่อนไขนิรภัยอยู่นอกวงเล็บเสมอ</span><span data-lang-en>Write the Boolean run-permissive expression, keeping the safety terms outside the bracket.</span></li>
+            <li><span data-lang-th>ระบุว่าต้องใช้ไทเมอร์ชนิดใดกับกระบอกลม A และเพราะเหตุใดจึงไม่ใช้อีกสองชนิด</span><span data-lang-en>State which timer type cylinder A needs, and why the other two are wrong for it.</span></li>
+            <li><span data-lang-th>ตอบว่าจะทำอย่างไรไม่ให้เคาน์เตอร์นับผลเดียวซ้ำสองครั้ง หากมะม่วงสั่นค้างอยู่หน้าเซนเซอร์</span><span data-lang-en>Explain how you would stop the counter double-counting one fruit that jiggles in front of the sensor.</span></li>
+            <li><span data-lang-th>แลกแบบกับกลุ่มข้างเคียง แล้วหา “สถานการณ์ที่ทำให้ลำดับของเพื่อนค้าง” ให้ได้อย่างน้อยหนึ่งกรณี</span><span data-lang-en>Swap designs with a neighbouring group and find at least one scenario that would freeze their sequence.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ตาราง I/O และ SFC หนึ่งหน้า พร้อมเงื่อนไขกำกับทุกเส้นเปลี่ยนขั้น</span><span data-lang-en>One page with the I/O table and the SFC, every transition labelled with its condition.</span></li>
+            <li><span data-lang-th>นิพจน์บูลีนของวงจรอนุญาตให้เดินเครื่อง</span><span data-lang-en>The Boolean expression for the run permissive.</span></li>
+            <li><span data-lang-th>สถานการณ์ที่ทำให้ลำดับของกลุ่มอื่นค้าง พร้อมข้อเสนอวิธีแก้</span><span data-lang-en>The freeze scenario found in another group's design, with a proposed fix.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- 4.10 --------- -->
+    <section id="lab">
+      <h2><span data-lang-th>4.10 ปฏิบัติการที่ 4</span><span data-lang-en>4.10 Laboratory 4</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <h3><span data-lang-th>ปฏิบัติการที่ 4 — เขียนแลดเดอร์บน PLC จริง</span><span data-lang-en>Laboratory 4 — Ladder programming on a real PLC</span></h3>
+            <p><span data-lang-th>กลุ่มละ 2–3 คน &middot; 4 ชั่วโมง (2 คาบ) &middot; ห้องปฏิบัติการระบบอัตโนมัติ</span><span data-lang-en>Groups of 2–3 &middot; 4 hours across two sessions &middot; Automation laboratory</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ข้อ 3–6</span><span data-lang-en>Maps to objectives 3–6</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 8% ของคะแนนรวม</span><span data-lang-en>8% of the course total</span></span>
+          </div>
+
+          <h4><span data-lang-th>อุปกรณ์</span><span data-lang-en>Equipment</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ชุดฝึก PLC (Siemens S7-1200, Mitsubishi FX หรือ Delta DVP) พร้อมซอฟต์แวร์เขียนโปรแกรม</span><span data-lang-en>A PLC trainer (Siemens S7-1200, Mitsubishi FX or Delta DVP) with its programming software</span></li>
+            <li><span data-lang-th>แผงสวิตช์จำลองอินพุต ไฟแสดงผลเอาต์พุต และปุ่มหยุดฉุกเฉินแบบ NC</span><span data-lang-en>A switch panel for inputs, output indicator lamps, and a normally-closed E-stop</span></li>
+            <li><span data-lang-th>ชุดจำลองสายพานขนาดเล็กพร้อมเซนเซอร์พร็อกซิมิตีและกระบอกลมหนึ่งตัว</span><span data-lang-en>A small conveyor rig with a proximity sensor and one air cylinder</span></li>
+            <li><span data-lang-th>มัลติมิเตอร์ และไทม์มิ่งไดอะแกรมเปล่าสำหรับบันทึกผล</span><span data-lang-en>A multimeter and blank timing-diagram sheets</span></li>
+          </ul>
+
+          <h4><span data-lang-th>ขั้นตอนการทดลอง</span><span data-lang-en>Procedure</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>วงจรเริ่ม–หยุด และการพิสูจน์ seal-in</span><span data-lang-en>Start–stop, and proving the seal-in</span></b><br>
+              <span data-lang-th>เขียนแลดเดอร์ตามสมการ (4.7) ดาวน์โหลดลง PLC ทดสอบว่ากดเริ่มแล้วปล่อยยังเดินต่อ จากนั้น <em>ลบหน้าสัมผัส seal-in ออก</em> แล้วทดสอบซ้ำ บันทึกสิ่งที่เกิดขึ้นและอธิบายด้วยรอบสแกน</span>
+              <span data-lang-en>Write the rung of equation (4.7), download it, and confirm the motor keeps running after Start is released. Then <em>delete the seal-in contact</em> and retest; record what happens and explain it in terms of the scan cycle.</span></li>
+            <li><b><span data-lang-th>วัดเวลารอบสแกนจริง</span><span data-lang-en>Measure the real scan time</span></b><br>
+              <span data-lang-th>อ่านค่า scan time จากหน้าสถานะของ CPU จากนั้นเพิ่มบรรทัดโปรแกรมที่ไม่มีผลอีก 200 บรรทัด แล้ววัดซ้ำ เปรียบเทียบกับสมการ (4.6)</span>
+              <span data-lang-en>Read the scan time from the CPU status page, then add 200 harmless rungs and measure again, comparing against equation (4.6).</span></li>
+            <li><b><span data-lang-th>วงจรอินเตอร์ล็อกและเงื่อนไขนิรภัย</span><span data-lang-en>Interlocks and the safety condition</span></b><br>
+              <span data-lang-th>เพิ่มเงื่อนไขฝาครอบและหยุดฉุกเฉินแบบ NC ทดสอบโดย <em>ถอดสายอินพุตหยุดฉุกเฉินออก</em> เพื่อจำลองสายขาด บันทึกว่าเครื่องหยุดหรือไม่ และอธิบายหลัก fail-safe</span>
+              <span data-lang-en>Add the guard and NC E-stop conditions, then test by <em>unplugging the E-stop input wire</em> to simulate a break. Record whether the machine stops, and explain the fail-safe principle.</span></li>
+            <li><b><span data-lang-th>ไทเมอร์ TON และ TOF</span><span data-lang-en>TON and TOF</span></b><br>
+              <span data-lang-th>สร้างวงจรที่พัดลมเดินต่ออีก 5 วินาทีหลังสวิตช์ดับ (TOF) และปั๊มเริ่มทำงานหลังสวิตช์ติดครบ 3 วินาที (TON) วาดไทม์มิ่งไดอะแกรมที่วัดได้จริงเทียบกับที่คาดไว้</span>
+              <span data-lang-en>Build a fan that runs 5 s after its switch opens (TOF) and a pump that starts after its switch has been on for 3 s (TON). Draw the measured timing diagram beside the predicted one.</span></li>
+            <li><b><span data-lang-th>เคาน์เตอร์และการทดสอบขอบสัญญาณ</span><span data-lang-en>Counter, and the edge test</span></b><br>
+              <span data-lang-th>นับวัตถุที่ผ่านเซนเซอร์ให้ครบ 10 ชิ้นแล้วหยุดสายพานอัตโนมัติ จากนั้นเพิ่มความเร็วสายพานขึ้นจนเริ่มนับพลาด บันทึกความเร็วที่เริ่มพลาดและคำนวณความกว้างพัลส์ที่ได้ ณ จุดนั้น</span>
+              <span data-lang-en>Count ten objects past the sensor and stop the conveyor automatically. Then raise belt speed until counts start to be missed; record the speed at which that begins and compute the pulse width there.</span></li>
+            <li><b><span data-lang-th>งานบูรณาการ</span><span data-lang-en>Integration task</span></b><br>
+              <span data-lang-th>นำ SFC ที่ออกแบบไว้ในกิจกรรมที่ 4.1 มาเขียนเป็นแลดเดอร์จริงให้ทำงานได้ครบลำดับ พร้อมใส่ไทเมอร์เฝ้าระวังที่แจ้งเตือนเมื่อขั้นใดค้างเกิน 10 วินาที</span>
+              <span data-lang-en>Implement the SFC designed in Activity 4.1 as working ladder logic, including a watchdog timer that alarms if any step stays active beyond 10 s.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 4.1</span><span data-lang-en>Data sheet 4.1</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>การทดลอง</span><span data-lang-en>Test</span></th>
+                  <th><span data-lang-th>สิ่งที่คาดว่าจะเกิด</span><span data-lang-en>Predicted</span></th>
+                  <th><span data-lang-th>สิ่งที่เกิดขึ้นจริง</span><span data-lang-en>Observed</span></th>
+                  <th><span data-lang-th>คำอธิบาย</span><span data-lang-en>Explanation</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>มี seal-in</span><span data-lang-en>with seal-in</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ไม่มี seal-in</span><span data-lang-en>without seal-in</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>scan time เดิม / +200 บรรทัด</span><span data-lang-en>scan time, base / +200 rungs</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ถอดสายหยุดฉุกเฉิน</span><span data-lang-en>E-stop wire removed</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ความเร็วที่เริ่มนับพลาด</span><span data-lang-en>speed at first missed count</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>การวิเคราะห์ผล</span><span data-lang-en>Analysis</span></h4>
+          <ol>
+            <li><span data-lang-th>เมื่อลบ seal-in ออก มอเตอร์หยุดทันทีที่ปล่อยปุ่ม จงอธิบายด้วยลำดับจังหวะทั้งสามของรอบสแกนว่าเหตุใดจึงเป็นเช่นนั้น</span><span data-lang-en>With the seal-in removed the motor stops as soon as the button is released. Explain why, using the three beats of the scan cycle.</span></li>
+            <li><span data-lang-th>การเพิ่ม 200 บรรทัดทำให้ scan time เพิ่มขึ้นกี่เปอร์เซ็นต์ และคิดเป็นเวลาต่อบรรทัดเท่าใด</span><span data-lang-en>By what percentage did 200 extra rungs raise the scan time, and what time does that imply per rung?</span></li>
+            <li><span data-lang-th>จากความเร็วที่เริ่มนับพลาด จงคำนวณความกว้างพัลส์ และเทียบกับ scan time ที่วัดได้ ผลสอดคล้องกับที่ทฤษฎีทำนายหรือไม่</span><span data-lang-en>From the speed at which counts were first missed, compute the pulse width and compare it with the measured scan time. Does theory match?</span></li>
+            <li><span data-lang-th>ถ้าต้องนับผลไม้ที่ความเร็วสองเท่าของที่ทดลองได้ จะแก้ด้วยวิธีใด เสนอสองทางเลือกพร้อมข้อดีข้อเสีย</span><span data-lang-en>To count reliably at twice the speed you achieved, what would you change? Offer two options with their trade-offs.</span></li>
+            <li><span data-lang-th>ไทเมอร์เฝ้าระวังที่ใส่ไว้จับความผิดปกติใดได้ และจับอะไรไม่ได้</span><span data-lang-en>What faults does your watchdog catch, and what does it miss?</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>Deliverables</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานปฏิบัติการไม่เกิน 6 หน้า ส่งภายใน 1 สัปดาห์</span><span data-lang-en>A report of at most six pages, due within one week.</span></li>
+            <li><span data-lang-th>ไฟล์โปรแกรม PLC ทุกข้อ พร้อมคอมเมนต์กำกับทุกบรรทัดที่สำคัญ</span><span data-lang-en>The PLC project files for every task, with the important rungs commented.</span></li>
+            <li><span data-lang-th>ไทม์มิ่งไดอะแกรมที่วัดได้ของ TON และ TOF เทียบกับที่คาดไว้</span><span data-lang-en>Measured timing diagrams for TON and TOF beside the predicted ones.</span></li>
+            <li><span data-lang-th>SFC ที่ปรับแก้แล้วหลังนำไปเขียนเป็นแลดเดอร์จริง พร้อมระบุว่าแก้อะไรและเพราะอะไร</span><span data-lang-en>The SFC as revised after implementation, stating what changed and why.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>วงจรเริ่ม–หยุดและอินเตอร์ล็อกทำงานถูกต้อง รวมถึงการทดสอบ fail-safe</span><span data-lang-en>Start–stop and interlocks correct, including the fail-safe test</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ไทเมอร์และเคาน์เตอร์ถูกชนิดและถูกค่าตั้ง</span><span data-lang-en>Correct timer types and preset values</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>งานบูรณาการจาก SFC ทำงานครบลำดับและมีไทเมอร์เฝ้าระวัง</span><span data-lang-en>The SFC implementation runs the full sequence, with a watchdog</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>คุณภาพการวิเคราะห์ โดยเฉพาะการเชื่อมโยงรอบสแกนกับการนับพลาด</span><span data-lang-en>Quality of analysis, especially linking scan time to missed counts</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ความเป็นระเบียบของโปรแกรม การตั้งชื่อตัวแปร และคอมเมนต์</span><span data-lang-en>Program tidiness: variable naming and comments</span></td><td>15</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--danger" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></div>
+            <p class="mb-0">
+              <span data-lang-th>ชุดฝึก PLC มีทั้งวงจร 24 VDC และวงจร 220 VAC อยู่ในตู้เดียวกัน ห้ามเปิดฝาตู้ด้านไฟกำลังโดยไม่มีผู้ควบคุม ก่อนดาวน์โหลดโปรแกรมใหม่ทุกครั้งต้องแจ้งเพื่อนในกลุ่มและตรวจว่าไม่มีมือใครอยู่ใกล้กระบอกลม เพราะกระบอกลมอาจยืดออกทันทีที่โปรแกรมเริ่มทำงาน ปล่อยลมออกจากระบบก่อนถอดหรือต่อสายลมทุกครั้ง และทดสอบปุ่มหยุดฉุกเฉินก่อนเริ่มงานทุกคาบ</span>
+              <span data-lang-en>The trainer carries both 24 VDC and 220 VAC inside one cabinet; never open the power side without supervision. Before every download, tell your group and check that no hand is near the cylinder — it can extend the instant the program starts. Bleed the air before connecting or removing any pneumatic line, and test the E-stop at the start of every session.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>งานควบคุมลำดับอธิบายได้ครบด้วยสามสิ่ง: ขั้น เงื่อนไขเปลี่ยนขั้น และการกระทำ ตามสมการ (4.1)</span><span data-lang-en>Sequence control is fully described by three things — step, transition and action — as in equation (4.1).</span></li>
+        <li><span data-lang-th>เงื่อนไขนิรภัยต้องคูณอยู่นอกวงเล็บเสมอ เพื่อไม่ให้โหมดใดข้ามได้</span><span data-lang-en>Safety terms are always factors outside the bracket, so that no operating mode can bypass them.</span></li>
+        <li><span data-lang-th>อุปกรณ์นิรภัยเดินสายแบบปกติปิด เพื่อให้สายขาดมีผลเหมือนการกดปุ่ม ซึ่งคือหลัก fail-safe</span><span data-lang-en>Safety devices are wired normally closed so a broken wire behaves like a pressed button — the fail-safe principle.</span></li>
+        <li><span data-lang-th>K-map ลดรูปนิพจน์ได้โดยอาศัยการเรียงรหัสเกรย์ ผลคือหน้าสัมผัสน้อยลงและโปรแกรมที่คนอ่านเข้าใจง่ายขึ้น</span><span data-lang-en>A K-map minimises an expression through Gray-code adjacency, yielding fewer contacts and a program people can read.</span></li>
+        <li><span data-lang-th>SFC ที่ออกแบบเฉพาะกรณีปกติจะค้างเมื่อเกิดเหตุผิดปกติ ทุกขั้นจึงต้องมีคำตอบเรื่องเวลา การแสดงสถานะ และการเริ่มใหม่</span><span data-lang-en>An SFC designed only for the happy path will freeze; every step needs an answer for timeout, indication and restart.</span></li>
+        <li><span data-lang-th>PLC ทำงานสามจังหวะต่อรอบ และความหน่วงที่แย่ที่สุดคือราวสองรอบสแกน</span><span data-lang-en>A PLC runs three beats per cycle, and its worst-case latency is about two scans.</span></li>
+        <li><span data-lang-th>วงจร seal-in คือหน่วยความจำหนึ่งบิตที่สร้างจากหน้าสัมผัสของเอาต์พุตเอง</span><span data-lang-en>A seal-in rung is a one-bit memory built from the output's own contact.</span></li>
+        <li><span data-lang-th>TON ยืนยันว่าเงื่อนไขอยู่จริง TOF ยืดเวลาทำงานหลังเงื่อนไขหมด และ TP ให้ช่วงเวลาที่แน่นอน</span><span data-lang-en>TON confirms a condition is real, TOF extends operation past it, and TP gives an exact interval.</span></li>
+        <li><span data-lang-th>เคาน์เตอร์นับขอบ ไม่ใช่นับเวลา และพัลส์ที่แคบกว่าหนึ่งรอบสแกนอาจหายไปทั้งพัลส์</span><span data-lang-en>Counters count edges, not time, and a pulse narrower than one scan can disappear altogether.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term">Scan cycle</div>
+          <div class="deflist__def"><span data-lang-th>รอบสแกน — สามจังหวะที่ PLC วนซ้ำ: อ่านอินพุต ประมวลผล ส่งเอาต์พุต</span><span data-lang-en>The three beats a PLC repeats: read inputs, execute, write outputs</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Input / output image</div>
+          <div class="deflist__def"><span data-lang-th>สำเนาสถานะ I/O ในหน่วยความจำที่โปรแกรมอ่านและเขียน แทนการแตะอุปกรณ์จริงโดยตรง</span><span data-lang-en>The in-memory copy of I/O that the program reads and writes instead of touching devices directly</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Seal-in / latch</div>
+          <div class="deflist__def"><span data-lang-th>หน้าสัมผัสของเอาต์พุตที่ต่อขนานกับปุ่มเริ่ม ทำให้สถานะค้างอยู่ได้</span><span data-lang-en>The output's own contact paralleled across the start button, holding the state</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Fail-safe</div>
+          <div class="deflist__def"><span data-lang-th>การออกแบบให้ความผิดปกติ เช่น สายขาด นำไปสู่สภาวะปลอดภัยโดยอัตโนมัติ</span><span data-lang-en>Designing so a fault such as a broken wire leads automatically to the safe state</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Transition condition</div>
+          <div class="deflist__def"><span data-lang-th>นิพจน์บูลีนที่ต้องเป็นจริงก่อนลำดับจะย้ายไปขั้นถัดไป</span><span data-lang-en>The Boolean expression that must be true before the sequence advances</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Watchdog timer</div>
+          <div class="deflist__def"><span data-lang-th>ไทเมอร์เฝ้าระวังที่แจ้งเตือนเมื่อขั้นใดแอ็กทีฟค้างนานเกินกำหนด</span><span data-lang-en>A timer that raises an alarm when a step stays active longer than it should</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Retentive memory</div>
+          <div class="deflist__def"><span data-lang-th>หน่วยความจำที่ค่าไม่หายเมื่อปิดเครื่อง ใช้เก็บจำนวนนับสะสมและสถานะที่ต้องจำข้ามวัน</span><span data-lang-en>Memory that survives power-off, used for lifetime counts and state that must persist</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>ทำหลังอ่านเนื้อหาครบแล้ว ข้อสอบชุดนี้เน้นการวิเคราะห์สถานการณ์และการวินิจฉัยปัญหา ไม่ใช่การจำนิยาม เกณฑ์ผ่านคือ 70%</span>
+        <span data-lang-en>Take this after reading the chapter. These items are about analysing situations and diagnosing faults rather than recalling definitions. Pass mark 70%.</span>
+      </p>
+      <div data-quiz="ch04-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>International Electrotechnical Commission. (2013). <em>IEC 61131-3: Programmable controllers — Part 3: Programming languages</em> (3rd ed.). IEC. <span data-lang-th>— มาตรฐานที่นิยาม LD, SFC, FBD, IL และ ST</span><span data-lang-en>— the standard defining LD, SFC, FBD, IL and ST.</span></li>
+        <li>Bolton, W. (2015). <em>Programmable Logic Controllers</em> (6th ed.). Newnes. <span data-lang-th>— ตำราเริ่มต้นที่อ่านง่ายที่สุดสำหรับแลดเดอร์ ไทเมอร์ และเคาน์เตอร์</span><span data-lang-en>— the most approachable introduction to ladder, timers and counters.</span></li>
+        <li>Petruzella, F. D. (2016). <em>Programmable Logic Controllers</em> (5th ed.). McGraw-Hill.</li>
+        <li>Hackworth, J. R., &amp; Hackworth, F. D. (2004). <em>Programmable Logic Controllers: Programming Methods and Applications</em>. Prentice Hall.</li>
+        <li>Kissell, T. E. (2017). <em>Industrial Electronics: Applications for Programmable Controllers, Instrumentation and Process Control, and Electrical Machines and Motor Controls</em> (4th ed.). Pearson.</li>
+        <li>Mano, M. M., &amp; Ciletti, M. D. (2018). <em>Digital Design: With an Introduction to the Verilog HDL, VHDL, and SystemVerilog</em> (6th ed.). Pearson. <span data-lang-th>— พีชคณิตบูลีนและการลดรูปด้วย K-map</span><span data-lang-en>— Boolean algebra and K-map minimisation.</span></li>
+        <li>David, R., &amp; Alla, H. (2010). <em>Discrete, Continuous, and Hybrid Petri Nets</em> (2nd ed.). Springer. <span data-lang-th>— พื้นฐานทางทฤษฎีของ SFC และระบบขับเคลื่อนด้วยเหตุการณ์</span><span data-lang-en>— the theory underpinning SFC and event-driven systems.</span></li>
+        <li>International Organization for Standardization. (2015). <em>ISO 13849-1: Safety of machinery — Safety-related parts of control systems — Part 1: General principles for design</em>. ISO.</li>
+        <li>International Electrotechnical Commission. (2016). <em>IEC 60204-1: Safety of machinery — Electrical equipment of machines — Part 1: General requirements</em>. IEC. <span data-lang-th>— ข้อกำหนดการเดินสายวงจรหยุดฉุกเฉิน</span><span data-lang-en>— requirements for emergency-stop circuits.</span></li>
+        <li>International Organization for Standardization. (2018). <em>ISO 18497:2018 Agricultural machinery and tractors — Safety of highly automated agricultural machines — Principles for design</em>. ISO.</li>
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press.</li>
+        <li>Shamshiri, R. R., Kalantari, F., Ting, K. C., Thorp, K. R., Hameed, I. A., Weltzien, C., Ahmad, D., &amp; Shad, Z. M. (2018). Advances in greenhouse automation and controlled environment agriculture: A transition to plant factories and urban agriculture. <em>International Journal of Agricultural and Biological Engineering, 11</em>(1), 1–22.</li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="ch03.html">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>บทก่อนหน้า</span><span data-lang-en>Previous chapter</span></small>
+        <b><span data-lang-th>บทที่ 3 · แอคชูเอเตอร์ เซนเซอร์ และคอนโทรลเลอร์</span><span data-lang-en>Chapter 3 · Actuators, Sensors and Controllers</span></b>
+      </a>
+      <a class="is-next" href="ch05.html">
+        <small><span data-lang-th>บทถัดไป</span><span data-lang-en>Next chapter</span> <i class="fa-solid fa-arrow-right"></i></small>
+        <b><span data-lang-th>บทที่ 5 · การประยุกต์และติดตั้ง PLC</span><span data-lang-en>Chapter 5 · PLC Applications and Implementation</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#plc"><span data-lang-th>PLC และรอบสแกน</span><span data-lang-en>The PLC scan</span></a></li>
+          <li><a href="#ladder"><span data-lang-th>แลดเดอร์ไดอะแกรม</span><span data-lang-en>Ladder diagrams</span></a></li>
+          <li><a href="#lab"><span data-lang-th>ปฏิบัติการที่ 4</span><span data-lang-en>Laboratory 4</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script src="../js/ch04-quiz.js"></script>
+<script src="../js/ch04-anim.js"></script>
+</body>
+</html>

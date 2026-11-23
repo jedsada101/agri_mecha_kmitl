@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 7 · ตัวควบคุมกระบวนการ" data-title-en="Chapter 7 · Process Controllers">Chapter 7 · Process Controllers</title>
+<meta name="description" content="Chapter 7: ON-OFF control and deadband, proportional offset, integral action and windup, derivative action and noise, PID forms, and tuning by Ziegler-Nichols.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="ch04.html"><span data-lang-th>บทที่ 4</span><span data-lang-en>Ch 4</span></a>
+      <a href="ch05.html"><span data-lang-th>บทที่ 5</span><span data-lang-en>Ch 5</span></a>
+      <a href="ch06.html"><span data-lang-th>บทที่ 6</span><span data-lang-en>Ch 6</span></a>
+      <a href="ch07.html" class="is-active"><span data-lang-th>บทที่ 7</span><span data-lang-en>Ch 7</span></a>
+      <a href="ch08.html"><span data-lang-th>บทที่ 8</span><span data-lang-en>Ch 8</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 7</span><span data-lang-en>Chapter 7</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 11</span><span data-lang-en>Week 11</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 2 ชม. + ปฏิบัติ 2 ชม.</span><span data-lang-en>2 h lecture + 2 h laboratory</span></span>
+      <span class="badge badge--sky"><i class="fa-solid fa-film"></i> <span data-lang-th>แอนิเมชัน 3 ชุด</span><span data-lang-en>3 animations</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 7 · ตัวควบคุมกระบวนการ</span>
+      <span data-lang-en>Chapter 7 · Process Controllers</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>บทที่ 6 ให้แบบจำลองของกระบวนการมาแล้ว บทนี้คือการเลือกและปรับจูน <em>ตัวควบคุม</em> ที่จะไปคู่กับมัน ตั้งแต่ ON–OFF ที่ง่ายที่สุดและยังใช้กันมากที่สุดในฟาร์ม ไปจนถึง PID พร้อมเหตุผลว่าทำไมแต่ละเทอมจึงมีอยู่ และค่าที่ควรตั้งมาจากไหน</span>
+      <span data-lang-en>Chapter 6 supplied the model of the process. This chapter chooses and tunes the <em>controller</em> to go with it, from the ON–OFF scheme that is the simplest and still the most common on a farm, through to PID — with the reason each term exists, and where its setting comes from.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#onoff"><span data-lang-th>7.1 การควบคุมแบบ ON–OFF</span><span data-lang-en>7.1 ON–OFF control</span></a></li>
+      <li><a href="#p"><span data-lang-th>7.2 เทอม P และออฟเซต</span><span data-lang-en>7.2 The P term and offset</span></a></li>
+      <li><a href="#i"><span data-lang-th>7.3 เทอม I และวินด์อัป</span><span data-lang-en>7.3 The I term and windup</span></a></li>
+      <li><a href="#d"><span data-lang-th>7.4 เทอม D และสัญญาณรบกวน</span><span data-lang-en>7.4 The D term and noise</span></a></li>
+      <li><a href="#pid"><span data-lang-th>7.5 PID รวมกัน</span><span data-lang-en>7.5 PID assembled</span></a></li>
+      <li><a href="#tuning"><span data-lang-th>7.6 การปรับจูน</span><span data-lang-en>7.6 Tuning</span></a></li>
+      <li><a href="#activity"><span data-lang-th>7.7 กิจกรรมในชั้นเรียน</span><span data-lang-en>7.7 In-class activity</span></a></li>
+      <li><a href="#lab"><span data-lang-th>7.8 ปฏิบัติการที่ 7</span><span data-lang-en>7.8 Laboratory 7</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>เลือกใช้การควบคุมแบบ ON–OFF หรือแบบต่อเนื่องให้เหมาะกับงาน และตั้งแถบตายอย่างมีเหตุผล</span><span data-lang-en>Choose between ON–OFF and continuous control for a task, and set the deadband with a reason.</span></li>
+        <li><span data-lang-th>อธิบายที่มาของออฟเซตในตัวควบคุมสัดส่วน และคำนวณขนาดของมันจากอัตราขยายวงรอบ</span><span data-lang-en>Explain where proportional offset comes from and compute its size from the loop gain.</span></li>
+        <li><span data-lang-th>อธิบายหน้าที่ของเทอมอินทิกรัล และระบุสภาวะที่ทำให้เกิดวินด์อัปพร้อมวิธีป้องกัน</span><span data-lang-en>State what the integral term does, identify the conditions that cause windup, and prevent it.</span></li>
+        <li><span data-lang-th>อธิบายข้อดีและข้อเสียของเทอมอนุพันธ์ และบอกเหตุผลที่งานเกษตรหลายกรณีไม่ใช้เทอมนี้</span><span data-lang-en>Weigh the derivative term&rsquo;s benefits against its costs, and say why much agricultural work omits it.</span></li>
+        <li><span data-lang-th>เขียนสมการ PID ทั้งในรูปมาตรฐานและรูปขนาน และแปลงค่าพารามิเตอร์ระหว่างสองรูปได้</span><span data-lang-en>Write PID in both standard and parallel form, and convert parameters between them.</span></li>
+        <li><span data-lang-th>ปรับจูน PID ด้วยวิธี Ziegler–Nichols จากข้อมูลที่วัดได้ในปฏิบัติการที่ 6</span><span data-lang-en>Tune a PID by the Ziegler–Nichols rules from the data measured in Laboratory 6.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ตอบก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิม ระบบเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer before reading. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch07-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 7.1 --------- -->
+    <section id="onoff">
+      <h2><span data-lang-th>7.1 การควบคุมแบบ ON–OFF</span><span data-lang-en>7.1 ON–OFF control</span></h2>
+
+      <p>
+        <span data-lang-th>ตัวควบคุมที่พบมากที่สุดในฟาร์มไทยไม่ใช่ PID แต่คือ ON–OFF เพราะแอคชูเอเตอร์ส่วนใหญ่ เช่น ปั๊ม คอมเพรสเซอร์ และโซลินอยด์วาล์ว มีเพียงสองสถานะอยู่แล้ว การสั่งค่ากลาง ๆ จึงเป็นไปไม่ได้ในทางกายภาพ</span>
+        <span data-lang-en>The commonest controller on a Thai farm is not a PID but ON–OFF, because most actuators — pumps, compressors, solenoid valves — have only two states to begin with, so an intermediate command is physically impossible.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ u = \begin{cases}
+                1, & y \le r - \tfrac{\Delta_{\text{db}}}{2} \\[4pt]
+                0, & y \ge r + \tfrac{\Delta_{\text{db}}}{2} \\[4pt]
+                \text{คงค่าเดิม / unchanged}, & \text{otherwise}
+              \end{cases} $$</div>
+        <div class="eq__num">(7.1)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>บรรทัดที่สามคือหัวใจ ในแถบตายตัวควบคุมจะ <em>ไม่ทำอะไรเลย</em> และคงสถานะเดิมไว้ นี่คือการใส่ฮิสเทอรีซิสเข้าไปโดยเจตนา ตามที่กล่าวไว้ในบทที่ 3</span>
+        <span data-lang-en>The third line is the essence: inside the deadband the controller <em>does nothing</em> and holds its last state. This is the deliberate hysteresis introduced in Chapter 3.</span>
+      </p>
+
+      <h3><span data-lang-th>7.1.1 ทำไมการแกว่งจึงกว้างกว่าแถบตายเสมอ</span><span data-lang-en>7.1.1 Why the swing always exceeds the deadband</span></h3>
+
+      <p>
+        <span data-lang-th>นักศึกษามักคาดว่าถ้าตั้งแถบตายไว้ 2 °C อุณหภูมิจะแกว่งอยู่ในช่วง 2 °C พอดี แต่ในระบบจริงจะแกว่งกว้างกว่านั้นเสมอ เพราะเมื่อตัวควบคุมสั่งตัดฮีตเตอร์ ความร้อนที่ค้างอยู่ในตัวฮีตเตอร์และอากาศยังเดินทางต่อไปอีกระยะหนึ่ง นั่นคือผลของความหน่วงเวลา \( \theta \) ที่เรียนในบทที่ 6</span>
+        <span data-lang-en>Students expect a 2 °C deadband to give a 2 °C swing. A real system always swings wider, because when the controller cuts the heater, the heat already stored in the element and the air keeps arriving — the effect of the dead time \( \theta \) met in Chapter 6.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ A_{\text{swing}} \;\approx\; \Delta_{\text{db}} \;+\; 2\,\theta \left| \frac{\mathrm{d}y}{\mathrm{d}t} \right| $$</div>
+        <div class="eq__num">(7.2)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( A_{\text{swing}} \) — <span data-lang-th>ความกว้างของการแกว่งที่สังเกตได้จริง</span><span data-lang-en>the swing actually observed</span></li>
+          <li>\( \left| \mathrm{d}y/\mathrm{d}t \right| \) — <span data-lang-th>อัตราการเปลี่ยนแปลงขณะที่ข้ามเกณฑ์ ซึ่งยิ่งแรงยิ่งเลยมาก</span><span data-lang-en>the rate of change as the threshold is crossed: the faster it moves, the further it goes past</span></li>
+        </ul>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-scale-unbalanced"></i> <span data-lang-th>ข้อแลกเปลี่ยนที่ต้องตัดสินใจทุกครั้ง</span><span data-lang-en>The trade-off to be decided every time</span></div>
+        <p class="mb-0">
+          <span data-lang-th>แถบตายแคบให้อุณหภูมินิ่งกว่าแต่สลับถี่จนหน้าสัมผัสและคอมเพรสเซอร์สึกเร็ว แถบตายกว้างยืดอายุอุปกรณ์แต่ปล่อยให้ค่าแกว่งมากขึ้น ไม่มีคำตอบที่ถูกต้องสากล มีแต่คำตอบที่เหมาะกับพืชและอุปกรณ์ชุดนั้น ตัวอย่างเช่น เห็ดทนการแกว่งอุณหภูมิ 1 °C ได้สบาย แต่ตู้ฟักไข่ต้องการ ±0.3 °C ซึ่งแคบเกินกว่าที่ ON–OFF จะทำได้ จึงต้องใช้ตัวควบคุมต่อเนื่อง</span>
+          <span data-lang-en>A narrow band holds the value steadier but switches so often that contacts and compressors wear out; a wide band saves the hardware and lets the value wander. There is no universal answer, only one that suits this crop and this equipment. Mushrooms tolerate a 1 °C swing comfortably; an egg incubator needs ±0.3 °C, which is tighter than ON–OFF can deliver, so it must move to continuous control.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 7.1 ===================== -->
+      <figure class="anim" data-anim="ch07-onoff">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 7.1 — แถบตาย ความหน่วง และความกว้างของการแกว่ง</span>
+          <span data-lang-en>Animation 7.1 — Deadband, dead time and the width of the swing</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <canvas class="anim__scope" id="oo-scope" style="height:230px" aria-label="Temperature cycling under ON-OFF control, against the deadband limits"></canvas>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--sky-500)"><i></i><span data-lang-th>อุณหภูมิ</span><span data-lang-en>temperature</span></span>
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>สถานะฮีตเตอร์</span><span data-lang-en>heater state</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>ขอบบนและขอบล่างของแถบตาย</span><span data-lang-en>the two deadband limits</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>แถบตาย</span><span data-lang-en>Deadband</span> \( \Delta_{\text{db}} \)
+            <input type="range" data-anim-param="db" data-unit="°C" min="0.2" max="4" step="0.2" value="1">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ความหน่วง</span><span data-lang-en>Dead time</span> \( \theta \)
+            <input type="range" data-anim-param="theta" data-unit="s" min="0" max="6" step="0.5" value="1.5">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 7.1</span><span data-lang-en>Animation 7.1</span></b>
+          <span data-lang-th> ตั้งความหน่วงไว้ที่ศูนย์ก่อน แล้วสังเกตว่าการแกว่งที่วัดได้เท่ากับแถบตายพอดี จากนั้นค่อย ๆ เพิ่มความหน่วง จะเห็นว่าอุณหภูมิเลยขอบแถบตายออกไปทั้งสองด้าน และตัวเลข “แกว่งจริง” จะโตขึ้นเรื่อย ๆ ตามสมการ (7.2) ส่วนจำนวนครั้งการสลับต่อนาทีกลับ <em>ลดลง</em> เพราะแต่ละรอบใช้เวลานานขึ้น นี่คือเหตุผลที่ความหน่วงสูงทำให้คุมได้แย่ลงแต่ไม่ได้ทำให้อุปกรณ์สึกเร็วขึ้น</span>
+          <span data-lang-en> Set the dead time to zero first and the measured swing equals the deadband exactly. Now raise it: the temperature overshoots both limits and the “actual swing” figure grows as equation (7.2) predicts, while switches per minute <em>fall</em>, since each cycle lasts longer. That is why long dead time worsens control without wearing the hardware faster.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 7.2 --------- -->
+    <section id="p">
+      <h2><span data-lang-th>7.2 เทอม P และออฟเซตที่ตามมา</span><span data-lang-en>7.2 The P term, and the offset that comes with it</span></h2>
+
+      <p>
+        <span data-lang-th>เมื่อแอคชูเอเตอร์ปรับค่าได้ต่อเนื่อง เช่น อินเวอร์เตอร์ของพัดลมหรือวาล์วสัดส่วน เราก็สั่งงานให้ <em>แปรตามขนาดของความคลาดเคลื่อน</em> ได้ ซึ่งคือตัวควบคุมสัดส่วน</span>
+        <span data-lang-en>Where the actuator is continuously adjustable — a fan inverter, a modulating valve — the command can be made <em>proportional to the size of the error</em>. That is the proportional controller.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ u(t) \;=\; K_p\, e(t) \;+\; u_{\text{bias}}, \qquad e(t) = r - y(t) $$</div>
+        <div class="eq__num">(7.3)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ในวงการอุตสาหกรรมมักไม่ตั้งค่าเป็น \( K_p \) โดยตรง แต่ตั้งเป็น <strong>แถบสัดส่วน</strong> ซึ่งบอกว่าต้องมีความคลาดเคลื่อนกี่เปอร์เซ็นต์ของสเกลเต็ม เอาต์พุตจึงจะวิ่งจาก 0 ถึง 100%</span>
+        <span data-lang-en>Industry rarely sets \( K_p \) directly, preferring the <strong>proportional band</strong>, which states what percentage of full scale the error must cover for the output to travel from 0 to 100%.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ PB = \frac{100}{K_p}\ \% $$</div>
+        <div class="eq__num">(7.4)</div>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-link"></i> <span data-lang-th>ออฟเซตคือสิ่งเดียวกับที่เราคำนวณไว้แล้วในบทที่ 2</span><span data-lang-en>The offset is the very thing computed back in Chapter 2</span></div>
+        <p>
+          <span data-lang-th>ตัวควบคุมสัดส่วนล้วนมีข้อจำกัดเชิงโครงสร้าง คือมันสร้างเอาต์พุตได้ก็ต่อเมื่อ <em>ยังมีความคลาดเคลื่อนเหลืออยู่</em> ถ้าความคลาดเคลื่อนเป็นศูนย์ เอาต์พุตก็เหลือเพียง \( u_{\text{bias}} \) ซึ่งมักไม่พอชดเชยสิ่งรบกวน ผลคือระบบจะนิ่งอยู่ที่จุดที่ยังห่างจากเป้าหมายเล็กน้อยเสมอ</span>
+          <span data-lang-en>A pure proportional controller has a structural limitation: it produces output only while <em>an error remains</em>. Drive the error to zero and the output falls back to \( u_{\text{bias}} \), which rarely balances the disturbance. The loop therefore settles a little short of target, every time.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ e_{\text{ss}} \;=\; \frac{r - d}{1 + K K_p} $$</div>
+          <div class="eq__num">(7.5)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>นี่คือสมการ (2.4) ตัวเดิมทุกประการ และบอกทางแก้ที่เป็นไปได้สองทาง: เพิ่ม \( K_p \) ให้สูงมากซึ่งจะทำให้ระบบแกว่งตามที่เห็นในบทที่ 6 หรือหาเทอมใหม่ที่สร้างเอาต์พุตได้แม้ความคลาดเคลื่อนเป็นศูนย์ ซึ่งนำไปสู่หัวข้อถัดไป</span>
+          <span data-lang-en>That is equation (2.4) unchanged, and it points to exactly two remedies: raise \( K_p \) very high, which makes the loop ring as Chapter 6 showed, or find a term that can produce output even when the error is zero — the subject of the next section.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 7.1 — ออฟเซตในโรงเรือนเมล่อน</span><span data-lang-en>Worked example 7.1 — Offset in a melon house</span></div>
+        <p>
+          <span data-lang-th>จากแบบจำลองในตัวอย่าง 6.2 ได้ \( K = 6.0 \) °C/kW ตั้งเป้า 30 °C ขณะที่อุณหภูมิฐานคือ 24 °C จึงต้องยกขึ้น 6 °C ถ้าใช้ \( K_p = 0.5 \) kW/°C อัตราขยายวงรอบคือ \( K K_p = 3.0 \) ออฟเซตจะเป็นเท่าใด</span>
+          <span data-lang-en>From the model of example 6.2, \( K = 6.0 \) °C/kW. The target is 30 °C against a base of 24 °C, a 6 °C lift. With \( K_p = 0.5 \) kW/°C the loop gain is \( K K_p = 3.0 \). What offset results?</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ e_{\text{ss}} = \frac{6.0}{1 + 3.0} = 1.5\ ^\circ\text{C} $$</div>
+          <div class="eq__num">(7.6)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>ระบบจะนิ่งที่ 28.5 °C ไม่ใช่ 30 °C ถ้าจะลดออฟเซตให้เหลือ 0.5 °C ต้องใช้ \( K K_p = 11 \) หรือ \( K_p \approx 1.8 \) ซึ่งสูงพอจะเริ่มทำให้ระบบที่มี \( \theta/\tau = 0.44 \) แกว่ง การเพิ่มอัตราขยายจึงไม่ใช่ทางออกที่ยั่งยืน</span>
+          <span data-lang-en>The loop settles at 28.5 °C rather than 30 °C. Cutting the offset to 0.5 °C would need \( K K_p = 11 \), or \( K_p \approx 1.8 \) — high enough to start a system with \( \theta/\tau = 0.44 \) hunting. More gain is not a durable answer.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 7.3 --------- -->
+    <section id="i">
+      <h2><span data-lang-th>7.3 เทอมอินทิกรัล และกับดักวินด์อัป</span><span data-lang-en>7.3 The integral term, and the windup trap</span></h2>
+
+      <p>
+        <span data-lang-th>เทอมอินทิกรัลแก้ปัญหาออฟเซตด้วยความคิดที่เรียบง่ายมาก: ถ้ายังมีความคลาดเคลื่อนเหลืออยู่ ให้ <em>สะสม</em> มันไว้แล้วเพิ่มเอาต์พุตขึ้นเรื่อย ๆ จนกว่าความคลาดเคลื่อนจะหมดไป เมื่อหมดแล้วค่าที่สะสมไว้จะค้างอยู่ ทำให้เอาต์พุตยังสูงพอชดเชยสิ่งรบกวนต่อไปได้แม้ความคลาดเคลื่อนเป็นศูนย์</span>
+        <span data-lang-en>The integral term cures offset with a very simple idea: while an error remains, <em>accumulate</em> it and keep raising the output until the error is gone. What has accumulated then stays, so the output remains high enough to balance the disturbance even at zero error.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ u(t) \;=\; K_p \left[ e(t) + \frac{1}{T_i}\int_0^t e(\lambda)\,\mathrm{d}\lambda \right] $$</div>
+        <div class="eq__num">(7.7)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( T_i \) — <span data-lang-th>เวลารีเซ็ต (s) ยิ่งสั้นยิ่งสะสมเร็ว ข้อควรระวังคือค่านี้อยู่ที่ <em>ตัวส่วน</em> จึงกลับทิศกับที่หลายคนคาด</span><span data-lang-en>the reset time (s): the shorter it is the faster the term accumulates, and note that it sits in the <em>denominator</em>, the opposite of what many expect</span></li>
+        </ul>
+      </div>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>วินด์อัป — ความผิดพลาดที่พบบ่อยที่สุดในการใช้ PID จริง</span><span data-lang-en>Windup — the commonest failure of a real PID</span></div>
+        <p>
+          <span data-lang-th>เทอมอินทิกรัลสะสมความคลาดเคลื่อนต่อไปเรื่อย ๆ โดยไม่สนใจว่าแอคชูเอเตอร์จะทำตามได้หรือไม่ ลองนึกภาพโรงเรือนในคืนที่หนาวจัด ฮีตเตอร์เปิดเต็ม 100% แล้วแต่ยังไปไม่ถึงเป้า ความคลาดเคลื่อนยังเหลืออยู่ เทอมอินทิกรัลจึงสะสมต่อไปจนค่าภายในอาจเทียบเท่ากับการสั่ง 400% ทั้งที่ฮีตเตอร์ให้ได้แค่ 100%</span>
+          <span data-lang-en>The integral term keeps accumulating regardless of whether the actuator can comply. Picture a greenhouse on a bitter night: the heater is already at 100% and still short of target, so the error persists and the integral keeps building until its internal value is equivalent to commanding 400% — from a heater that can only give 100%.</span>
+        </p>
+        <p class="mb-0">
+          <span data-lang-th>เช้าวันรุ่งขึ้นเมื่อแดดออกและอุณหภูมิพุ่งขึ้นเอง ตัวควบคุมจะยัง <em>ไม่ยอมลดฮีตเตอร์</em> จนกว่าค่าที่สะสมไว้จะถูกคลายออกหมด ซึ่งอาจกินเวลาเป็นชั่วโมง ผลคืออุณหภูมิพุ่งเกินเป้าไปไกลมากในช่วงสาย นี่ไม่ใช่ปัญหาของการจูนผิด แต่เป็นข้อบกพร่องเชิงโครงสร้างที่ต้องแก้ด้วย <strong>แอนติวินด์อัป</strong> คือหยุดการสะสมทันทีที่เอาต์พุตชนขีดจำกัด</span>
+          <span data-lang-en>Next morning, when the sun arrives and the temperature climbs by itself, the controller <em>refuses to back off</em> until all that accumulation has unwound, which can take hours. The house badly overshoots through mid-morning. This is not a tuning error but a structural defect, cured by <strong>anti-windup</strong>: stop accumulating the moment the output hits its limit.</span>
+        </p>
+      </div>
+
+      <div class="eq">
+        <div class="eq__body">$$ \text{ถ้า } u_{\text{calc}} > u_{\max} \ \text{ หรือ } \ u_{\text{calc}} < u_{\min}
+                              \quad\Longrightarrow\quad \frac{\mathrm{d}}{\mathrm{d}t}\!\int e \,\mathrm{d}t = 0 $$</div>
+        <div class="eq__num">(7.8)</div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 7.4 --------- -->
+    <section id="d">
+      <h2><span data-lang-th>7.4 เทอมอนุพันธ์ และราคาที่ต้องจ่าย</span><span data-lang-en>7.4 The derivative term, and what it costs</span></h2>
+
+      <p>
+        <span data-lang-th>เทอม P มองที่ความคลาดเคลื่อน <em>ปัจจุบัน</em> เทอม I มองที่ <em>อดีต</em> ส่วนเทอม D พยายามมองไป <em>ข้างหน้า</em> โดยดูที่อัตราการเปลี่ยนแปลง ถ้าค่ากำลังวิ่งเข้าหาเป้าหมายอย่างรวดเร็ว เทอมนี้จะเริ่มถอนคันเร่งไว้ก่อนที่จะเลยเป้า</span>
+        <span data-lang-en>The P term looks at the <em>present</em> error, the I term at the <em>past</em>, and the D term tries to look <em>ahead</em> by watching the rate of change. If the value is rushing toward target, this term eases off before it goes past.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ u_D(t) \;=\; K_p\, T_d\, \frac{\mathrm{d}e(t)}{\mathrm{d}t} $$</div>
+        <div class="eq__num">(7.9)</div>
+      </div>
+
+      <div class="compare">
+        <div class="compare__col compare__col--a">
+          <h4><i class="fa-solid fa-thumbs-up" style="color:var(--green-500)"></i> <span data-lang-th>สิ่งที่เทอม D ให้</span><span data-lang-en>What D gives</span></h4>
+          <ul>
+            <li><span data-lang-th>ลดการพุ่งเกินได้มาก โดยไม่ต้องลดอัตราขยายลง</span><span data-lang-en>A large cut in overshoot without having to reduce the gain.</span></li>
+            <li><span data-lang-th>ช่วยให้ระบบที่มีความเฉื่อยสูง เช่น แกนหุ่นยนต์ เข้าที่ได้นิ่งกว่า</span><span data-lang-en>A steadier landing on systems with real inertia, such as a robot axis.</span></li>
+            <li><span data-lang-th>ตอบสนองต่อสิ่งรบกวนที่มาเร็วได้ก่อนที่ความคลาดเคลื่อนจะโตขึ้น</span><span data-lang-en>A response to a fast disturbance before the error has grown.</span></li>
+          </ul>
+        </div>
+        <div class="compare__col compare__col--b">
+          <h4><i class="fa-solid fa-thumbs-down" style="color:var(--sky-500)"></i> <span data-lang-th>ราคาที่ต้องจ่าย</span><span data-lang-en>What D costs</span></h4>
+          <ul>
+            <li><span data-lang-th>ขยายสัญญาณรบกวนอย่างรุนแรง เพราะอนุพันธ์ของสัญญาณรบกวนมีขนาดใหญ่มาก</span><span data-lang-en>Violent noise amplification, since the derivative of noise is large.</span></li>
+            <li><span data-lang-th>เกิด “เดริเวทีฟคิก” เมื่อผู้ใช้เปลี่ยนค่าเป้าหมายกะทันหัน</span><span data-lang-en>A “derivative kick” whenever the operator steps the setpoint.</span></li>
+            <li><span data-lang-th>ปรับจูนยากกว่าสองเทอมแรกอย่างเห็นได้ชัด</span><span data-lang-en>Noticeably harder to tune than the other two terms.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <p>
+        <span data-lang-th>ปัญหาเดริเวทีฟคิกแก้ได้ด้วยวิธีที่ใช้กันเป็นมาตรฐาน คือคำนวณอนุพันธ์จาก <em>ค่าที่วัดได้</em> แทนที่จะคำนวณจากความคลาดเคลื่อน เพราะเมื่อผู้ใช้เปลี่ยนค่าเป้าหมาย ค่าที่วัดได้ยังไม่กระโดด เทอม D จึงไม่กระชากตาม</span>
+        <span data-lang-en>The kick is removed by the standard remedy: take the derivative of the <em>measurement</em> rather than of the error. When the operator steps the setpoint the measurement has not jumped, so the D term does not lurch.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ u_D(t) \;=\; -\,K_p\, T_d\, \frac{\mathrm{d}y(t)}{\mathrm{d}t} $$</div>
+        <div class="eq__num">(7.10)</div>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ — ทำไมโรงเรือนส่วนใหญ่ใช้เพียง PI</span><span data-lang-en>In smart-farm practice — why most greenhouses run PI only</span></div>
+        <p class="mb-0">
+          <span data-lang-th>สัญญาณอุณหภูมิในโรงเรือนมีสัญญาณรบกวนสูงจากลมที่พัดผ่านเซนเซอร์ และพลวัตของอากาศก็ช้ามากอยู่แล้ว ประโยชน์ของการ “มองไปข้างหน้า” จึงน้อย ขณะที่โทษจากการขยายสัญญาณรบกวนมีมาก ในทางปฏิบัติโรงเรือนเกือบทั้งหมดจึงตั้ง \( T_d = 0 \) และใช้เพียง PI ส่วนเทอม D จะกลับมามีประโยชน์จริงในบทที่ 8 และ 9 เมื่อเราควบคุมตำแหน่งของแขนหุ่นยนต์ ซึ่งมีความเฉื่อยสูงและสัญญาณจากเอนโคเดอร์สะอาดกว่ามาก</span>
+          <span data-lang-en>A greenhouse temperature signal is noisy — air moves across the probe — and the air dynamics are already slow, so there is little to gain from looking ahead and much to lose from amplifying noise. In practice nearly every greenhouse sets \( T_d = 0 \) and runs PI. The D term earns its place in Chapters 8 and 9, controlling the position of a robot arm, where inertia is real and the encoder signal is far cleaner.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 7.5 --------- -->
+    <section id="pid">
+      <h2><span data-lang-th>7.5 PID รวมกัน และรูปแบบที่ต้องแยกให้ออก</span><span data-lang-en>7.5 PID assembled, and the two forms to tell apart</span></h2>
+
+      <p>
+        <span data-lang-th>รวมสามเทอมเข้าด้วยกันได้สมการ PID ในรูปมาตรฐาน ซึ่งเป็นรูปที่ตัวควบคุมอุตสาหกรรมส่วนใหญ่ใช้</span>
+        <span data-lang-en>Combining the three terms gives PID in its standard form, the one most industrial controllers use:</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ u(t) \;=\; K_p \left[ e(t) + \frac{1}{T_i}\int_0^t e\,\mathrm{d}\lambda + T_d \frac{\mathrm{d}e}{\mathrm{d}t} \right] $$</div>
+        <div class="eq__num">(7.11)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>ส่วนในตำราและในโค้ดที่เขียนเองมักพบรูปขนาน ซึ่งแยกอัตราขยายของแต่ละเทอมออกจากกัน</span>
+        <span data-lang-en>Textbooks and hand-written code more often show the parallel form, with a separate gain on each term:</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ u(t) \;=\; K_p\, e + K_i \int_0^t e\,\mathrm{d}\lambda + K_d \frac{\mathrm{d}e}{\mathrm{d}t},
+                              \qquad K_i = \frac{K_p}{T_i}, \qquad K_d = K_p T_d $$</div>
+        <div class="eq__num">(7.12)</div>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>สองรูปนี้ไม่ใช่สิ่งเดียวกันเวลาปรับจูน</span><span data-lang-en>The two forms behave differently while you tune</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ในรูปมาตรฐาน การเปลี่ยน \( K_p \) จะเปลี่ยนความแรงของ <em>ทั้งสามเทอม</em> พร้อมกัน เพราะ \( K_p \) คูณอยู่นอกวงเล็บ ส่วนในรูปขนาน การเปลี่ยน \( K_p \) กระทบเฉพาะเทอม P เท่านั้น นักศึกษาที่จูนตามตารางของ Ziegler–Nichols โดยไม่ดูว่าตัวควบคุมของตนใช้รูปใด จะได้ผลที่ผิดไปมาก และนี่เป็นสาเหตุอันดับต้น ๆ ที่ค่าที่คำนวณได้ “ใช้ไม่ได้จริง”</span>
+          <span data-lang-en>In the standard form, changing \( K_p \) scales <em>all three terms</em> at once, since it multiplies the bracket. In the parallel form it touches only the P term. A student applying the Ziegler–Nichols table without checking which form their controller uses gets badly wrong results — among the leading reasons computed settings “do not work in practice”.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 7.2 ===================== -->
+      <figure class="anim" data-anim="ch07-pid">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 7.2 — เปิดปิดทีละเทอม แล้วดูว่าแต่ละเทอมทำอะไร</span>
+          <span data-lang-en>Animation 7.2 — Switch each term in and out, and see what it does</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <canvas class="anim__scope" id="pid-scope" style="height:250px" aria-label="Greenhouse temperature under P, PI and PID control with a disturbance applied"></canvas>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>อุณหภูมิ</span><span data-lang-en>temperature</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>ค่าที่ต้องการ</span><span data-lang-en>setpoint</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>เอาต์พุตของตัวควบคุม</span><span data-lang-en>controller output</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn is-on" type="button" data-anim-toggle="useI" aria-pressed="true"><i class="fa-solid fa-i"></i><span data-lang-th>เทอม I</span><span data-lang-en>I term</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="useD" aria-pressed="false"><i class="fa-solid fa-d"></i><span data-lang-th>เทอม D</span><span data-lang-en>D term</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="dist" aria-pressed="false"><i class="fa-solid fa-cloud-showers-heavy"></i><span data-lang-th>ใส่สิ่งรบกวน</span><span data-lang-en>Disturbance</span></button>
+          <button class="anim__btn is-on" type="button" data-anim-toggle="antiwindup" aria-pressed="true"><i class="fa-solid fa-shield-halved"></i><span data-lang-th>แอนติวินด์อัป</span><span data-lang-en>Anti-windup</span></button>
+          <label class="anim__param">
+            \( K_p \)
+            <input type="range" data-anim-param="kp" min="0.2" max="4" step="0.1" value="1.2">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            \( T_i \)
+            <input type="range" data-anim-param="ti" data-unit="s" min="2" max="40" step="1" value="12">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            \( T_d \)
+            <input type="range" data-anim-param="td" data-unit="s" min="0" max="8" step="0.5" value="2">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 7.2</span><span data-lang-en>Animation 7.2</span></b>
+          <span data-lang-th> ปิดเทอม I ก่อน แล้วสังเกตว่าเส้นอุณหภูมินิ่งอยู่ <em>ต่ำกว่า</em> เส้นเป้าหมายเสมอ นั่นคือออฟเซตตามสมการ (7.5) เปิดเทอม I กลับเข้ามาแล้วออฟเซตจะค่อย ๆ หายไป จากนั้นลองปิดแอนติวินด์อัปแล้วกดใส่สิ่งรบกวนแรง ๆ จนเอาต์พุตชน 100% สักพักแล้วปลดออก จะเห็นว่าอุณหภูมิพุ่งเลยเป้าไปไกลและใช้เวลานานกว่าจะกลับมา เพราะค่าที่สะสมไว้ต้องคลายออกก่อน</span>
+          <span data-lang-en> Switch the I term off first and the temperature settles <em>below</em> the setpoint, every time — the offset of equation (7.5). Switch I back on and that offset drifts away. Now turn anti-windup off, apply a heavy disturbance until the output pins at 100%, hold it a while and release: the temperature sails far past the target and takes a long time to return, because the accumulated term has to unwind first.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 7.6 --------- -->
+    <section id="tuning">
+      <h2><span data-lang-th>7.6 การปรับจูน</span><span data-lang-en>7.6 Tuning</span></h2>
+
+      <p>
+        <span data-lang-th>การปรับจูนคือการหาค่า \( K_p, T_i, T_d \) ที่ทำให้ระบบตอบสนองดีพอโดยไม่แกว่ง วิธีที่สอนกันทั่วโลกและยังใช้ได้จริงคือกฎของ Ziegler และ Nichols ซึ่งมีสองแบบ แบบแรกใช้ข้อมูลจากการทดสอบขั้นบันไดที่เราทำไว้แล้วในปฏิบัติการที่ 6</span>
+        <span data-lang-en>Tuning means finding \( K_p, T_i \) and \( T_d \) that give an acceptable response without hunting. The rules taught everywhere, and still genuinely useful, are those of Ziegler and Nichols. There are two; the first uses the step-test data already gathered in Laboratory 6.</span>
+      </p>
+
+      <h3><span data-lang-th>7.6.1 วิธีที่หนึ่ง — จากเส้นโค้งการตอบสนอง</span><span data-lang-en>7.6.1 Method one — from the reaction curve</span></h3>
+
+      <p>
+        <span data-lang-th>ใช้ \( K, \tau, \theta \) ที่หาได้จากแบบจำลอง FOPDT ในสมการ (6.12) แทนลงในตารางได้เลย ข้อดีคือทดสอบเพียงครั้งเดียวและไม่ต้องทำให้ระบบแกว่ง</span>
+        <span data-lang-en>Take the \( K, \tau \) and \( \theta \) obtained from the FOPDT model of equation (6.12) and read the table. One test suffices, and the system is never driven into oscillation.</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 7.1 — กฎ Ziegler–Nichols จากเส้นโค้งการตอบสนอง</span><span data-lang-en>Table 7.1 — Ziegler–Nichols from the reaction curve</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ชนิดตัวควบคุม</span><span data-lang-en>Controller</span></th>
+              <th>\( K_p \)</th>
+              <th>\( T_i \)</th>
+              <th>\( T_d \)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>P</td><td>\( \dfrac{\tau}{K\theta} \)</td><td>—</td><td>—</td></tr>
+            <tr><td>PI</td><td>\( \dfrac{0.9\,\tau}{K\theta} \)</td><td>\( 3.3\,\theta \)</td><td>—</td></tr>
+            <tr><td>PID</td><td>\( \dfrac{1.2\,\tau}{K\theta} \)</td><td>\( 2\,\theta \)</td><td>\( 0.5\,\theta \)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 7.2 — จูน PI ให้โรงเรือนเมล่อน</span><span data-lang-en>Worked example 7.2 — Tuning a PI for the melon house</span></div>
+        <p>
+          <span data-lang-th>จากตัวอย่าง 6.2 ได้ \( K = 6.0 \) °C/kW, \( \tau = 9.0 \) นาที และ \( \theta = 4.0 \) นาที จงหาค่าตั้งของตัวควบคุม PI</span>
+          <span data-lang-en>From example 6.2, \( K = 6.0 \) °C/kW, \( \tau = 9.0 \) min and \( \theta = 4.0 \) min. Find the PI settings.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ K_p = \frac{0.9(9.0)}{(6.0)(4.0)} = 0.34\ \text{kW/}^\circ\text{C}, \qquad
+                                 T_i = 3.3(4.0) = 13.2\ \text{นาที / min} $$</div>
+          <div class="eq__num">(7.13)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>สังเกตว่า \( K_p \) ที่ได้ต่ำกว่าค่า 0.5 ที่ใช้ในตัวอย่าง 7.1 ซึ่งดูเหมือนจะแย่ลงเพราะออฟเซตจะโตขึ้น แต่เทอมอินทิกรัลเป็นตัวจัดการออฟเซตแทนแล้ว เราจึงไม่ต้องพึ่ง \( K_p \) สูง ๆ อีกต่อไป นี่คือประโยชน์ที่แท้จริงของเทอม I คือยอมลดอัตราขยายลงเพื่อความเสถียร โดยไม่ต้องยอมรับความคลาดเคลื่อนถาวร</span>
+          <span data-lang-en>Note that this \( K_p \) is below the 0.5 of example 7.1, which looks like a step backwards since the offset would grow — except that the integral term now handles the offset, so high gain is no longer needed. That is the real benefit of the I term: it lets gain be lowered for stability without accepting a permanent error.</span>
+        </p>
+      </div>
+
+      <h3><span data-lang-th>7.6.2 วิธีที่สอง — จากอัตราขยายวิกฤต</span><span data-lang-en>7.6.2 Method two — from the ultimate gain</span></h3>
+
+      <p>
+        <span data-lang-th>วิธีนี้ใช้ข้อมูลจากขั้นตอนสุดท้ายของปฏิบัติการที่ 6 โดยตรง คือค่อย ๆ เพิ่ม \( K_p \) ของตัวควบคุมสัดส่วนล้วนจนระบบแกว่งด้วยแอมพลิจูดคงที่ ค่าอัตราขยาย ณ จุดนั้นเรียกว่า \( K_u \) และคาบของการแกว่งเรียกว่า \( P_u \)</span>
+        <span data-lang-en>This uses the final step of Laboratory 6 directly: raise the gain of a pure proportional controller until the loop oscillates at constant amplitude. That gain is the ultimate gain \( K_u \) and the period of the oscillation is \( P_u \).</span>
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตารางที่ 7.2 — กฎ Ziegler–Nichols จากอัตราขยายวิกฤต</span><span data-lang-en>Table 7.2 — Ziegler–Nichols from the ultimate gain</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ชนิดตัวควบคุม</span><span data-lang-en>Controller</span></th>
+              <th>\( K_p \)</th>
+              <th>\( T_i \)</th>
+              <th>\( T_d \)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>P</td><td>\( 0.5\,K_u \)</td><td>—</td><td>—</td></tr>
+            <tr><td>PI</td><td>\( 0.45\,K_u \)</td><td>\( 0.83\,P_u \)</td><td>—</td></tr>
+            <tr><td>PID</td><td>\( 0.6\,K_u \)</td><td>\( 0.5\,P_u \)</td><td>\( 0.125\,P_u \)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>ข้อจำกัดของกฎนี้ที่ต้องรู้ก่อนนำไปใช้จริง</span><span data-lang-en>Limits to know before using these rules in anger</span></div>
+        <p class="mb-0">
+          <span data-lang-th>กฎของ Ziegler–Nichols ถูกออกแบบมาให้ได้อัตราการลดทอนราวหนึ่งในสี่ ซึ่งหมายความว่า <em>ระบบจะพุ่งเกินและแกว่งสองสามรอบก่อนเข้าที่</em> พฤติกรรมนี้ยอมรับได้ในโรงงาน แต่ไม่เหมาะกับงานที่พืชไวต่อการเปลี่ยนแปลง ในทางปฏิบัติจึงนิยมใช้ค่าที่ได้เป็น <em>จุดตั้งต้น</em> แล้วลด \( K_p \) ลงอีกราวครึ่งหนึ่งเพื่อให้นิ่งขึ้น นอกจากนี้วิธีอัตราขยายวิกฤตต้องทำให้ระบบแกว่งจริง ซึ่งห้ามทำเด็ดขาดกับโรงเรือนที่มีพืชอยู่ หรือกับเครื่องจักรที่การแกว่งอาจทำให้เกิดอันตราย</span>
+          <span data-lang-en>The Ziegler–Nichols rules target roughly quarter-amplitude damping, meaning <em>the loop overshoots and rings a few times before settling</em>. That is acceptable in a factory but poor for a crop sensitive to swings, so in practice the figures serve as a <em>starting point</em> and \( K_p \) is then halved for a calmer response. The ultimate-gain method also requires driving the system into real oscillation, which must never be done in a house with a crop in it, or on machinery where oscillation is hazardous.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 7.3 ===================== -->
+      <figure class="anim" data-anim="ch07-zn">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 7.3 — หา \( K_u \) และ \( P_u \) แล้วใช้กฎ Ziegler–Nichols</span>
+          <span data-lang-en>Animation 7.3 — Find \( K_u \) and \( P_u \), then apply the Ziegler–Nichols rules</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <canvas class="anim__scope" id="zn-scope" style="height:240px" aria-label="Closed-loop response as the proportional gain is raised toward the ultimate gain"></canvas>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>ผลตอบสนอง</span><span data-lang-en>response</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>ค่าที่ต้องการ</span><span data-lang-en>setpoint</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <button class="anim__btn" type="button" data-anim-toggle="applyZN" aria-pressed="false"><i class="fa-solid fa-wand-magic-sparkles"></i><span data-lang-th>ใช้ค่าจากกฎ ZN (PID)</span><span data-lang-en>Apply the ZN rules (PID)</span></button>
+          <label class="anim__param">
+            <span data-lang-th>อัตราขยาย</span><span data-lang-en>Gain</span> \( K_p \)
+            <input type="range" data-anim-param="kp" min="0.2" max="6" step="0.1" value="1">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 7.3</span><span data-lang-en>Animation 7.3</span></b>
+          <span data-lang-th> ค่อย ๆ เพิ่ม \( K_p \) ทีละน้อยแล้วรอดูทุกครั้ง จนถึงจุดที่การแกว่งไม่โตขึ้นและไม่ลดลง นั่นคือ \( K_u \) ส่วนคาบที่วัดได้คือ \( P_u \) จากนั้นกดปุ่มใช้กฎ ZN ระบบจะสลับไปเป็น PID ด้วยค่าที่คำนวณจากตารางที่ 7.2 ทันที สังเกตว่าผลลัพธ์ยังพุ่งเกินอยู่พอสมควร ซึ่งเป็นลักษณะที่กฎนี้ตั้งใจออกแบบไว้ ไม่ใช่ความผิดพลาด</span>
+          <span data-lang-en> Raise \( K_p \) a little at a time, waiting after each change, until the oscillation neither grows nor decays: that gain is \( K_u \) and the measured period is \( P_u \). Press the ZN button and the loop switches to a PID with the settings from Table 7.2. Notice that the result still overshoots appreciably — that is what these rules are designed to give, not a mistake.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 7.7 --------- -->
+    <section id="activity">
+      <h2><span data-lang-th>7.7 กิจกรรมในชั้นเรียน</span><span data-lang-en>7.7 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 7.1 — วินิจฉัยจากรูปร่างของกราฟ</span><span data-lang-en>Activity 7.1 — Diagnose from the shape of the curve</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3 คน &middot; 30 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Groups of 3 &middot; 30 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>โจทย์</span><span data-lang-en>The brief</span></h4>
+          <p>
+            <span data-lang-th>แต่ละกลุ่มได้รับกราฟอุณหภูมิจากโรงเรือนจริงห้าใบ แต่ละใบมีอาการต่างกัน ให้ระบุว่าอาการใดเกิดจากอะไร และควรปรับพารามิเตอร์ตัวใดไปทางไหน</span>
+            <span data-lang-en>Each group receives five temperature traces from real greenhouses, each with a different complaint. Identify the cause of each and say which parameter to move, and in which direction.</span>
+          </p>
+          <ol>
+            <li><span data-lang-th>อุณหภูมินิ่งสนิทแต่ต่ำกว่าเป้าหมาย 1.8 °C ตลอดเวลา ไม่ว่าจะรอนานเท่าใด</span><span data-lang-en>Rock steady but 1.8 °C below target, indefinitely, however long one waits</span></li>
+            <li><span data-lang-th>อุณหภูมิแกว่งขึ้นลงรอบเป้าหมายด้วยแอมพลิจูดคงที่และไม่ยอมเข้าที่</span><span data-lang-en>Swinging about the target at constant amplitude and never settling</span></li>
+            <li><span data-lang-th>ทุกเช้าหลังคืนที่หนาวจัด อุณหภูมิจะพุ่งเกินเป้าไป 4 °C แล้วค่อย ๆ ลดลงภายในสองชั่วโมง</span><span data-lang-en>Every morning after a cold night it overshoots by 4 °C, easing back over two hours</span></li>
+            <li><span data-lang-th>เอาต์พุตของตัวควบคุมกระตุกขึ้นลงอย่างรุนแรงตลอดเวลา ทั้งที่อุณหภูมิเปลี่ยนแปลงน้อยมาก</span><span data-lang-en>The controller output jitters violently although the temperature barely moves</span></li>
+            <li><span data-lang-th>เมื่อผู้ใช้เปลี่ยนค่าเป้าหมายบนหน้าจอ เอาต์พุตกระชากเต็มสเกลหนึ่งครั้งแล้วกลับมาปกติ</span><span data-lang-en>When the operator steps the setpoint, the output slams to full scale once, then recovers</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ขั้นตอน</span><span data-lang-en>Steps</span></h4>
+          <ol>
+            <li><span data-lang-th>จับคู่อาการทั้งห้ากับสาเหตุ โดยอ้างสมการในบทนี้ประกอบทุกข้อ</span><span data-lang-en>Match all five symptoms to their causes, citing an equation from this chapter for each.</span></li>
+            <li><span data-lang-th>ระบุว่าควรปรับพารามิเตอร์ใด เพิ่มหรือลด และคาดว่าจะเห็นผลอย่างไร</span><span data-lang-en>State which parameter to change, up or down, and what you expect to see.</span></li>
+            <li><span data-lang-th>มีอย่างน้อยหนึ่งอาการที่แก้ด้วยการจูนไม่ได้เลย ให้ระบุว่าข้อใดและต้องแก้ที่อะไรแทน</span><span data-lang-en>At least one symptom cannot be tuned away at all; identify it and say what must change instead.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>ตารางจับคู่ อาการ–สาเหตุ–พารามิเตอร์ที่ปรับ–ทิศทาง ครบทั้งห้าข้อ</span><span data-lang-en>A table of symptom, cause, parameter and direction for all five.</span></li>
+            <li><span data-lang-th>คำอธิบายข้อที่แก้ด้วยการจูนไม่ได้ พร้อมข้อเสนอการแก้ไขเชิงโครงสร้าง</span><span data-lang-en>An explanation of the one that tuning cannot fix, with a structural remedy.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 7.8 --------- -->
+    <section id="lab">
+      <h2><span data-lang-th>7.8 ปฏิบัติการที่ 7</span><span data-lang-en>7.8 Laboratory 7</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <h3><span data-lang-th>ปฏิบัติการที่ 7 — จูน PID บนกล่องทดลองอุณหภูมิ</span><span data-lang-en>Laboratory 7 — Tuning a PID on the thermal chamber</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 2 ชั่วโมง &middot; ห้องปฏิบัติการระบบอัตโนมัติ</span><span data-lang-en>Groups of 3–4 &middot; 2 hours &middot; Automation laboratory</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ข้อ 1–6</span><span data-lang-en>Maps to objectives 1–6</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 6% ของคะแนนรวม</span><span data-lang-en>6% of the course total</span></span>
+            <span class="badge badge--gold"><i class="fa-solid fa-link"></i> <span data-lang-th>ใช้ข้อมูลจากปฏิบัติการที่ 6</span><span data-lang-en>Uses the data from Laboratory 6</span></span>
+          </div>
+
+          <h4><span data-lang-th>ขั้นตอนการทดลอง</span><span data-lang-en>Procedure</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>ควบคุมแบบ ON–OFF เป็นฐานเปรียบเทียบ</span><span data-lang-en>ON–OFF as the baseline</span></b><br>
+              <span data-lang-th>ตั้งแถบตาย 2 °C เดินระบบ 10 นาที บันทึกความกว้างการแกว่งที่วัดได้จริงและจำนวนครั้งการสลับ เทียบกับที่สมการ (7.2) ทำนาย</span>
+              <span data-lang-en>Set a 2 °C deadband, run for ten minutes, and record the actual swing and the number of switches, comparing with the prediction of equation (7.2).</span></li>
+            <li><b><span data-lang-th>ตัวควบคุมสัดส่วนล้วน และการวัดออฟเซต</span><span data-lang-en>Pure proportional, and measuring the offset</span></b><br>
+              <span data-lang-th>ใช้ \( K_p \) สามค่าที่ต่างกัน วัดออฟเซตที่สถานะคงตัวของแต่ละค่า แล้วพล็อตออฟเซตเทียบกับ \( 1/(1+KK_p) \) ควรได้เส้นตรง</span>
+              <span data-lang-en>Run three different \( K_p \) values, measure the steady-state offset of each, and plot offset against \( 1/(1+KK_p) \); it should be a straight line.</span></li>
+            <li><b><span data-lang-th>หาอัตราขยายวิกฤต</span><span data-lang-en>Find the ultimate gain</span></b><br>
+              <span data-lang-th>ค่อย ๆ เพิ่ม \( K_p \) จนการแกว่งคงแอมพลิจูด บันทึก \( K_u \) และวัดคาบ \( P_u \) จากกราฟ หรือใช้ค่าที่วัดไว้แล้วในปฏิบัติการที่ 6</span>
+              <span data-lang-en>Raise \( K_p \) until the oscillation holds its amplitude, record \( K_u \), and measure \( P_u \) from the trace — or reuse the values from Laboratory 6.</span></li>
+            <li><b><span data-lang-th>คำนวณและทดสอบค่าจาก ZN</span><span data-lang-en>Compute and test the ZN settings</span></b><br>
+              <span data-lang-th>คำนวณค่า PI และ PID จากตารางที่ 7.2 ทดสอบทั้งสองชุด บันทึกค่าพุ่งเกินและเวลาเข้าที่ของแต่ละชุด</span>
+              <span data-lang-en>Compute the PI and PID settings from Table 7.2, test both, and record overshoot and settling time for each.</span></li>
+            <li><b><span data-lang-th>ปรับให้ดีขึ้นด้วยมือ</span><span data-lang-en>Improve it by hand</span></b><br>
+              <span data-lang-th>ลด \( K_p \) ลงครึ่งหนึ่งจากค่า ZN แล้วทดสอบซ้ำ เปรียบเทียบว่าค่าใดเหมาะกับโรงเรือนที่มีพืชอยู่มากกว่า พร้อมเหตุผล</span>
+              <span data-lang-en>Halve \( K_p \) from the ZN figure, retest, and argue which setting suits a house with a crop in it, and why.</span></li>
+            <li><b><span data-lang-th>สาธิตวินด์อัป</span><span data-lang-en>Demonstrate windup</span></b><br>
+              <span data-lang-th>ปิดแอนติวินด์อัป ตั้งเป้าหมายสูงเกินกว่าที่ฮีตเตอร์จะทำได้ รอ 3 นาที แล้วลดเป้าหมายลงมาที่ค่าปกติ บันทึกเวลาที่ใช้กว่าระบบจะกลับเข้าที่ จากนั้นเปิดแอนติวินด์อัปแล้วทำซ้ำ</span>
+              <span data-lang-en>Turn anti-windup off, set a target beyond what the heater can reach, wait three minutes, then drop the target back to normal and record how long recovery takes. Switch anti-windup on and repeat.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 7.1</span><span data-lang-en>Data sheet 7.1</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>ตัวควบคุม</span><span data-lang-en>Controller</span></th>
+                  <th>\( K_p \)</th>
+                  <th>\( T_i \)</th>
+                  <th>\( T_d \)</th>
+                  <th><span data-lang-th>ออฟเซต</span><span data-lang-en>Offset</span></th>
+                  <th>\( M_p \)</th>
+                  <th>\( t_s \)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>ON–OFF</td><td>—</td><td>—</td><td>—</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>P</td><td>&nbsp;</td><td>—</td><td>—</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>PI (ZN)</td><td>&nbsp;</td><td>&nbsp;</td><td>—</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>PID (ZN)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>PID ปรับมือ</span><span data-lang-en>PID, hand-tuned</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>การวิเคราะห์ผล</span><span data-lang-en>Analysis</span></h4>
+          <ol>
+            <li><span data-lang-th>ออฟเซตที่วัดได้ของตัวควบคุม P ทั้งสามค่า เป็นไปตามสมการ (7.5) หรือไม่ ถ้าเบี่ยงเบนให้เสนอสาเหตุ</span><span data-lang-en>Do the three measured P offsets follow equation (7.5)? If they deviate, propose a cause.</span></li>
+            <li><span data-lang-th>การเพิ่มเทอม I ทำให้ออฟเซตหายไปจริงหรือไม่ และต้องแลกด้วยอะไรในรูปของผลตอบสนอง</span><span data-lang-en>Did adding the I term truly remove the offset, and what was traded away in the response?</span></li>
+            <li><span data-lang-th>ค่าจากกฎ ZN ให้ผลพุ่งเกินกี่เปอร์เซ็นต์ และสอดคล้องกับที่กฎนี้ตั้งใจออกแบบไว้หรือไม่</span><span data-lang-en>What overshoot did the ZN settings give, and is that consistent with what the rules intend?</span></li>
+            <li><span data-lang-th>เวลาที่ใช้ฟื้นตัวหลังวินด์อัป ต่างจากกรณีที่เปิดแอนติวินด์อัปกี่เท่า</span><span data-lang-en>By what factor did recovery after windup differ from the case with anti-windup on?</span></li>
+            <li><span data-lang-th>สำหรับโรงเรือนปลูกผักสลัดที่ไวต่อการแกว่งของอุณหภูมิ ควรเลือกค่าชุดใดจากตารางที่ 7.2 และเพราะเหตุใด</span><span data-lang-en>For a lettuce house sensitive to temperature swings, which row of Table 7.2 would you ship, and why?</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>Deliverables</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานปฏิบัติการไม่เกิน 5 หน้า ส่งภายใน 1 สัปดาห์</span><span data-lang-en>A report of at most five pages, due within one week.</span></li>
+            <li><span data-lang-th>กราฟเปรียบเทียบผลตอบสนองของตัวควบคุมทั้งห้าแบบในแกนเดียวกัน</span><span data-lang-en>One set of axes comparing the responses of all five controllers.</span></li>
+            <li><span data-lang-th>กราฟออฟเซตเทียบกับ \( 1/(1+KK_p) \) พร้อมเส้นถดถอยและค่า \( R^2 \)</span><span data-lang-en>The offset against \( 1/(1+KK_p) \), with a fitted line and its \( R^2 \).</span></li>
+            <li><span data-lang-th>กราฟสองเส้นแสดงการฟื้นตัวหลังวินด์อัป โดยเปิดและปิดแอนติวินด์อัป</span><span data-lang-en>Two traces of the recovery after windup, with anti-windup on and off.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>การวัดออฟเซตและการยืนยันสมการ (7.5) ด้วยข้อมูลสามจุด</span><span data-lang-en>Offset measurement and the three-point confirmation of equation (7.5)</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การหา \( K_u \) และ \( P_u \) และการคำนวณค่าจากตารางที่ 7.2</span><span data-lang-en>Finding \( K_u \) and \( P_u \), and computing the settings from Table 7.2</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>การสาธิตวินด์อัปและการอธิบายกลไกที่ทำให้ฟื้นตัวช้า</span><span data-lang-en>The windup demonstration and the explanation of the slow recovery</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การเลือกค่าที่จะส่งมอบจริง พร้อมเหตุผลที่อิงกับพืชที่ปลูก</span><span data-lang-en>The choice of settings to ship, justified against the crop being grown</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ความปลอดภัยและความเป็นระเบียบในการปฏิบัติงาน</span><span data-lang-en>Safe and orderly laboratory practice</span></td><td>15</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--danger" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></div>
+            <p class="mb-0">
+              <span data-lang-th>ขั้นตอนที่ 3 และ 6 ทำให้ฮีตเตอร์ทำงานที่กำลังสูงเป็นเวลานาน กล่องทดลองจะร้อนกว่าปกติมาก ห้ามสัมผัสผิวกล่องและห้ามวางสิ่งใดคลุมช่องระบายอากาศ ตั้งขีดจำกัดอุณหภูมิสูงสุดไว้ในโปรแกรมก่อนเริ่มทุกครั้ง และให้มีผู้เฝ้าดูตลอดช่วงที่ปิดแอนติวินด์อัป เพราะเป็นสภาวะที่ตัวควบคุมจะสั่งฮีตเตอร์เต็มกำลังค้างไว้โดยตั้งใจ</span>
+              <span data-lang-en>Steps 3 and 6 hold the heater at high power for extended periods and the chamber gets much hotter than usual. Do not touch its surface and never cover the vents. Set a maximum-temperature limit in the program before each run, and keep someone watching throughout the anti-windup-off phase, since that condition deliberately leaves the heater commanded to full.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>ON–OFF ยังเป็นตัวควบคุมที่ใช้มากที่สุดในฟาร์ม เพราะแอคชูเอเตอร์ส่วนใหญ่มีเพียงสองสถานะอยู่แล้ว</span><span data-lang-en>ON–OFF remains the commonest farm controller, because most actuators have only two states anyway.</span></li>
+        <li><span data-lang-th>การแกว่งภายใต้ ON–OFF กว้างกว่าแถบตายเสมอ เพราะความหน่วงเวลาตามสมการ (7.2)</span><span data-lang-en>The swing under ON–OFF always exceeds the deadband, because of dead time — equation (7.2).</span></li>
+        <li><span data-lang-th>ตัวควบคุมสัดส่วนล้วนทิ้งออฟเซตไว้เสมอ เพราะมันสร้างเอาต์พุตได้ก็ต่อเมื่อยังมีความคลาดเคลื่อน</span><span data-lang-en>A pure P controller always leaves an offset, since it produces output only while an error remains.</span></li>
+        <li><span data-lang-th>เทอม I กำจัดออฟเซตโดยการสะสม ทำให้ลด \( K_p \) ลงเพื่อความเสถียรได้โดยไม่เสียความแม่นยำ</span><span data-lang-en>The I term removes offset by accumulating, letting \( K_p \) drop for stability without losing accuracy.</span></li>
+        <li><span data-lang-th>วินด์อัปไม่ใช่ปัญหาการจูน แต่เป็นข้อบกพร่องเชิงโครงสร้างที่ต้องแก้ด้วยการหยุดสะสมเมื่อเอาต์พุตอิ่มตัว</span><span data-lang-en>Windup is not a tuning fault but a structural defect, cured by halting accumulation once the output saturates.</span></li>
+        <li><span data-lang-th>เทอม D ลดการพุ่งเกินแต่ขยายสัญญาณรบกวน โรงเรือนส่วนใหญ่จึงใช้เพียง PI</span><span data-lang-en>The D term cuts overshoot but amplifies noise, which is why most greenhouses run PI only.</span></li>
+        <li><span data-lang-th>คำนวณอนุพันธ์จากค่าที่วัดได้แทนความคลาดเคลื่อน เพื่อไม่ให้เกิดเดริเวทีฟคิกเมื่อเปลี่ยนเป้าหมาย</span><span data-lang-en>Take the derivative of the measurement rather than the error, so a setpoint change causes no kick.</span></li>
+        <li><span data-lang-th>รูปมาตรฐานกับรูปขนานให้ผลต่างกันเวลาจูน เพราะ \( K_p \) ในรูปมาตรฐานคูณทั้งสามเทอม</span><span data-lang-en>Standard and parallel forms tune differently, since \( K_p \) in the standard form scales all three terms.</span></li>
+        <li><span data-lang-th>กฎ Ziegler–Nichols ให้จุดตั้งต้น ไม่ใช่คำตอบสุดท้าย และตั้งใจให้พุ่งเกินพอสมควร</span><span data-lang-en>The Ziegler–Nichols rules give a starting point, not a final answer, and intend a fair amount of overshoot.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>แถบตาย (Deadband)</span><span data-lang-en>Deadband</span></div>
+          <div class="deflist__def"><span data-lang-th>ช่วงรอบค่าเป้าหมายที่ตัวควบคุมไม่เปลี่ยนสถานะ ใส่ไว้เพื่อไม่ให้สลับถี่เกินไป</span><span data-lang-en>The band about the setpoint in which the controller holds its state, added to stop rapid switching</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>ออฟเซต (Offset)</span><span data-lang-en>Offset</span></div>
+          <div class="deflist__def"><span data-lang-th>ความคลาดเคลื่อนถาวรที่เหลืออยู่เมื่อใช้ตัวควบคุมสัดส่วนล้วน ขนาดตามสมการ (7.5)</span><span data-lang-en>The permanent error left by a pure proportional controller, sized by equation (7.5)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>เวลารีเซ็ต \( T_i \)</span><span data-lang-en>Reset time \( T_i \)</span></div>
+          <div class="deflist__def"><span data-lang-th>พารามิเตอร์ของเทอมอินทิกรัล อยู่ที่ตัวส่วน ค่ายิ่งน้อยการสะสมยิ่งเร็ว</span><span data-lang-en>The integral parameter, in the denominator: the smaller it is, the faster the term accumulates</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>วินด์อัป (Integral windup)</span><span data-lang-en>Integral windup</span></div>
+          <div class="deflist__def"><span data-lang-th>การที่เทอมอินทิกรัลสะสมต่อไปขณะเอาต์พุตอิ่มตัว ทำให้ระบบฟื้นตัวช้ามากหลังสิ่งรบกวนหมดไป</span><span data-lang-en>The integral continuing to accumulate while the output is saturated, leaving a very slow recovery</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>เดริเวทีฟคิก</span><span data-lang-en>Derivative kick</span></div>
+          <div class="deflist__def"><span data-lang-th>การกระชากของเอาต์พุตเมื่อค่าเป้าหมายเปลี่ยนกะทันหัน แก้ด้วยสมการ (7.10)</span><span data-lang-en>The output lurch when the setpoint steps, cured by equation (7.10)</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term"><span data-lang-th>อัตราขยายวิกฤต \( K_u \)</span><span data-lang-en>Ultimate gain \( K_u \)</span></div>
+          <div class="deflist__def"><span data-lang-th>อัตราขยายสัดส่วนที่ทำให้ระบบแกว่งด้วยแอมพลิจูดคงที่ ใช้เป็นฐานของกฎ Ziegler–Nichols</span><span data-lang-en>The proportional gain at which the loop oscillates at constant amplitude, the basis of the ZN rules</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>สิบข้อ เน้นการวินิจฉัยจากรูปร่างของผลตอบสนอง การคำนวณค่าจูน และการตัดสินใจเชิงออกแบบ เกณฑ์ผ่าน 70%</span>
+        <span data-lang-en>Ten items on diagnosing from the shape of a response, computing tuning values and judging a design. Pass mark 70%.</span>
+      </p>
+      <div data-quiz="ch07-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>Åström, K. J., &amp; Hägglund, T. (2006). <em>Advanced PID Control</em>. ISA — The Instrumentation, Systems and Automation Society. <span data-lang-th>— ตำราอ้างอิงหลักเรื่อง PID วินด์อัป และการปรับจูน</span><span data-lang-en>— the standard reference on PID, windup and tuning.</span></li>
+        <li>Ziegler, J. G., &amp; Nichols, N. B. (1942). Optimum settings for automatic controllers. <em>Transactions of the ASME, 64</em>(11), 759–768. <span data-lang-th>— บทความต้นฉบับของกฎที่ใช้ในหัวข้อ 7.6</span><span data-lang-en>— the original paper behind the rules of §7.6.</span></li>
+        <li>Seborg, D. E., Edgar, T. F., Mellichamp, D. A., &amp; Doyle, F. J. (2016). <em>Process Dynamics and Control</em> (4th ed.). Wiley.</li>
+        <li>Ogata, K. (2010). <em>Modern Control Engineering</em> (5th ed.). Prentice Hall.</li>
+        <li>Nise, N. S. (2019). <em>Control Systems Engineering</em> (8th ed.). Wiley.</li>
+        <li>Åström, K. J., &amp; Murray, R. M. (2021). <em>Feedback Systems: An Introduction for Scientists and Engineers</em> (2nd ed.). Princeton University Press.</li>
+        <li>King, M. (2016). <em>Process Control: A Practical Approach</em> (2nd ed.). Wiley. <span data-lang-th>— มุมมองจากหน้างานว่ากฎการจูนแบบใดใช้ได้จริงและเมื่อใด</span><span data-lang-en>— a practitioner&rsquo;s view of which tuning rules actually work, and when.</span></li>
+        <li>Bolton, W. (2019). <em>Mechatronics: Electronic Control Systems in Mechanical and Electrical Engineering</em> (7th ed.). Pearson Education.</li>
+        <li>van Straten, G., van Willigenburg, G., van Henten, E., &amp; van Ooteghem, R. (2010). <em>Optimal Control of Greenhouse Cultivation</em>. CRC Press.</li>
+        <li>Shamshiri, R. R., Kalantari, F., Ting, K. C., Thorp, K. R., Hameed, I. A., Weltzien, C., Ahmad, D., &amp; Shad, Z. M. (2018). Advances in greenhouse automation and controlled environment agriculture: A transition to plant factories and urban agriculture. <em>International Journal of Agricultural and Biological Engineering, 11</em>(1), 1–22.</li>
+        <li>Nikolaou, G., Neocleous, D., Katsoulas, N., &amp; Kittas, C. (2019). Irrigation of greenhouse crops. <em>Horticulturae, 5</em>(1), 7.</li>
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press.</li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="ch06.html">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>บทก่อนหน้า</span><span data-lang-en>Previous chapter</span></small>
+        <b><span data-lang-th>บทที่ 6 · การควบคุมกระบวนการ</span><span data-lang-en>Chapter 6 · Process Control</span></b>
+      </a>
+      <a class="is-next" href="ch08.html">
+        <small><span data-lang-th>บทถัดไป</span><span data-lang-en>Next chapter</span> <i class="fa-solid fa-arrow-right"></i></small>
+        <b><span data-lang-th>บทที่ 8 · ระบบหุ่นยนต์อุตสาหกรรม</span><span data-lang-en>Chapter 8 · Industrial Robot Systems</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#i"><span data-lang-th>เทอม I และวินด์อัป</span><span data-lang-en>The I term and windup</span></a></li>
+          <li><a href="#tuning"><span data-lang-th>การปรับจูน</span><span data-lang-en>Tuning</span></a></li>
+          <li><a href="#lab"><span data-lang-th>ปฏิบัติการที่ 7</span><span data-lang-en>Laboratory 7</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script src="../js/ch07-quiz.js"></script>
+<script src="../js/ch07-anim.js"></script>
+</body>
+</html>

@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-title-th="บทที่ 6 · การควบคุมกระบวนการ" data-title-en="Chapter 6 · Process Control">Chapter 6 · Process Control</title>
+<meta name="description" content="Chapter 6: block diagrams and their algebra, modelling from first principles, first- and second-order systems, time response, and identifying a model from a step test.">
+<meta name="author" content="Jedsada Saijai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/math.js"></script>
+<script src="../js/anim.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<script>
+  (function () {
+    try {
+      var l = localStorage.getItem('amr-lang') || 'th';
+      var t = localStorage.getItem('amr-theme') || 'light';
+      document.documentElement.setAttribute('data-lang', l);
+      document.documentElement.setAttribute('lang', l);
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main"><span data-lang-th>ข้ามไปยังเนื้อหาหลัก</span><span data-lang-en>Skip to main content</span></a>
+
+<!-- ===================================================== Navigation ====== -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+      <span class="brand__text">
+        <b>Agri&#8209;Mechatronics</b>
+        <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+        <span data-lang-en>Mechatronics &amp; Robotics</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a>
+      <a href="ch03.html"><span data-lang-th>บทที่ 3</span><span data-lang-en>Ch 3</span></a>
+      <a href="ch04.html"><span data-lang-th>บทที่ 4</span><span data-lang-en>Ch 4</span></a>
+      <a href="ch05.html"><span data-lang-th>บทที่ 5</span><span data-lang-en>Ch 5</span></a>
+      <a href="ch06.html" class="is-active"><span data-lang-th>บทที่ 6</span><span data-lang-en>Ch 6</span></a>
+      <a href="ch07.html"><span data-lang-th>บทที่ 7</span><span data-lang-en>Ch 7</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-set-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+<div class="reading-bar"></div>
+
+<!-- ==================================================== Chapter hero ===== -->
+<section class="ch-hero">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="../index.html"><span data-lang-th>หน้าแรก</span><span data-lang-en>Home</span></a><span>/</span>
+      <a href="../index.html#chapters"><span data-lang-th>บทเรียน</span><span data-lang-en>Chapters</span></a><span>/</span>
+      <span data-lang-th>บทที่ 6</span><span data-lang-en>Chapter 6</span>
+    </div>
+
+    <div class="ch-hero__meta">
+      <span class="badge"><i class="fa-solid fa-calendar-week"></i> <span data-lang-th>สัปดาห์ที่ 9–10</span><span data-lang-en>Weeks 9–10</span></span>
+      <span class="badge badge--gold"><i class="fa-regular fa-clock"></i> <span data-lang-th>บรรยาย 4 ชม. + ปฏิบัติ 4 ชม.</span><span data-lang-en>4 h lecture + 4 h laboratory</span></span>
+      <span class="badge badge--sky"><i class="fa-solid fa-film"></i> <span data-lang-th>แอนิเมชัน 3 ชุด</span><span data-lang-en>3 animations</span></span>
+    </div>
+
+    <h1>
+      <span data-lang-th>บทที่ 6 · การควบคุมกระบวนการ</span>
+      <span data-lang-en>Chapter 6 · Process Control</span>
+    </h1>
+    <p class="ch-hero__lead">
+      <span data-lang-th>บทที่ 2 บอกว่าการป้อนกลับลดผลของสิ่งรบกวนลง \( 1 + K K_p \) เท่า แต่ไม่ได้บอกว่าระบบจะใช้เวลานานแค่ไหนกว่าจะเข้าที่ หรือจะแกว่งก่อนหรือไม่ บทนี้เติมมิติของ <em>เวลา</em> เข้าไป ด้วยแบบจำลองที่สร้างจากสมดุลพลังงาน และคำตอบที่อ่านได้จากพารามิเตอร์เพียงสองสามตัว</span>
+      <span data-lang-en>Chapter 2 showed that feedback divides a disturbance by \( 1 + K K_p \), but said nothing about how long the system takes to settle, or whether it overshoots on the way. This chapter adds the dimension of <em>time</em>, through models built from energy balances and answers read off just two or three parameters.</span>
+    </p>
+  </div>
+</section>
+
+<main id="main">
+<div class="wrap ch-layout">
+
+  <!-- ================================================== Sidebar TOC ====== -->
+  <aside class="toc">
+    <h4><span data-lang-th>หัวข้อในบทนี้</span><span data-lang-en>In this chapter</span></h4>
+    <ol>
+      <li><a href="#objectives"><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></a></li>
+      <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+      <li><a href="#why"><span data-lang-th>6.1 ทำไมต้องมีแบบจำลอง</span><span data-lang-en>6.1 Why model at all</span></a></li>
+      <li><a href="#blocks"><span data-lang-th>6.2 พีชคณิตของแผนภาพบล็อก</span><span data-lang-en>6.2 Block diagram algebra</span></a></li>
+      <li><a href="#modelling"><span data-lang-th>6.3 สร้างแบบจำลองจากสมดุล</span><span data-lang-en>6.3 Modelling from a balance</span></a></li>
+      <li><a href="#first"><span data-lang-th>6.4 ระบบอันดับหนึ่ง</span><span data-lang-en>6.4 First-order systems</span></a></li>
+      <li><a href="#second"><span data-lang-th>6.5 ระบบอันดับสอง</span><span data-lang-en>6.5 Second-order systems</span></a></li>
+      <li><a href="#identify"><span data-lang-th>6.6 หาแบบจำลองจากข้อมูลจริง</span><span data-lang-en>6.6 Identifying a model</span></a></li>
+      <li><a href="#activity"><span data-lang-th>6.7 กิจกรรมในชั้นเรียน</span><span data-lang-en>6.7 In-class activity</span></a></li>
+      <li><a href="#lab"><span data-lang-th>6.8 ปฏิบัติการที่ 6</span><span data-lang-en>6.8 Laboratory 6</span></a></li>
+      <li><a href="#summary"><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></a></li>
+      <li><a href="#posttest"><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></a></li>
+      <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================================================== Article ======= -->
+  <article class="article">
+
+    <!-- ----------------------------------------------- Objectives ------- -->
+    <section id="objectives">
+      <h2><span data-lang-th>วัตถุประสงค์การเรียนรู้</span><span data-lang-en>Learning objectives</span></h2>
+      <p class="lead">
+        <span data-lang-th>เมื่อเรียนจบบทนี้ นักศึกษาจะสามารถ:</span>
+        <span data-lang-en>After completing this chapter, students will be able to:</span>
+      </p>
+      <ul class="objectives">
+        <li><span data-lang-th>ยุบแผนภาพบล็อกที่มีการต่ออนุกรม ขนาน และวงรอบป้อนกลับ ให้เหลือฟังก์ชันถ่ายโอนเดียว</span><span data-lang-en>Reduce a block diagram with series, parallel and feedback paths to a single transfer function.</span></li>
+        <li><span data-lang-th>สร้างแบบจำลองอันดับหนึ่งของระบบเกษตรจากสมดุลพลังงานหรือสมดุลมวล</span><span data-lang-en>Build a first-order model of an agricultural system from an energy or mass balance.</span></li>
+        <li><span data-lang-th>ระบุค่าคงที่เวลาและอัตราขยายจากสมการเชิงอนุพันธ์ และทำนายผลตอบสนองต่ออินพุตขั้นบันได</span><span data-lang-en>Extract the time constant and gain from a differential equation and predict the step response.</span></li>
+        <li><span data-lang-th>คำนวณค่าพุ่งเกิน เวลาขึ้นสูงสุด และเวลาเข้าที่ของระบบอันดับสองจาก \( \zeta \) และ \( \omega_n \)</span><span data-lang-en>Compute overshoot, peak time and settling time of a second-order system from \( \zeta \) and \( \omega_n \).</span></li>
+        <li><span data-lang-th>อธิบายผลของอัตราส่วนการหน่วงที่มีต่อรูปร่างของผลตอบสนอง และเลือกค่าที่เหมาะกับงานเกษตร</span><span data-lang-en>Explain how the damping ratio shapes a response, and choose a value suited to an agricultural task.</span></li>
+        <li><span data-lang-th>หาค่า \( K, \tau, \theta \) ของแบบจำลอง FOPDT จากข้อมูลการทดสอบขั้นบันไดที่วัดได้จริง</span><span data-lang-en>Obtain \( K, \tau \) and \( \theta \) of a FOPDT model from real step-test data.</span></li>
+      </ul>
+    </section>
+
+    <!-- ------------------------------------------------- Pre-test ------- -->
+    <section id="pretest">
+      <h2><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></h2>
+      <p>
+        <span data-lang-th>ตอบก่อนอ่านเนื้อหา เพื่อสำรวจความเข้าใจเดิม ระบบเฉลยพร้อมคำอธิบายทันทีเมื่อกด “ตรวจคำตอบ”</span>
+        <span data-lang-en>Answer before reading. Explanations appear as soon as you check your answers.</span>
+      </p>
+      <div data-quiz="ch06-pre"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- 6.1 --------- -->
+    <section id="why">
+      <h2><span data-lang-th>6.1 ทำไมวิศวกรจึงต้องมีแบบจำลอง</span><span data-lang-en>6.1 Why an engineer needs a model</span></h2>
+
+      <p>
+        <span data-lang-th>ในบทที่ 2 เราวาดบล็อก “กระบวนการ” เป็นกล่องเปล่าแล้วบอกเพียงว่ามันมีอัตราขยาย \( K \) นั่นเพียงพอสำหรับการเปรียบเทียบระบบเปิดกับระบบปิด แต่ไม่พอสำหรับคำถามที่ผู้ใช้จริงถามเสมอ</span>
+        <span data-lang-en>In Chapter 2 the “process” block was an empty box with a gain \( K \). That sufficed to compare open and closed loop, but not for the questions a real user always asks.</span>
+      </p>
+
+      <div class="grid grid--2">
+        <div class="card">
+          <div class="card__icon"><i class="fa-regular fa-clock"></i></div>
+          <h3><span data-lang-th>“อีกนานแค่ไหนจึงจะถึงอุณหภูมิที่ตั้งไว้”</span><span data-lang-en>“How long until it reaches the setpoint?”</span></h3>
+          <p><span data-lang-th>คำตอบมาจากค่าคงที่เวลา ซึ่งหาได้จากขนาดของสิ่งที่ต้องทำให้ร้อนและอัตราการสูญเสียความร้อน</span><span data-lang-en>The answer comes from the time constant, which follows from the size of the thing being heated and the rate it loses heat.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--gold"><i class="fa-solid fa-chart-line"></i></div>
+          <h3><span data-lang-th>“ทำไมมันพุ่งเกินแล้วค่อยวกกลับ”</span><span data-lang-en>“Why does it overshoot and come back?”</span></h3>
+          <p><span data-lang-th>คำตอบมาจากอัตราส่วนการหน่วง ซึ่งบอกว่าระบบมีแนวโน้มแกว่งมากเพียงใด</span><span data-lang-en>The answer comes from the damping ratio, which says how inclined the system is to oscillate.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--sky"><i class="fa-solid fa-sliders"></i></div>
+          <h3><span data-lang-th>“ควรตั้งอัตราขยายเท่าไรจึงจะไม่แกว่ง”</span><span data-lang-en>“What gain can I use without hunting?”</span></h3>
+          <p><span data-lang-th>คำถามนี้ตอบไม่ได้เลยถ้าไม่มีแบบจำลอง และเป็นหัวใจของการปรับจูนในบทที่ 7</span><span data-lang-en>Unanswerable without a model, and the heart of the tuning in Chapter 7.</span></p>
+        </div>
+        <div class="card">
+          <div class="card__icon card__icon--steel"><i class="fa-solid fa-ruler-combined"></i></div>
+          <h3><span data-lang-th>“ฮีตเตอร์ขนาดเท่าไรจึงจะพอ”</span><span data-lang-en>“How big must the heater be?”</span></h3>
+          <p><span data-lang-th>แบบจำลองบอกขนาดอุปกรณ์ที่ต้องซื้อก่อนลงทุน ไม่ใช่หลังจากติดตั้งแล้วพบว่าเล็กเกินไป</span><span data-lang-en>A model sizes the equipment before you buy it, not after discovering it was too small.</span></p>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-lightbulb"></i> <span data-lang-th>แบบจำลองที่ดีไม่ใช่แบบจำลองที่ละเอียดที่สุด</span><span data-lang-en>The best model is not the most detailed one</span></div>
+        <p class="mb-0">
+          <span data-lang-th>โรงเรือนหนึ่งหลังมีพลวัตของอากาศ ดิน พืช โครงสร้าง และความชื้นปนกันอยู่ ถ้าสร้างแบบจำลองให้ครบทุกอย่างจะได้สมการหลายสิบตัวที่ไม่มีใครใช้งานจริง สิ่งที่วิศวกรควบคุมต้องการคือแบบจำลองที่ <em>หยาบที่สุดเท่าที่ยังตอบคำถามได้</em> ซึ่งในงานควบคุมอุณหภูมิมักเป็นสมการอันดับหนึ่งเพียงสมการเดียว บวกความหน่วงเวลาอีกหนึ่งค่า</span>
+          <span data-lang-en>A greenhouse mixes the dynamics of air, soil, crop, structure and humidity. Model every one of them and you get dozens of equations nobody will ever use. What a control engineer wants is the <em>coarsest model that still answers the question</em> — for temperature control, usually a single first-order equation plus one dead-time figure.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 6.2 --------- -->
+    <section id="blocks">
+      <h2><span data-lang-th>6.2 พีชคณิตของแผนภาพบล็อก</span><span data-lang-en>6.2 The algebra of block diagrams</span></h2>
+
+      <p>
+        <span data-lang-th>แผนภาพบล็อกไม่ใช่เพียงภาพประกอบ แต่เป็นสมการที่วาดออกมา ทุกบล็อกคือการคูณด้วยฟังก์ชันถ่ายโอน และเราย้ายไปมาได้ด้วยกฎสามข้อ</span>
+        <span data-lang-en>A block diagram is not a picture; it is an equation drawn out. Every block is a multiplication by its transfer function, and three rules let us rearrange them.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \underbrace{G_1 G_2}_{\text{อนุกรม / series}}, \qquad
+                              \underbrace{G_1 + G_2}_{\text{ขนาน / parallel}}, \qquad
+                              \underbrace{\frac{G}{1 + G H}}_{\text{ป้อนกลับ / feedback}} $$</div>
+        <div class="eq__num">(6.1)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>กฎข้อที่สามคือข้อที่สำคัญที่สุดและใช้บ่อยที่สุด เพราะวงรอบควบคุมทุกวงมีรูปแบบนี้ สำหรับวงรอบที่มีตัวควบคุม \( C \) กระบวนการ \( G \) และเซนเซอร์ \( H \) ฟังก์ชันถ่ายโอนจากค่าที่ต้องการไปยังผลลัพธ์คือ</span>
+        <span data-lang-en>The third rule matters most and is used most often, since every control loop has this shape. For a loop with controller \( C \), process \( G \) and sensor \( H \), the transfer function from setpoint to output is</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \frac{Y(s)}{R(s)} \;=\; \frac{C(s)\,G(s)}{1 + C(s)\,G(s)\,H(s)} $$</div>
+        <div class="eq__num">(6.2)</div>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-link"></i> <span data-lang-th>สมการนี้คือสมการ (2.3) ที่เติมมิติเวลาเข้าไป</span><span data-lang-en>This is equation (2.3) with time added</span></div>
+        <p class="mb-0">
+          <span data-lang-th>ถ้าแทน \( s = 0 \) ลงในสมการ (6.2) ซึ่งหมายถึง “ปล่อยให้เวลาผ่านไปนานจนทุกอย่างนิ่ง” จะได้ \( \frac{CG}{1+CGH} \) ที่เป็นเพียงตัวเลข ซึ่งก็คือ \( \frac{K K_p}{1 + K K_p} \) ในบทที่ 2 พอดี กล่าวได้ว่าบทที่ 2 คือกรณีสถานะคงตัวของบทนี้ และบทนี้คือบทที่ 2 ที่มองเห็นระหว่างทางด้วย</span>
+          <span data-lang-en>Put \( s = 0 \) into equation (6.2) — which means “let time pass until everything settles” — and it becomes the plain number \( \frac{CG}{1+CGH} \), exactly the \( \frac{K K_p}{1 + K K_p} \) of Chapter 2. Chapter 2 was the steady-state case of this chapter; this chapter is Chapter 2 with the journey visible.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 6.1 ===================== -->
+      <figure class="anim" data-anim="ch06-blocks">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 6.1 — ยุบแผนภาพบล็อกทีละขั้น</span>
+          <span data-lang-en>Animation 6.1 — Reducing a block diagram one step at a time</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <svg viewBox="0 0 860 240" role="img" aria-label="A control loop reduced step by step to a single transfer function">
+            <defs>
+              <marker id="ar61" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" class="dg-arrow"/>
+              </marker>
+            </defs>
+
+            <line x1="30" y1="84" x2="74" y2="84" class="dg-stroke" stroke-width="2" marker-end="url(#ar61)"/>
+            <circle id="b6-sum" cx="94" cy="84" r="18" class="dg-fill-surface dg-stroke" stroke-width="2"/>
+            <text class="dg-text" x="94" y="89" text-anchor="middle">Σ</text>
+            <text class="dg-text-sm" x="74" y="68">+</text>
+            <text class="dg-text-sm" x="86" y="120">−</text>
+            <line id="b6-w1" x1="112" y1="84" x2="162" y2="84" class="dg-stroke" stroke-width="2" marker-end="url(#ar61)"/>
+
+            <!-- controller -->
+            <g id="b6-c">
+              <rect x="164" y="56" width="120" height="56" rx="9" class="dg-fill-green dg-stroke-green" stroke-width="2"/>
+              <text class="dg-text" x="224" y="90" text-anchor="middle">C(s)</text>
+            </g>
+            <line id="b6-w2" x1="284" y1="84" x2="334" y2="84" class="dg-stroke" stroke-width="2" marker-end="url(#ar61)"/>
+
+            <!-- process -->
+            <g id="b6-g">
+              <rect x="336" y="56" width="120" height="56" rx="9" class="dg-fill-gold dg-stroke-gold" stroke-width="2"/>
+              <text class="dg-text" x="396" y="90" text-anchor="middle">G(s)</text>
+            </g>
+
+            <!-- the merged series block, shown from step 2 -->
+            <g id="b6-cg" opacity="0">
+              <rect x="164" y="56" width="292" height="56" rx="9" class="dg-fill-green dg-stroke-green" stroke-width="2.5"/>
+              <text class="dg-text" x="310" y="90" text-anchor="middle">C(s) G(s)</text>
+            </g>
+
+            <!-- the fully reduced block, shown at step 3 -->
+            <g id="b6-final" opacity="0">
+              <rect x="164" y="48" width="292" height="72" rx="10" class="dg-fill-green dg-stroke-green" stroke-width="3"/>
+            </g>
+
+            <line id="b6-w3" x1="456" y1="84" x2="700" y2="84" class="dg-stroke" stroke-width="2" marker-end="url(#ar61)"/>
+
+            <!-- sensor in the return path -->
+            <g id="b6-h">
+              <path id="b6-w4" d="M 620 84 L 620 176 L 456 176" class="dg-stroke" stroke-width="2" fill="none" marker-end="url(#ar61)"/>
+              <rect x="336" y="148" width="120" height="56" rx="9" class="dg-fill-sky dg-stroke" stroke-width="2"/>
+              <text class="dg-text" x="396" y="182" text-anchor="middle">H(s)</text>
+              <path id="b6-w5" d="M 336 176 L 94 176 L 94 102" class="dg-stroke" stroke-width="2" fill="none" marker-end="url(#ar61)"/>
+            </g>
+
+            <text id="b6-caption" class="dg-text-sm" x="430" y="226" text-anchor="middle"></text>
+          </svg>
+
+          <span class="fig-label fig-label--bare" style="left:2.5%;top:32%">\( R \)</span>
+          <span class="fig-label fig-label--bare" style="left:83.0%;top:32%">\( Y \)</span>
+          <span class="fig-label" id="b6-result" style="left:36.0%;top:35%"></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>จังหวะ</span><span data-lang-en>Pace</span>
+            <input type="range" data-anim-param="pace" data-unit="s" min="1" max="5" step="0.5" value="2.5">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 6.1</span><span data-lang-en>Animation 6.1</span></b>
+          <span data-lang-th> ขั้นแรกบล็อกที่ต่ออนุกรมถูกคูณรวมเป็นก้อนเดียว ขั้นที่สองวงรอบป้อนกลับถูกยุบด้วยกฎข้อที่สามในสมการ (6.1) เหลือเป็นบล็อกเดียวตามสมการ (6.2) สังเกตว่าตัวส่วนคือ \( 1 + \) ผลคูณของทุกบล็อก <em>รอบวง</em> ซึ่งเรียกว่าอัตราขยายวงรอบ และเป็นปริมาณเดียวที่ตัดสินทั้งความแม่นยำและเสถียรภาพของระบบ</span>
+          <span data-lang-en> First the series blocks multiply into one. Then the feedback loop collapses by the third rule of equation (6.1), leaving the single block of equation (6.2). Notice that the denominator is \( 1 + \) the product of every block <em>around the loop</em> — the loop gain, the one quantity that governs both the accuracy and the stability of the system.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 6.3 --------- -->
+    <section id="modelling">
+      <h2><span data-lang-th>6.3 สร้างแบบจำลองจากสมดุล</span><span data-lang-en>6.3 Building a model from a balance</span></h2>
+
+      <p>
+        <span data-lang-th>แบบจำลองของระบบเกษตรเกือบทั้งหมดเริ่มจากประโยคเดียวกัน คือ <strong>“อัตราการสะสม เท่ากับ อัตราที่เข้า ลบ อัตราที่ออก”</strong> เขียนประโยคนี้ให้ถูกต้องแล้ว สมการเชิงอนุพันธ์จะตามมาเอง</span>
+        <span data-lang-en>Almost every agricultural model starts from the same sentence: <strong>“the rate of accumulation equals the rate in minus the rate out”</strong>. Write that sentence correctly and the differential equation follows.</span>
+      </p>
+
+      <h3><span data-lang-th>6.3.1 ตัวอย่าง — อุณหภูมิอากาศในโรงเรือน</span><span data-lang-en>6.3.1 Worked example — greenhouse air temperature</span></h3>
+
+      <p>
+        <span data-lang-th>พลังงานความร้อนที่สะสมในอากาศคือ \( C\,T \) โดย \( C \) คือความจุความร้อนรวม ความร้อนเข้ามาจากฮีตเตอร์ \( Q \) และจากแสงอาทิตย์ \( Q_{\text{sun}} \) ส่วนความร้อนออกไปทางผนังและหลังคาด้วยอัตราที่แปรตามผลต่างอุณหภูมิ</span>
+        <span data-lang-en>Heat stored in the air is \( C\,T \), where \( C \) is the total heat capacity. Heat arrives from the heater \( Q \) and from the sun \( Q_{\text{sun}} \), and leaves through the walls and roof at a rate proportional to the temperature difference.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ C\,\frac{\mathrm{d}T}{\mathrm{d}t} \;=\; \underbrace{Q + Q_{\text{sun}}}_{\text{เข้า / in}} \;-\; \underbrace{UA\left(T - T_{\text{out}}\right)}_{\text{ออก / out}} $$</div>
+        <div class="eq__num">(6.3)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( C \) — <span data-lang-th>ความจุความร้อนของอากาศและมวลภายใน (J/K)</span><span data-lang-en>heat capacity of the air and internal mass (J/K)</span></li>
+          <li>\( UA \) — <span data-lang-th>ผลคูณของสัมประสิทธิ์การถ่ายเทความร้อนกับพื้นที่ผิว (W/K)</span><span data-lang-en>the heat-transfer coefficient times the surface area (W/K)</span></li>
+          <li>\( T_{\text{out}} \) — <span data-lang-th>อุณหภูมิภายนอก ซึ่งเป็นสิ่งรบกวนตัวหนึ่ง</span><span data-lang-en>the outside temperature, itself a disturbance</span></li>
+        </ul>
+      </div>
+
+      <p>
+        <span data-lang-th>จัดรูปใหม่โดยให้ \( y = T - T_{\text{out}} \) คืออุณหภูมิที่สูงกว่าภายนอก และหารตลอดด้วย \( UA \) จะได้รูปมาตรฐานของระบบอันดับหนึ่ง</span>
+        <span data-lang-en>Let \( y = T - T_{\text{out}} \) be the rise above outside, divide through by \( UA \), and the standard first-order form appears:</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \underbrace{\frac{C}{UA}}_{\tau}\,\frac{\mathrm{d}y}{\mathrm{d}t} + y \;=\; \underbrace{\frac{1}{UA}}_{K}\,\left(Q + Q_{\text{sun}}\right) $$</div>
+        <div class="eq__num">(6.4)</div>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-key"></i> <span data-lang-th>สิ่งที่ได้จากการจัดรูปนี้มีค่ามาก</span><span data-lang-en>What that rearrangement buys</span></div>
+        <p class="mb-0">
+          <span data-lang-th>พารามิเตอร์สองตัวของแบบจำลองไม่ใช่ตัวเลขลอย ๆ แต่มีความหมายทางกายภาพชัดเจน: \( \tau = C/UA \) บอกว่า <em>โรงเรือนใหญ่และเก็บความร้อนดีจะช้า</em> ส่วน \( K = 1/UA \) บอกว่า <em>โรงเรือนที่สูญเสียความร้อนมากจะร้อนขึ้นน้อยต่อกำลังฮีตเตอร์หนึ่งวัตต์</em> นั่นแปลว่าการฉีดฉนวนที่หลังคาเพื่อลด \( UA \) จะทำให้ทั้งช้าลงและร้อนง่ายขึ้นพร้อมกัน ซึ่งเป็นข้อสรุปที่อ่านได้จากสมการโดยไม่ต้องทดลอง</span>
+          <span data-lang-en>The model&rsquo;s two parameters are not abstract numbers; each has a physical meaning. \( \tau = C/UA \) says <em>a large, well-insulated house is slow</em>, and \( K = 1/UA \) says <em>a leaky house warms less per watt of heater</em>. So adding roof insulation to reduce \( UA \) makes the house both slower and easier to heat at once — a conclusion read straight off the equation, with no experiment needed.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--note">
+        <div class="callout__title"><i class="fa-solid fa-seedling"></i> <span data-lang-th>ตัวอย่างในงานเกษตรอัจฉริยะ</span><span data-lang-en>In smart-farm practice</span></div>
+        <p class="mb-0">
+          <span data-lang-th>สมการเดียวกันใช้ได้กับถังผสมปุ๋ยโดยเปลี่ยนจากสมดุลพลังงานเป็นสมดุลมวล: ปริมาตรถัง \( V \) แทน \( C \) อัตราการไหลออก \( F \) แทน \( UA \) และความเข้มข้นแทนอุณหภูมิ จะได้ \( \tau = V/F \) ซึ่งหมายความว่าถังใบใหญ่ตอบสนองต่อการเติมสารเข้มข้นช้ากว่าถังเล็กตามสัดส่วนปริมาตร นี่คือเหตุผลที่ระบบ fertigation มักใช้ถังผสมขนาดเล็กที่ไหลเวียนเร็ว แทนถังใหญ่ใบเดียว</span>
+          <span data-lang-en>The same equation serves a fertigation tank with a mass balance in place of an energy one: tank volume \( V \) replaces \( C \), outflow \( F \) replaces \( UA \), and concentration replaces temperature, giving \( \tau = V/F \). A large tank therefore responds to a dose of concentrate proportionally more slowly than a small one — which is why fertigation skids favour a small, fast-circulating mixing tank over one big vessel.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 6.4 --------- -->
+    <section id="first">
+      <h2><span data-lang-th>6.4 ระบบอันดับหนึ่ง</span><span data-lang-en>6.4 First-order systems</span></h2>
+
+      <p>
+        <span data-lang-th>รูปมาตรฐานของระบบอันดับหนึ่งและฟังก์ชันถ่ายโอนของมันคือ</span>
+        <span data-lang-en>The standard form of a first-order system, and its transfer function, are</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \tau \frac{\mathrm{d}y}{\mathrm{d}t} + y = K u
+                              \qquad\Longleftrightarrow\qquad
+                              G(s) = \frac{K}{\tau s + 1} $$</div>
+        <div class="eq__num">(6.5)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>เมื่อป้อนอินพุตขั้นบันไดขนาด \( A \) เข้าไปที่ระบบซึ่งเริ่มจากศูนย์ ผลตอบสนองคือ</span>
+        <span data-lang-en>Driven by a step of size \( A \) from rest, the response is</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ y(t) \;=\; K A \left( 1 - e^{-t/\tau} \right) $$</div>
+        <div class="eq__num">(6.6)</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <caption><span data-lang-th>ตัวเลขที่ควรจำเกี่ยวกับผลตอบสนองอันดับหนึ่ง</span><span data-lang-en>Numbers worth memorising about a first-order response</span></caption>
+          <thead>
+            <tr>
+              <th><span data-lang-th>เวลาที่ผ่านไป</span><span data-lang-en>Elapsed time</span></th>
+              <th><span data-lang-th>ไปถึงกี่เปอร์เซ็นต์ของค่าสุดท้าย</span><span data-lang-en>Fraction of the final value reached</span></th>
+              <th><span data-lang-th>ความหมายในทางปฏิบัติ</span><span data-lang-en>What it means in practice</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>\( t = \tau \)</td><td>63.2%</td><td><span data-lang-th>นิยามของค่าคงที่เวลา ใช้หาค่า \( \tau \) จากกราฟที่วัดได้</span><span data-lang-en>the definition of the time constant, used to read \( \tau \) off a measured curve</span></td></tr>
+            <tr><td>\( t = 2\tau \)</td><td>86.5%</td><td><span data-lang-th>จุดที่ผู้ใช้ส่วนใหญ่เริ่มคิดว่า “เกือบถึงแล้ว”</span><span data-lang-en>where most users start to feel it is “nearly there”</span></td></tr>
+            <tr><td>\( t = 3\tau \)</td><td>95.0%</td><td><span data-lang-th>เกณฑ์เวลาเข้าที่แบบหลวมที่ยอมรับได้ในงานเกษตรหลายกรณี</span><span data-lang-en>the loose settling criterion acceptable in much agricultural work</span></td></tr>
+            <tr><td>\( t = 5\tau \)</td><td>99.3%</td><td><span data-lang-th>ถือว่าเข้าที่แล้วในทางวิศวกรรม</span><span data-lang-en>taken as settled for engineering purposes</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>ระบบอันดับหนึ่งล้วน ๆ ไม่มีวันพุ่งเกิน</span><span data-lang-en>A pure first-order system can never overshoot</span></div>
+        <p class="mb-0">
+          <span data-lang-th>สมการ (6.6) เป็นฟังก์ชันที่เพิ่มขึ้นอย่างเดียวและเข้าหาค่าสุดท้ายจากด้านล่างเสมอ ดังนั้นถ้าคุณวัดอุณหภูมิโรงเรือนแล้วเห็นว่ามันพุ่งเกินเป้าหมายก่อนวกกลับ นั่นเป็นหลักฐานว่าระบบ <em>ไม่ใช่</em> อันดับหนึ่ง อาจเป็นเพราะมีความหน่วงเวลาในวงรอบ หรือมีตัวเก็บพลังงานมากกว่าหนึ่งตัว ซึ่งนำไปสู่หัวข้อถัดไป</span>
+          <span data-lang-en>Equation (6.6) rises monotonically and approaches its final value from below, always. So if you measure a greenhouse temperature overshooting its target before coming back, that is evidence the system is <em>not</em> first-order — either there is dead time in the loop or more than one energy store, which leads to the next section.</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 6.2 ===================== -->
+      <figure class="anim" data-anim="ch06-first">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 6.2 — ค่าคงที่เวลาและอัตราขยาย เปลี่ยนกราฟอย่างไร</span>
+          <span data-lang-en>Animation 6.2 — How the time constant and gain reshape the curve</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <canvas class="anim__scope" id="fo-scope" style="height:230px" aria-label="Step response of a first-order system with the 63.2 percent point marked"></canvas>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>ผลตอบสนอง \( y(t) \)</span><span data-lang-en>response \( y(t) \)</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>อินพุตขั้นบันได</span><span data-lang-en>step input</span></span>
+          <span style="color:var(--ink-mute)"><i></i><span data-lang-th>ค่าสุดท้าย และระดับ 63.2%</span><span data-lang-en>final value and the 63.2% level</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>ค่าคงที่เวลา</span><span data-lang-en>Time constant</span> \( \tau \)
+            <input type="range" data-anim-param="tau" data-unit="s" min="1" max="12" step="0.5" value="4">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>อัตราขยาย</span><span data-lang-en>Gain</span> \( K \)
+            <input type="range" data-anim-param="k" min="0.5" max="3" step="0.1" value="1.5">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 6.2</span><span data-lang-en>Animation 6.2</span></b>
+          <span data-lang-th> \( K \) กำหนดว่ากราฟไปจบที่ระดับใด ส่วน \( \tau \) กำหนดว่าใช้เวลานานเท่าใดจึงจะไปถึง สองสิ่งนี้เป็นอิสระต่อกันโดยสิ้นเชิง สังเกตเส้นประที่ 63.2% ซึ่งตัดกราฟที่ \( t = \tau \) พอดีเสมอไม่ว่าจะปรับค่าใด นี่คือวิธีอ่านค่า \( \tau \) จากกราฟที่วัดได้จริง และเป็นสิ่งที่จะใช้ในปฏิบัติการที่ 6</span>
+          <span data-lang-en> \( K \) sets where the curve ends up; \( \tau \) sets how long it takes to get there, and the two are entirely independent. Watch the dashed 63.2% line: it always crosses the curve at exactly \( t = \tau \), whatever you set. That is how \( \tau \) is read off a measured curve, and what Laboratory 6 puts to use.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 6.5 --------- -->
+    <section id="second">
+      <h2><span data-lang-th>6.5 ระบบอันดับสอง</span><span data-lang-en>6.5 Second-order systems</span></h2>
+
+      <p>
+        <span data-lang-th>ระบบที่มีตัวเก็บพลังงานสองตัวซึ่งแลกเปลี่ยนพลังงานกันได้ เช่น มวลกับสปริง หรือความเฉื่อยของมอเตอร์กับความยืดหยุ่นของชุดส่งกำลัง จะมีพฤติกรรมที่แกว่งได้ รูปมาตรฐานคือ</span>
+        <span data-lang-en>A system with two energy stores that can exchange energy — a mass and a spring, or a motor&rsquo;s inertia and the compliance of its drive — can oscillate. The standard form is</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ \frac{\mathrm{d}^2 y}{\mathrm{d}t^2} + 2\zeta\omega_n \frac{\mathrm{d}y}{\mathrm{d}t} + \omega_n^2 y
+                              \;=\; K\,\omega_n^2\, u
+                              \qquad\Longleftrightarrow\qquad
+                              G(s) = \frac{K\,\omega_n^2}{s^2 + 2\zeta\omega_n s + \omega_n^2} $$</div>
+        <div class="eq__num">(6.7)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( \omega_n \) — <span data-lang-th>ความถี่ธรรมชาติ (rad/s) บอกว่าระบบ “เร็ว” เพียงใด</span><span data-lang-en>the natural frequency (rad/s), setting how fast the system is</span></li>
+          <li>\( \zeta \) — <span data-lang-th>อัตราส่วนการหน่วง ไม่มีหน่วย บอกว่าระบบแกว่งมากเพียงใด</span><span data-lang-en>the damping ratio, dimensionless, setting how much it oscillates</span></li>
+        </ul>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span data-lang-th>ช่วงของ \( \zeta \)</span><span data-lang-en>Range of \( \zeta \)</span></th>
+              <th><span data-lang-th>เรียกว่า</span><span data-lang-en>Called</span></th>
+              <th><span data-lang-th>พฤติกรรม</span><span data-lang-en>Behaviour</span></th>
+              <th><span data-lang-th>พบที่ใดในงานเกษตร</span><span data-lang-en>Where it appears on a farm</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>\( \zeta = 0 \)</td>
+              <td><span data-lang-th>ไม่มีการหน่วง</span><span data-lang-en>undamped</span></td>
+              <td><span data-lang-th>แกว่งไม่หยุดด้วยแอมพลิจูดคงที่</span><span data-lang-en>oscillates forever at constant amplitude</span></td>
+              <td><span data-lang-th>ไม่มีในระบบจริง เพราะมีแรงเสียดทานเสมอ</span><span data-lang-en>never real: friction always exists</span></td>
+            </tr>
+            <tr>
+              <td>\( 0 &lt; \zeta &lt; 1 \)</td>
+              <td><span data-lang-th>หน่วงน้อยกว่าวิกฤต</span><span data-lang-en>underdamped</span></td>
+              <td><span data-lang-th>พุ่งเกินแล้วแกว่งลดลงจนเข้าที่</span><span data-lang-en>overshoots, then rings down to the final value</span></td>
+              <td><span data-lang-th>แขนหุ่นยนต์เก็บเกี่ยวที่ยาวและเบา</span><span data-lang-en>a long, light harvesting arm</span></td>
+            </tr>
+            <tr>
+              <td>\( \zeta = 1 \)</td>
+              <td><span data-lang-th>หน่วงวิกฤต</span><span data-lang-en>critically damped</span></td>
+              <td><span data-lang-th>เข้าที่เร็วที่สุดโดยไม่พุ่งเกินเลย</span><span data-lang-en>the fastest approach with no overshoot at all</span></td>
+              <td><span data-lang-th>เป้าหมายของการออกแบบแกนเคลื่อนที่ส่วนใหญ่</span><span data-lang-en>the design target for most motion axes</span></td>
+            </tr>
+            <tr>
+              <td>\( \zeta &gt; 1 \)</td>
+              <td><span data-lang-th>หน่วงมากกว่าวิกฤต</span><span data-lang-en>overdamped</span></td>
+              <td><span data-lang-th>ไม่พุ่งเกินแต่ช้ากว่าที่ควรจะเป็น</span><span data-lang-en>no overshoot, but slower than it needs to be</span></td>
+              <td><span data-lang-th>ประตูโรงเรือนที่มีโช้คอัพหน่วงไว้</span><span data-lang-en>a greenhouse door with a damper fitted</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3><span data-lang-th>6.5.1 ตัวเลขที่อ่านได้จาก \( \zeta \) และ \( \omega_n \) โดยตรง</span><span data-lang-en>6.5.1 Numbers read straight from \( \zeta \) and \( \omega_n \)</span></h3>
+
+      <div class="eq">
+        <div class="eq__body">$$ M_p \;=\; \exp\!\left( \frac{-\pi\zeta}{\sqrt{1-\zeta^2}} \right) \times 100\% $$</div>
+        <div class="eq__num">(6.8)</div>
+      </div>
+
+      <div class="eq">
+        <div class="eq__body">$$ t_p \;=\; \frac{\pi}{\omega_n \sqrt{1-\zeta^2}}, \qquad
+                              t_s \;\approx\; \frac{4}{\zeta \omega_n} $$</div>
+        <div class="eq__num">(6.9)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( M_p \) — <span data-lang-th>ค่าพุ่งเกินสูงสุด คิดเป็นเปอร์เซ็นต์ของค่าสุดท้าย ขึ้นกับ \( \zeta \) เพียงตัวเดียว</span><span data-lang-en>peak overshoot as a percentage of the final value, depending on \( \zeta \) alone</span></li>
+          <li>\( t_p \) — <span data-lang-th>เวลาที่ไปถึงยอดแรก</span><span data-lang-en>the time of the first peak</span></li>
+          <li>\( t_s \) — <span data-lang-th>เวลาเข้าที่ภายในแถบ \( \pm 2\% \)</span><span data-lang-en>the time to settle inside a \( \pm 2\% \) band</span></li>
+        </ul>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 6.1 — แขนหุ่นยนต์เก็บมะเขือเทศ</span><span data-lang-en>Worked example 6.1 — A tomato-picking arm</span></div>
+        <p>
+          <span data-lang-th>แขนกลหนึ่งมี \( \omega_n = 8 \) rad/s และ \( \zeta = 0.3 \) จงหาค่าพุ่งเกินและเวลาเข้าที่ แล้วพิจารณาว่ายอมรับได้หรือไม่สำหรับงานหยิบผลไม้</span>
+          <span data-lang-en>An arm has \( \omega_n = 8 \) rad/s and \( \zeta = 0.3 \). Find its overshoot and settling time, and judge whether that is acceptable for picking fruit.</span>
+        </p>
+        <div class="eq">
+          <div class="eq__body">$$ M_p = \exp\!\left( \frac{-\pi (0.3)}{\sqrt{1-0.09}} \right) = 37\%, \qquad
+                                 t_s \approx \frac{4}{(0.3)(8)} = 1.67\ \text{s} $$</div>
+          <div class="eq__num">(6.10)</div>
+        </div>
+        <p class="mb-0">
+          <span data-lang-th>พุ่งเกิน 37% หมายความว่าถ้าสั่งให้ปลายแขนเคลื่อนไป 200 mm มันจะเลยไปถึง 274 mm ก่อนวกกลับ ซึ่งในงานเก็บผลไม้แปลว่ามือจับจะชนผลหรือชนกิ่งก่อนจะมาหยุดตรงจุดที่ต้องการ จึงรับไม่ได้ ทางแก้คือเพิ่ม \( \zeta \) ให้ถึงราว 0.7 ซึ่งจะเหลือพุ่งเกินเพียง 5% และยังเข้าที่ได้เร็วกว่าเดิมด้วย เพราะ \( t_s \) แปรผกผันกับ \( \zeta \)</span>
+          <span data-lang-en>A 37% overshoot means a commanded 200 mm move travels to 274 mm before coming back — on a picking task, the gripper strikes the fruit or a branch before settling where it was asked to be. Unacceptable. Raising \( \zeta \) to about 0.7 leaves only 5% overshoot and actually settles sooner, since \( t_s \) varies inversely with \( \zeta \).</span>
+        </p>
+      </div>
+
+      <!-- ===================== Animation 6.3 ===================== -->
+      <figure class="anim" data-anim="ch06-second">
+        <div class="anim__head">
+          <i class="fa-solid fa-film"></i>
+          <span data-lang-th>แอนิเมชัน 6.3 — อัตราส่วนการหน่วงเปลี่ยนรูปร่างของผลตอบสนอง</span>
+          <span data-lang-en>Animation 6.3 — How the damping ratio reshapes the response</span>
+          <span class="anim__tag">Interactive</span>
+        </div>
+
+        <div class="anim__stage">
+          <canvas class="anim__scope" id="so-scope" style="height:240px" aria-label="Second-order step response with overshoot and settling band marked"></canvas>
+        </div>
+        <div class="anim__legend">
+          <span style="color:var(--green-500)"><i></i><span data-lang-th>ผลตอบสนอง</span><span data-lang-en>response</span></span>
+          <span style="color:var(--sky-500)"><i></i><span data-lang-th>แถบเข้าที่ \( \pm 2\% \)</span><span data-lang-en>\( \pm 2\% \) settling band</span></span>
+          <span style="color:var(--gold-500)"><i></i><span data-lang-th>ยอดแรก</span><span data-lang-en>the first peak</span></span>
+        </div>
+
+        <div class="anim__controls">
+          <button class="anim__btn" type="button" data-anim-play><i class="fa-solid fa-play"></i><span data-lang-th>เล่น</span><span data-lang-en>Play</span></button>
+          <button class="anim__btn" type="button" data-anim-reset><i class="fa-solid fa-rotate-left"></i><span data-lang-th>เริ่มใหม่</span><span data-lang-en>Reset</span></button>
+          <label class="anim__param">
+            <span data-lang-th>อัตราส่วนการหน่วง</span><span data-lang-en>Damping</span> \( \zeta \)
+            <input type="range" data-anim-param="zeta" min="0.05" max="1.6" step="0.05" value="0.3">
+            <output></output>
+          </label>
+          <label class="anim__param">
+            <span data-lang-th>ความถี่ธรรมชาติ</span><span data-lang-en>Natural freq.</span> \( \omega_n \)
+            <input type="range" data-anim-param="wn" data-unit="rad/s" min="1" max="12" step="0.5" value="4">
+            <output></output>
+          </label>
+          <div class="anim__readout" data-anim-readout></div>
+        </div>
+
+        <figcaption>
+          <b><span data-lang-th>แอนิเมชัน 6.3</span><span data-lang-en>Animation 6.3</span></b>
+          <span data-lang-th> ตัวเลข \( M_p \) ที่แสดงคือค่าที่ <em>วัดจากกราฟ</em> ส่วนค่าในวงเล็บคือค่าที่ <em>ทำนายจากสมการ (6.8)</em> ลองเลื่อน \( \zeta \) แล้วดูว่าทั้งสองค่าตรงกันเสมอ จุดที่ควรสังเกตคือเมื่อ \( \zeta \) เกิน 1 กราฟจะไม่พุ่งเกินอีกเลยแต่เข้าที่ช้าลง และการเปลี่ยน \( \omega_n \) จะย่อหรือยืดกราฟตามแกนเวลาโดยไม่เปลี่ยนรูปร่างเลย เพราะค่าพุ่งเกินขึ้นกับ \( \zeta \) เพียงตัวเดียว</span>
+          <span data-lang-en> The \( M_p \) shown is <em>measured off the curve</em>, with the value in brackets <em>predicted by equation (6.8)</em>; move \( \zeta \) and the two always agree. Note that beyond \( \zeta = 1 \) the curve never overshoots again but settles more slowly, and that changing \( \omega_n \) stretches or compresses the plot along time without altering its shape at all — because overshoot depends on \( \zeta \) alone.</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------------------------------- 6.6 --------- -->
+    <section id="identify">
+      <h2><span data-lang-th>6.6 หาแบบจำลองจากข้อมูลจริง</span><span data-lang-en>6.6 Identifying a model from real data</span></h2>
+
+      <p>
+        <span data-lang-th>ในโรงเรือนจริงเราไม่รู้ค่า \( C \) และ \( UA \) และไม่มีใครอยากวัดมันทีละตัว วิธีที่ใช้จริงคือ <strong>การทดสอบขั้นบันได</strong> คือเพิ่มกำลังฮีตเตอร์ขึ้นทีเดียวแล้วบันทึกอุณหภูมิไว้ จากนั้นอ่านพารามิเตอร์ออกมาจากกราฟ</span>
+        <span data-lang-en>In a real greenhouse we know neither \( C \) nor \( UA \), and nobody wants to measure them separately. The practical method is a <strong>step test</strong>: raise the heater power once, log the temperature, and read the parameters off the curve.</span>
+      </p>
+
+      <p>
+        <span data-lang-th>แบบจำลองที่ใช้กันแพร่หลายที่สุดในงานควบคุมกระบวนการคือ FOPDT ซึ่งคือระบบอันดับหนึ่งบวกความหน่วงเวลา</span>
+        <span data-lang-en>The model used most widely in process control is FOPDT — first order plus dead time:</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ G(s) \;=\; \frac{K\, e^{-\theta s}}{\tau s + 1} $$</div>
+        <div class="eq__num">(6.11)</div>
+      </div>
+
+      <p>
+        <span data-lang-th>พารามิเตอร์ทั้งสามหาได้จากกราฟโดยตรง ความหน่วง \( \theta \) คือช่วงที่ไม่มีอะไรเกิดขึ้นหลังเปลี่ยนอินพุต อัตราขยาย \( K \) คือผลต่างของค่าสุดท้ายหารด้วยขนาดของขั้นบันได และค่าคงที่เวลาหาได้จากสองจุดบนกราฟ</span>
+        <span data-lang-en>All three come off the curve directly: the dead time \( \theta \) is the interval in which nothing happens after the input changes, the gain \( K \) is the change in final value divided by the step size, and the time constant comes from two points on the curve.</span>
+      </p>
+
+      <div class="eq">
+        <div class="eq__body">$$ K = \frac{\Delta y_\infty}{\Delta u}, \qquad
+                              \tau = 1.5\left( t_{63} - t_{28} \right), \qquad
+                              \theta = t_{63} - \tau $$</div>
+        <div class="eq__num">(6.12)</div>
+      </div>
+
+      <div class="where">
+        <span data-lang-th><strong>โดยที่</strong></span><span data-lang-en><strong>where</strong></span>
+        <ul>
+          <li>\( t_{28} \) <span data-lang-th>และ</span><span data-lang-en>and</span> \( t_{63} \) — <span data-lang-th>เวลาที่ผลตอบสนองไปถึง 28.3% และ 63.2% ของการเปลี่ยนแปลงทั้งหมด</span><span data-lang-en>the times at which the response reaches 28.3% and 63.2% of the total change</span></li>
+        </ul>
+      </div>
+
+      <div class="callout callout--tip">
+        <div class="callout__title"><i class="fa-solid fa-calculator"></i> <span data-lang-th>ตัวอย่างคำนวณ 6.2 — ทดสอบขั้นบันไดในโรงเรือนเมล่อน</span><span data-lang-en>Worked example 6.2 — A step test in a melon house</span></div>
+        <p>
+          <span data-lang-th>เพิ่มกำลังฮีตเตอร์จาก 2.0 เป็น 3.0 kW ที่เวลา \( t = 0 \) อุณหภูมิเริ่มจาก 24.0 °C และนิ่งที่ 30.0 °C อ่านจากกราฟได้ \( t_{28} = 7 \) นาที และ \( t_{63} = 13 \) นาที จงหาแบบจำลอง</span>
+          <span data-lang-en>Heater power steps from 2.0 to 3.0 kW at \( t = 0 \). The temperature starts at 24.0 °C and settles at 30.0 °C, with \( t_{28} = 7 \) min and \( t_{63} = 13 \) min read off the plot. Find the model.</span>
+        </p>
+        <ul>
+          <li><span data-lang-th>\( K = (30.0 - 24.0)/(3.0 - 2.0) = 6.0 \) °C/kW</span><span data-lang-en>\( K = (30.0 - 24.0)/(3.0 - 2.0) = 6.0 \) °C/kW</span></li>
+          <li><span data-lang-th>\( \tau = 1.5(13 - 7) = 9.0 \) นาที</span><span data-lang-en>\( \tau = 1.5(13 - 7) = 9.0 \) min</span></li>
+          <li><span data-lang-th>\( \theta = 13 - 9.0 = 4.0 \) นาที</span><span data-lang-en>\( \theta = 13 - 9.0 = 4.0 \) min</span></li>
+        </ul>
+        <p class="mb-0">
+          <span data-lang-th>อัตราส่วน \( \theta/\tau = 0.44 \) เป็นตัวเลขที่บอกความยากของการควบคุมได้ทันที ระบบที่มีอัตราส่วนต่ำกว่า 0.2 ควบคุมง่ายมาก ส่วนที่เกิน 1.0 ควบคุมยากและต้องใช้วิธีพิเศษ ค่า 0.44 นี้ถือว่าปานกลาง ควบคุมด้วย PID ธรรมดาได้ ซึ่งเป็นงานของบทที่ 7</span>
+          <span data-lang-en>The ratio \( \theta/\tau = 0.44 \) immediately indicates how hard the loop will be to control: below 0.2 is easy, beyond 1.0 is difficult and needs special methods. At 0.44 this is moderate and an ordinary PID will handle it — the business of Chapter 7.</span>
+        </p>
+      </div>
+
+      <div class="callout callout--danger">
+        <div class="callout__title"><i class="fa-solid fa-triangle-exclamation"></i> <span data-lang-th>ทดสอบขั้นบันไดในโรงเรือนจริงต้องระวังอะไร</span><span data-lang-en>What to watch when step-testing a real greenhouse</span></div>
+        <p class="mb-0">
+          <span data-lang-th>แสงอาทิตย์เป็นสิ่งรบกวนที่ใหญ่กว่าฮีตเตอร์มาก ถ้าทดสอบตอนกลางวันที่มีเมฆผ่าน กราฟที่ได้จะเป็นการตอบสนองต่อเมฆ ไม่ใช่ต่อฮีตเตอร์ จึงควรทดสอบ <em>ตอนกลางคืน</em> ที่ไม่มีแสงอาทิตย์และอุณหภูมิภายนอกค่อนข้างคงที่ นอกจากนี้ขนาดของขั้นบันไดต้องใหญ่พอให้เห็นผลเหนือสัญญาณรบกวน แต่ไม่ใหญ่จนพืชเสียหายหรือระบบเข้าสู่ย่านอิ่มตัว</span>
+          <span data-lang-en>Sunlight is a far larger disturbance than the heater. Test during a cloudy daytime and the curve records the clouds, not the heater, so step tests belong to the <em>night</em>, when there is no sun and the outside temperature is reasonably steady. The step must also be large enough to rise clear of the noise, yet not so large that the crop suffers or the system saturates.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 6.7 --------- -->
+    <section id="activity">
+      <h2><span data-lang-th>6.7 กิจกรรมในชั้นเรียน</span><span data-lang-en>6.7 In-class activity</span></h2>
+
+      <div class="lab lab--activity">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <h3><span data-lang-th>กิจกรรมที่ 6.1 — อ่านแบบจำลองจากกราฟที่ได้จากหน้างาน</span><span data-lang-en>Activity 6.1 — Read a model off a curve from the field</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3 คน &middot; 35 นาที &middot; ทำในคาบบรรยาย</span><span data-lang-en>Groups of 3 &middot; 35 minutes &middot; during the lecture hour</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+          <h4><span data-lang-th>ส่วนที่ 1 — หาพารามิเตอร์</span><span data-lang-en>Part 1 — Extract the parameters</span></h4>
+          <p>
+            <span data-lang-th>แต่ละกลุ่มได้รับกราฟการทดสอบขั้นบันไดหนึ่งใบจากสี่ใบต่อไปนี้ ให้หา \( K, \tau, \theta \) ด้วยสมการ (6.12) แล้วเขียนฟังก์ชันถ่ายโอนออกมา</span>
+            <span data-lang-en>Each group receives one of the four step-test plots below, extracts \( K, \tau \) and \( \theta \) using equation (6.12), and writes out the transfer function.</span>
+          </p>
+          <ol>
+            <li><span data-lang-th>อุณหภูมิอากาศในโรงเรือนตอบสนองต่อการเพิ่มกำลังฮีตเตอร์ 1 kW</span><span data-lang-en>Greenhouse air temperature against a 1 kW heater step</span></li>
+            <li><span data-lang-th>ความชื้นดินตอบสนองต่อการเปิดวาล์วน้ำหยดเพิ่มขึ้น 20%</span><span data-lang-en>Soil moisture against a 20% increase in drip valve opening</span></li>
+            <li><span data-lang-th>ค่า EC ในถังผสมตอบสนองต่อการเพิ่มรอบปั๊มจ่ายสารเข้มข้น</span><span data-lang-en>Mixing-tank EC against an increase in dosing-pump duty</span></li>
+            <li><span data-lang-th>อุณหภูมิในห้องเย็นตอบสนองต่อการลดรอบคอมเพรสเซอร์ลง 15%</span><span data-lang-en>Cold-room temperature against a 15% reduction in compressor duty</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ส่วนที่ 2 — ตีความ</span><span data-lang-en>Part 2 — Interpret</span></h4>
+          <ol>
+            <li><span data-lang-th>คำนวณอัตราส่วน \( \theta/\tau \) ของระบบที่ได้รับ แล้วจัดอันดับร่วมกับกลุ่มอื่นว่าระบบใดควบคุมยากที่สุด</span><span data-lang-en>Compute \( \theta/\tau \) for your system, then rank all four with the other groups to see which is hardest to control.</span></li>
+            <li><span data-lang-th>ถ้าต้องการให้ระบบของกลุ่มคุณตอบสนองเร็วขึ้นเป็นสองเท่า จะต้องเปลี่ยน <em>อะไรในทางกายภาพ</em> ไม่ใช่เปลี่ยนในโปรแกรม</span><span data-lang-en>To make your system respond twice as fast, what would you change <em>physically</em> — not in software?</span></li>
+            <li><span data-lang-th>ระบุแหล่งที่มาของความหน่วงเวลา \( \theta \) ในระบบของคุณอย่างน้อยหนึ่งแหล่ง</span><span data-lang-en>Name at least one physical source of the dead time \( \theta \) in your system.</span></li>
+            <li><span data-lang-th>ถ้าเซนเซอร์ที่ใช้วัดมีค่าคงที่เวลาของตัวเองเท่ากับ 20% ของ \( \tau \) ที่วัดได้ ค่าที่อ่านได้จะคลาดเคลื่อนไปทางใด</span><span data-lang-en>If the sensor itself has a time constant equal to 20% of the measured \( \tau \), in which direction is your estimate wrong?</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>What to hand in</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>กราฟที่ทำเครื่องหมายจุด \( t_{28} \), \( t_{63} \) และค่าสุดท้ายไว้ชัดเจน</span><span data-lang-en>The plot with \( t_{28} \), \( t_{63} \) and the final value clearly marked.</span></li>
+            <li><span data-lang-th>ฟังก์ชันถ่ายโอนพร้อมหน่วยของ \( K \) ที่ถูกต้อง</span><span data-lang-en>The transfer function, with correct units on \( K \).</span></li>
+            <li><span data-lang-th>คำตอบของคำถามตีความทั้งสี่ข้อ ความยาวไม่เกินครึ่งหน้า</span><span data-lang-en>Answers to the four interpretation questions, in no more than half a page.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 6.8 --------- -->
+    <section id="lab">
+      <h2><span data-lang-th>6.8 ปฏิบัติการที่ 6</span><span data-lang-en>6.8 Laboratory 6</span></h2>
+
+      <div class="lab">
+        <div class="lab__head">
+          <div class="lab__icon"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <h3><span data-lang-th>ปฏิบัติการที่ 6 — ทดสอบขั้นบันไดและสร้างแบบจำลองของระบบจริง</span><span data-lang-en>Laboratory 6 — Step-testing a real system and building its model</span></h3>
+            <p><span data-lang-th>กลุ่มละ 3–4 คน &middot; 4 ชั่วโมง (2 คาบ) &middot; ห้องปฏิบัติการระบบอัตโนมัติ</span><span data-lang-en>Groups of 3–4 &middot; 4 hours across two sessions &middot; Automation laboratory</span></p>
+          </div>
+        </div>
+        <div class="lab__body">
+
+          <div class="lab__meta">
+            <span class="badge badge--sky"><i class="fa-solid fa-bullseye"></i> <span data-lang-th>สอดคล้องกับวัตถุประสงค์ข้อ 2–6</span><span data-lang-en>Maps to objectives 2–6</span></span>
+            <span class="badge badge--steel"><i class="fa-solid fa-percent"></i> <span data-lang-th>คิดเป็น 9% ของคะแนนรวม</span><span data-lang-en>9% of the course total</span></span>
+          </div>
+
+          <h4><span data-lang-th>อุปกรณ์</span><span data-lang-en>Equipment</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>กล่องทดลองอุณหภูมิจากปฏิบัติการที่ 2 พร้อมหลอดไส้และพัดลม</span><span data-lang-en>The thermal chamber from Laboratory 2, with its lamp and fan</span></li>
+            <li><span data-lang-th>ชุดมอเตอร์ DC พร้อมเอนโคเดอร์และมู่เล่ปรับความเฉื่อยได้ สำหรับการทดลองอันดับสอง</span><span data-lang-en>A DC motor with encoder and a flywheel of adjustable inertia, for the second-order part</span></li>
+            <li><span data-lang-th>ไมโครคอนโทรลเลอร์หรือ PLC ที่บันทึกข้อมูลลง CSV ได้ที่อัตราอย่างน้อย 2 ครั้งต่อวินาที</span><span data-lang-en>A microcontroller or PLC logging to CSV at two samples a second or better</span></li>
+            <li><span data-lang-th>คอมพิวเตอร์พร้อมโปรแกรมพล็อตกราฟ เช่น Python หรือสเปรดชีต</span><span data-lang-en>A computer with plotting software, Python or a spreadsheet</span></li>
+          </ul>
+
+          <h4><span data-lang-th>ตอนที่ 1 — ระบบอันดับหนึ่ง (2 ชม.)</span><span data-lang-en>Part 1 — A first-order system (2 h)</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>รอให้ระบบนิ่งก่อน</span><span data-lang-en>Let it settle first</span></b><br>
+              <span data-lang-th>เปิดฮีตเตอร์ที่ 30% ค้างไว้จนอุณหภูมิไม่เปลี่ยนเกิน 0.1 °C ในสองนาที บันทึกค่านี้เป็นจุดเริ่มต้น การทดสอบขั้นบันไดจากระบบที่ยังไม่นิ่งจะให้ค่าที่ผิดทั้งหมด</span>
+              <span data-lang-en>Hold the heater at 30% until the temperature moves less than 0.1 °C in two minutes, and record that as the baseline. A step test started before the system is steady gives entirely wrong parameters.</span></li>
+            <li><b><span data-lang-th>ป้อนขั้นบันได</span><span data-lang-en>Apply the step</span></b><br>
+              <span data-lang-th>เพิ่มกำลังฮีตเตอร์จาก 30% เป็น 60% ในจังหวะเดียว บันทึกอุณหภูมิทุก 1 วินาทีจนกว่าจะนิ่งอีกครั้ง</span>
+              <span data-lang-en>Raise the heater from 30% to 60% in one move, logging temperature every second until it is steady again.</span></li>
+            <li><b><span data-lang-th>หาพารามิเตอร์</span><span data-lang-en>Extract the parameters</span></b><br>
+              <span data-lang-th>พล็อตกราฟ หา \( K, \tau, \theta \) ตามสมการ (6.12) แล้วทำเครื่องหมายจุด \( t_{28} \) และ \( t_{63} \) ไว้บนกราฟ</span>
+              <span data-lang-en>Plot the data, obtain \( K, \tau \) and \( \theta \) from equation (6.12), and mark \( t_{28} \) and \( t_{63} \) on the plot.</span></li>
+            <li><b><span data-lang-th>ตรวจสอบแบบจำลอง</span><span data-lang-en>Validate the model</span></b><br>
+              <span data-lang-th>ใช้แบบจำลองที่ได้ทำนายผลตอบสนองต่อขั้นบันไดขนาดใหม่ เช่น 60% ไป 45% แล้วทดลองจริงเทียบกัน พล็อตสองเส้นซ้อนกัน</span>
+              <span data-lang-en>Use the model to predict the response to a different step, say 60% down to 45%, then run it and overlay the two curves.</span></li>
+            <li><b><span data-lang-th>ทดสอบผลของสิ่งที่เปลี่ยนทางกายภาพ</span><span data-lang-en>Change something physical</span></b><br>
+              <span data-lang-th>เปิดพัดลมค้างไว้แล้วทำซ้ำขั้นตอนที่ 1–3 บันทึกว่า \( K \) และ \( \tau \) เปลี่ยนไปอย่างไร และอธิบายด้วยสมการ (6.4)</span>
+              <span data-lang-en>Leave the fan running, repeat steps 1–3, record how \( K \) and \( \tau \) change, and explain it using equation (6.4).</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตอนที่ 2 — ระบบอันดับสอง (2 ชม.)</span><span data-lang-en>Part 2 — A second-order system (2 h)</span></h4>
+          <ol class="steps">
+            <li><b><span data-lang-th>สั่งตำแหน่งแบบขั้นบันได</span><span data-lang-en>Command a position step</span></b><br>
+              <span data-lang-th>ใช้ตัวควบคุมสัดส่วนสั่งให้เพลาหมุนไป 90 องศา บันทึกมุมจากเอนโคเดอร์ทุก 10 ms</span>
+              <span data-lang-en>With proportional control, command the shaft to 90 degrees and log the encoder angle every 10 ms.</span></li>
+            <li><b><span data-lang-th>วัดค่าพุ่งเกินและเวลาเข้าที่</span><span data-lang-en>Measure overshoot and settling time</span></b><br>
+              <span data-lang-th>อ่าน \( M_p \) และ \( t_s \) จากกราฟ แล้วย้อนกลับไปหา \( \zeta \) จากสมการ (6.8) และ \( \omega_n \) จากสมการ (6.9)</span>
+              <span data-lang-en>Read \( M_p \) and \( t_s \) off the plot, then invert equations (6.8) and (6.9) to recover \( \zeta \) and \( \omega_n \).</span></li>
+            <li><b><span data-lang-th>เพิ่มความเฉื่อย</span><span data-lang-en>Add inertia</span></b><br>
+              <span data-lang-th>ติดมู่เล่เพิ่มที่เพลาแล้วทำซ้ำ บันทึกว่า \( \omega_n \) และ \( \zeta \) เปลี่ยนไปในทิศทางใด</span>
+              <span data-lang-en>Fit the extra flywheel, repeat, and record which way \( \omega_n \) and \( \zeta \) move.</span></li>
+            <li><b><span data-lang-th>เพิ่มอัตราขยายของตัวควบคุม</span><span data-lang-en>Raise the controller gain</span></b><br>
+              <span data-lang-th>เพิ่ม \( K_p \) ทีละขั้นแล้วทำซ้ำที่แต่ละค่า บันทึกจนถึงค่าที่ระบบเริ่มแกว่งไม่หยุด</span>
+              <span data-lang-en>Step \( K_p \) up and repeat at each value, continuing until the system rings continuously.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>ตารางบันทึกผลที่ 6.1</span><span data-lang-en>Data sheet 6.1</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>การทดลอง</span><span data-lang-en>Run</span></th>
+                  <th>\( K \)</th>
+                  <th>\( \tau \)</th>
+                  <th>\( \theta \)</th>
+                  <th>\( \theta/\tau \)</th>
+                  <th><span data-lang-th>หมายเหตุ</span><span data-lang-en>Notes</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>ฮีตเตอร์ 30→60% ไม่เปิดพัดลม</span><span data-lang-en>heater 30→60%, fan off</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ฮีตเตอร์ 60→45% ไม่เปิดพัดลม</span><span data-lang-en>heater 60→45%, fan off</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td><span data-lang-th>ฮีตเตอร์ 30→60% เปิดพัดลม</span><span data-lang-en>heater 30→60%, fan on</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4><span data-lang-th>การวิเคราะห์ผล</span><span data-lang-en>Analysis</span></h4>
+          <ol>
+            <li><span data-lang-th>แบบจำลองที่สร้างจากขั้นบันไดขาขึ้น ทำนายขั้นบันไดขาลงได้แม่นเพียงใด ถ้าไม่แม่น ให้เสนอเหตุผลทางกายภาพ</span><span data-lang-en>How well does a model built on a rising step predict a falling one? If poorly, propose a physical reason.</span></li>
+            <li><span data-lang-th>การเปิดพัดลมทำให้ \( UA \) เปลี่ยนไปอย่างไร และผลที่สังเกตได้ใน \( K \) กับ \( \tau \) สอดคล้องกับสมการ (6.4) หรือไม่</span><span data-lang-en>How does running the fan change \( UA \), and do the observed shifts in \( K \) and \( \tau \) agree with equation (6.4)?</span></li>
+            <li><span data-lang-th>ค่า \( \zeta \) ที่คำนวณจาก \( M_p \) ตรงกับค่าที่คำนวณจาก \( t_s \) หรือไม่ ถ้าต่างกันมากแสดงว่าอะไร</span><span data-lang-en>Does the \( \zeta \) from \( M_p \) agree with the one from \( t_s \)? If they differ substantially, what does that indicate?</span></li>
+            <li><span data-lang-th>การเพิ่มมู่เล่ส่งผลต่อ \( \omega_n \) ในทิศทางที่คาดไว้หรือไม่ และเหตุใด \( \zeta \) จึงเปลี่ยนไปด้วยทั้งที่ไม่ได้แตะตัวควบคุม</span><span data-lang-en>Did extra inertia move \( \omega_n \) as expected, and why did \( \zeta \) change too, when the controller was untouched?</span></li>
+            <li><span data-lang-th>ที่อัตราขยายซึ่งทำให้ระบบแกว่งไม่หยุด จงวัดคาบของการแกว่งและเก็บค่านี้ไว้ เพราะจะใช้ในการปรับจูน PID ในบทที่ 7</span><span data-lang-en>At the gain where the system rings continuously, measure the period of oscillation and keep it — Chapter 7 uses it to tune a PID.</span></li>
+          </ol>
+
+          <h4><span data-lang-th>สิ่งที่ต้องส่ง</span><span data-lang-en>Deliverables</span></h4>
+          <ul class="checklist">
+            <li><span data-lang-th>รายงานปฏิบัติการไม่เกิน 6 หน้า ส่งภายใน 1 สัปดาห์</span><span data-lang-en>A report of at most six pages, due within one week.</span></li>
+            <li><span data-lang-th>ไฟล์ CSV ของทุกการทดลอง พร้อมกราฟที่ทำเครื่องหมายจุดอ่านค่าไว้</span><span data-lang-en>CSV logs for every run, with plots showing the points used for extraction.</span></li>
+            <li><span data-lang-th>กราฟซ้อนระหว่างค่าที่แบบจำลองทำนายกับค่าที่วัดได้จริง</span><span data-lang-en>An overlay of the model&rsquo;s prediction on the measured data.</span></li>
+            <li><span data-lang-th>ค่าอัตราขยายและคาบการแกว่งที่จุดเริ่มไม่เสถียร เพื่อใช้ต่อในบทที่ 7</span><span data-lang-en>The gain and oscillation period at the onset of instability, for use in Chapter 7.</span></li>
+          </ul>
+
+          <h4><span data-lang-th>เกณฑ์การให้คะแนน</span><span data-lang-en>Marking rubric</span></h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang-th>เกณฑ์</span><span data-lang-en>Criterion</span></th>
+                  <th><span data-lang-th>คะแนน</span><span data-lang-en>Marks</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang-th>คุณภาพของการทดสอบขั้นบันได โดยเฉพาะการรอให้ระบบนิ่งก่อนเริ่ม</span><span data-lang-en>Quality of the step tests, especially settling before starting</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ความถูกต้องของการหา \( K, \tau, \theta \) และหน่วยที่ใช้</span><span data-lang-en>Correct extraction of \( K, \tau, \theta \) with proper units</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>การตรวจสอบแบบจำลองด้วยขั้นบันไดชุดใหม่ และการอภิปรายความคลาดเคลื่อน</span><span data-lang-en>Model validation on a fresh step, and discussion of the mismatch</span></td><td>25</td></tr>
+                <tr><td><span data-lang-th>การวิเคราะห์ระบบอันดับสอง และความสอดคล้องของ \( \zeta \) จากสองวิธี</span><span data-lang-en>Second-order analysis, and consistency of \( \zeta \) from two routes</span></td><td>20</td></tr>
+                <tr><td><span data-lang-th>ความปลอดภัยและความเป็นระเบียบในการปฏิบัติงาน</span><span data-lang-en>Safe and orderly laboratory practice</span></td><td>15</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout--danger" style="margin-bottom:0">
+            <div class="callout__title"><i class="fa-solid fa-helmet-safety"></i> <span data-lang-th>ความปลอดภัย</span><span data-lang-en>Safety</span></div>
+            <p class="mb-0">
+              <span data-lang-th>ตอนที่ 2 ขั้นตอนสุดท้ายจงใจทำให้ระบบแกว่งจนไม่เสถียร ซึ่งมู่เล่จะสะบัดไปมาอย่างรุนแรง ต้องมีฝาครอบปิดเพลาตลอดเวลาและยืนห่างจากแนวระนาบการหมุน ตั้งเวลาทดลองช่วงนี้ไม่เกิน 10 วินาทีต่อครั้งเพื่อไม่ให้มอเตอร์และชุดส่งกำลังเสียหาย และให้มือหนึ่งอยู่ที่ปุ่มหยุดฉุกเฉินเสมอ ส่วนหลอดไส้ในกล่องทดลองร้อนพอที่จะทำให้ผิวหนังพอง ห้ามสัมผัสขณะจ่ายไฟและรออย่างน้อยสองนาทีหลังตัดไฟ</span>
+              <span data-lang-en>The last step of Part 2 deliberately drives the system unstable, and the flywheel will slam back and forth. Keep the shaft guard closed throughout, stand clear of the plane of rotation, limit each unstable run to ten seconds so the motor and drivetrain survive, and keep one hand on the E-stop. The lamp in the thermal chamber gets hot enough to blister skin: never touch it while powered, and wait two minutes after switching off.</span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------- Summary ------ -->
+    <section id="summary">
+      <h2><span data-lang-th>สรุปและคำศัพท์สำคัญ</span><span data-lang-en>Summary &amp; key terms</span></h2>
+
+      <ul>
+        <li><span data-lang-th>แบบจำลองที่ดีคือแบบที่หยาบที่สุดเท่าที่ยังตอบคำถามที่ถามได้ ไม่ใช่แบบที่ละเอียดที่สุด</span><span data-lang-en>The best model is the coarsest one that still answers the question, not the most detailed.</span></li>
+        <li><span data-lang-th>แผนภาพบล็อกคือสมการที่วาดออกมา และยุบได้ด้วยกฎสามข้อในสมการ (6.1)</span><span data-lang-en>A block diagram is an equation drawn out, reducible by the three rules of equation (6.1).</span></li>
+        <li><span data-lang-th>ตัวส่วนของวงรอบปิดคือ \( 1 + \) ผลคูณของทุกบล็อกรอบวง ซึ่งเป็นปริมาณเดียวที่ตัดสินทั้งความแม่นยำและเสถียรภาพ</span><span data-lang-en>A closed loop&rsquo;s denominator is \( 1 + \) the product of every block around it — the one quantity governing both accuracy and stability.</span></li>
+        <li><span data-lang-th>แบบจำลองเริ่มจากประโยคเดียว คือ อัตราการสะสม เท่ากับ เข้า ลบ ออก</span><span data-lang-en>Every model starts from one sentence: accumulation equals in minus out.</span></li>
+        <li><span data-lang-th>ในระบบความร้อน \( \tau = C/UA \) และ \( K = 1/UA \) ซึ่งทั้งคู่มีความหมายทางกายภาพที่จับต้องได้</span><span data-lang-en>In a thermal system \( \tau = C/UA \) and \( K = 1/UA \), both with tangible physical meaning.</span></li>
+        <li><span data-lang-th>ระบบอันดับหนึ่งไปถึง 63.2% ที่ \( t = \tau \) และถือว่าเข้าที่ที่ \( 5\tau \) โดยไม่มีวันพุ่งเกิน</span><span data-lang-en>A first-order system reaches 63.2% at \( t = \tau \), settles by \( 5\tau \), and never overshoots.</span></li>
+        <li><span data-lang-th>ค่าพุ่งเกินของระบบอันดับสองขึ้นกับ \( \zeta \) เพียงตัวเดียว ส่วน \( \omega_n \) กำหนดเพียงความเร็ว</span><span data-lang-en>A second-order system&rsquo;s overshoot depends on \( \zeta \) alone; \( \omega_n \) sets only the speed.</span></li>
+        <li><span data-lang-th>อัตราส่วน \( \theta/\tau \) บอกความยากของการควบคุมได้ทันที ต่ำกว่า 0.2 ง่าย เกิน 1.0 ยาก</span><span data-lang-en>The ratio \( \theta/\tau \) states at once how hard a loop will be: below 0.2 easy, beyond 1.0 difficult.</span></li>
+      </ul>
+
+      <h3><span data-lang-th>คำศัพท์สำคัญ</span><span data-lang-en>Key terms</span></h3>
+      <div class="deflist">
+        <div class="deflist__item">
+          <div class="deflist__term">Transfer function</div>
+          <div class="deflist__def"><span data-lang-th>ฟังก์ชันถ่ายโอน อัตราส่วนของเอาต์พุตต่ออินพุตในโดเมน \( s \) ซึ่งบรรจุพลวัตทั้งหมดของบล็อกไว้</span><span data-lang-en>The output-to-input ratio in the \( s \) domain, carrying all of a block&rsquo;s dynamics</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Time constant \( \tau \)</div>
+          <div class="deflist__def"><span data-lang-th>เวลาที่ระบบอันดับหนึ่งใช้ไปถึง 63.2% ของการเปลี่ยนแปลงทั้งหมด</span><span data-lang-en>The time a first-order system needs to cover 63.2% of a change</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Dead time \( \theta \)</div>
+          <div class="deflist__def"><span data-lang-th>ช่วงที่ไม่มีอะไรเกิดขึ้นเลยหลังอินพุตเปลี่ยน มาจากการขนส่งมวลหรือการสุ่มสัญญาณ</span><span data-lang-en>The interval in which nothing happens after an input changes, from transport or sampling</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Damping ratio \( \zeta \)</div>
+          <div class="deflist__def"><span data-lang-th>ตัวเลขไร้หน่วยที่บอกว่าระบบจะแกว่งหรือไม่ และพุ่งเกินเท่าใด</span><span data-lang-en>The dimensionless number saying whether a system rings, and by how much it overshoots</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">Natural frequency \( \omega_n \)</div>
+          <div class="deflist__def"><span data-lang-th>ความถี่ที่ระบบจะแกว่งหากไม่มีการหน่วงเลย กำหนดความเร็วโดยรวมของผลตอบสนอง</span><span data-lang-en>The frequency a system would ring at with no damping, setting the overall speed of response</span></div>
+        </div>
+        <div class="deflist__item">
+          <div class="deflist__term">FOPDT</div>
+          <div class="deflist__def"><span data-lang-th>แบบจำลองอันดับหนึ่งบวกความหน่วงเวลา ที่ใช้กันแพร่หลายที่สุดในงานควบคุมกระบวนการ</span><span data-lang-en>First order plus dead time, the model used most widely in process control</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------- Post-test ----- -->
+    <section id="posttest">
+      <h2><span data-lang-th>แบบทดสอบหลังเรียน</span><span data-lang-en>Post-test</span></h2>
+      <p>
+        <span data-lang-th>สิบข้อ เน้นการอ่านกราฟ การคำนวณจากพารามิเตอร์ และการตีความเชิงกายภาพ เกณฑ์ผ่าน 70%</span>
+        <span data-lang-en>Ten items on reading curves, computing from parameters and interpreting them physically. Pass mark 70%.</span>
+      </p>
+      <div data-quiz="ch06-post"></div>
+    </section>
+
+    <!-- ------------------------------------------------- References ----- -->
+    <section id="references">
+      <h2><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></h2>
+      <ol class="refs">
+        <li>Ogata, K. (2010). <em>Modern Control Engineering</em> (5th ed.). Prentice Hall. <span data-lang-th>— บทที่ 3–5 แบบจำลองทางคณิตศาสตร์ แผนภาพบล็อก และผลตอบสนองเชิงเวลา</span><span data-lang-en>— Chapters 3–5 on mathematical modelling, block diagrams and time response.</span></li>
+        <li>Nise, N. S. (2019). <em>Control Systems Engineering</em> (8th ed.). Wiley. <span data-lang-th>— การวิเคราะห์ระบบอันดับสองและนิยามของตัวชี้วัดผลตอบสนอง</span><span data-lang-en>— second-order analysis and the definitions of the response specifications.</span></li>
+        <li>Dorf, R. C., &amp; Bishop, R. H. (2017). <em>Modern Control Systems</em> (13th ed.). Pearson.</li>
+        <li>Seborg, D. E., Edgar, T. F., Mellichamp, D. A., &amp; Doyle, F. J. (2016). <em>Process Dynamics and Control</em> (4th ed.). Wiley. <span data-lang-th>— การสร้างแบบจำลองจากสมดุล และการหา FOPDT จากการทดสอบขั้นบันได</span><span data-lang-en>— modelling from balances, and FOPDT identification from step tests.</span></li>
+        <li>Åström, K. J., &amp; Murray, R. M. (2021). <em>Feedback Systems: An Introduction for Scientists and Engineers</em> (2nd ed.). Princeton University Press.</li>
+        <li>Åström, K. J., &amp; Hägglund, T. (2006). <em>Advanced PID Control</em>. ISA. <span data-lang-th>— ความสำคัญของอัตราส่วน \( \theta/\tau \) ต่อความยากของการควบคุม</span><span data-lang-en>— why the \( \theta/\tau \) ratio governs how hard a loop is to control.</span></li>
+        <li>Ljung, L. (1999). <em>System Identification: Theory for the User</em> (2nd ed.). Prentice Hall.</li>
+        <li>van Straten, G., van Willigenburg, G., van Henten, E., &amp; van Ooteghem, R. (2010). <em>Optimal Control of Greenhouse Cultivation</em>. CRC Press. <span data-lang-th>— แบบจำลองพลวัตของสภาพอากาศในโรงเรือน</span><span data-lang-en>— dynamic models of the greenhouse climate.</span></li>
+        <li>Bot, G. P. A. (1983). <em>Greenhouse Climate: From Physical Processes to a Dynamic Model</em> (Doctoral dissertation). Wageningen University.</li>
+        <li>Shamshiri, R. R., Kalantari, F., Ting, K. C., Thorp, K. R., Hameed, I. A., Weltzien, C., Ahmad, D., &amp; Shad, Z. M. (2018). Advances in greenhouse automation and controlled environment agriculture: A transition to plant factories and urban agriculture. <em>International Journal of Agricultural and Biological Engineering, 11</em>(1), 1–22.</li>
+        <li>Zhang, Q., &amp; Pierce, F. J. (Eds.). (2013). <em>Agricultural Automation: Fundamentals and Practices</em>. CRC Press.</li>
+        <li>King, M. (2016). <em>Process Control: A Practical Approach</em> (2nd ed.). Wiley.</li>
+      </ol>
+    </section>
+
+    <!-- ---------------------------------------------- Chapter nav ------- -->
+    <nav class="ch-nav">
+      <a href="ch05.html">
+        <small><i class="fa-solid fa-arrow-left"></i> <span data-lang-th>บทก่อนหน้า</span><span data-lang-en>Previous chapter</span></small>
+        <b><span data-lang-th>บทที่ 5 · การประยุกต์และติดตั้ง PLC</span><span data-lang-en>Chapter 5 · PLC Applications and Implementation</span></b>
+      </a>
+      <a class="is-next" href="ch07.html">
+        <small><span data-lang-th>บทถัดไป</span><span data-lang-en>Next chapter</span> <i class="fa-solid fa-arrow-right"></i></small>
+        <b><span data-lang-th>บทที่ 7 · ตัวควบคุมกระบวนการ</span><span data-lang-en>Chapter 7 · Process Controllers</span></b>
+      </a>
+    </nav>
+
+  </article>
+</div>
+</main>
+
+<!-- ========================================================= Footer ====== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <span class="brand__mark"><i class="fa-solid fa-seedling"></i></span>
+          <span class="brand__text">
+            <b>Agri&#8209;Mechatronics</b>
+            <span data-lang-th>เมคคาทรอนิกส์และหุ่นยนต์เกษตร</span>
+            <span data-lang-en>Mechatronics &amp; Robotics</span>
+          </span>
+        </a>
+        <p>
+          <span data-lang-th>สื่อการสอนออนไลน์สองภาษา สำหรับรายวิชาเมคคาทรอนิกส์และหุ่นยนต์เกษตร หลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+          <span data-lang-en>A bilingual online courseware for Agricultural Mechatronics and Robotics in the Agri-Intelligence Engineering programme.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span data-lang-th>บทนี้</span><span data-lang-en>This chapter</span></h5>
+        <ul>
+          <li><a href="#pretest"><span data-lang-th>แบบทดสอบก่อนเรียน</span><span data-lang-en>Pre-test</span></a></li>
+          <li><a href="#first"><span data-lang-th>ระบบอันดับหนึ่ง</span><span data-lang-en>First-order systems</span></a></li>
+          <li><a href="#second"><span data-lang-th>ระบบอันดับสอง</span><span data-lang-en>Second-order systems</span></a></li>
+          <li><a href="#lab"><span data-lang-th>ปฏิบัติการที่ 6</span><span data-lang-en>Laboratory 6</span></a></li>
+          <li><a href="#references"><span data-lang-th>รายการอ้างอิง</span><span data-lang-en>References</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>รายวิชา</span><span data-lang-en>Course</span></h5>
+        <ul>
+          <li><a href="../index.html#overview"><span data-lang-th>ภาพรวม</span><span data-lang-en>Overview</span></a></li>
+          <li><a href="../index.html#plan"><span data-lang-th>แผนการสอน</span><span data-lang-en>Weekly plan</span></a></li>
+          <li><a href="../index.html#assessment"><span data-lang-th>การประเมินผล</span><span data-lang-en>Assessment</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span data-lang-th>ติดต่อ</span><span data-lang-en>Contact</span></h5>
+        <ul>
+          <li><i class="fa-solid fa-user-tie"></i> Jedsada Saijai</li>
+          <li><i class="fa-solid fa-building-columns"></i> <span data-lang-th>สจล.</span><span data-lang-en>KMITL</span></li>
+          <li><i class="fa-solid fa-graduation-cap"></i> <span data-lang-th>วิศวกรรมเกษตรอัจฉริยะ</span><span data-lang-en>Agri-Intelligence Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; <span data-year>2026</span> <strong>Jedsada Saijai</strong>. <span data-lang-th>สงวนลิขสิทธิ์</span><span data-lang-en>All rights reserved.</span></span>
+      <span data-lang-th>จัดทำเพื่อการเรียนการสอนในหลักสูตรวิศวกรรมเกษตรอัจฉริยะ</span>
+      <span data-lang-en>Prepared for teaching in the Agri-Intelligence Engineering programme.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="../js/site.js"></script>
+<script src="../js/quiz.js"></script>
+<script src="../js/ch06-quiz.js"></script>
+<script src="../js/ch06-anim.js"></script>
+</body>
+</html>

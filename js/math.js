@@ -22,7 +22,7 @@
       tags: 'none',
       macros: {
         // Shorthands used throughout the course notes.
-        deg: ['^{\\circ}', 0],
+        deg: ['{}^{\\circ}', 0],
         T: ['{}^{#1}\\!\\mathbf{T}_{#2}', 2],   // \T{A}{B}  → homogeneous transform
         vect: ['\\mathbf{#1}', 1],
         dd: ['\\mathrm{d}', 0]
